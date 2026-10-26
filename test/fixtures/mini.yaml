@@ -1,0 +1,129 @@
+openapi: '3.1.0'
+info: { title: Mini, version: '1.2.3' }
+servers:
+  - url: https://api.test/v9
+paths:
+  /pets:
+    get:
+      operationId: pets.list
+      summary: List pets
+      parameters:
+        - { name: limit, in: query, schema: { type: integer } }
+        - { name: cursor, in: query, schema: { type: string } }
+        - { name: kind, in: query, schema: { type: string, enum: [cat, dog] } }
+        - { name: born_after, in: query, schema: { $ref: '#/components/schemas/Timestamp' } }
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/ListEnvelope' }
+                  - type: object
+                    properties:
+                      data: { type: array, items: { $ref: '#/components/schemas/Pet' } }
+    post:
+      operationId: pets.create
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreatePetRequest' }
+      responses:
+        200:
+          description: Dry run.
+          content: { application/json: { schema: { $ref: '#/components/schemas/Preview' } } }
+        201:
+          content: { application/json: { schema: { $ref: '#/components/schemas/Pet' } } }
+  /pets/{id}:
+    delete:
+      operationId: pets.delete
+      responses:
+        202:
+          content:
+            application/json:
+              schema: { type: object, required: [status], properties: { status: { type: string } } }
+        204: { description: Gone. }
+  /pets/{id}/photos/{photo_id}/tags:
+    post:
+      operationId: pets.photos.tag
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        204: { description: Done. }
+components:
+  schemas:
+    Uuid: { type: string, format: uuid }
+    Timestamp: { type: string, format: date-time }
+    ListEnvelope:
+      type: object
+      required: [data, next_cursor]
+      properties:
+        data: { type: array, items: {} }
+        next_cursor: { type: [string, 'null'] }
+    Hours:
+      type: [object, 'null']
+      properties:
+        start: { type: string }
+    Address:
+      type: object
+      required: [city]
+      properties:
+        city: { type: string }
+    Preview:
+      type: object
+      required: [id]
+      properties:
+        id: { type: 'null' }
+        note: { type: [string, 'null'] }
+    Pet:
+      type: object
+      required: [id, kind, hours, born_at, tags, owner, status, score, mood, home, twin, limits, sold_to]
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        kind: { type: string, enum: [cat, dog] }
+        hours: { $ref: '#/components/schemas/Hours' }
+        born_at:
+          oneOf:
+            - { $ref: '#/components/schemas/Timestamp' }
+            - { type: 'null' }
+        tags: { type: array, items: { type: string } }
+        owner:
+          type: object
+          required: [name]
+          properties:
+            name: { type: string }
+        status: { type: string, enum: [active] }
+        score: { type: integer, enum: [1, 2, 3] }
+        mood: { type: [string, 'null'], enum: [happy, sad, null] }
+        home:
+          description: Where it lives.
+          allOf:
+            - { $ref: '#/components/schemas/Address' }
+        twin:
+          oneOf:
+            - { $ref: '#/components/schemas/Address' }
+            - { $ref: '#/components/schemas/Preview' }
+            - { type: 'null' }
+        limits:
+          type: object
+          additionalProperties: { $ref: '#/components/schemas/Address' }
+        sold_to: { $ref: '#/components/schemas/Uuid' }
+        nickname: { type: string }
+    CreatePetRequest:
+      type: object
+      required: [name, kind]
+      properties:
+        name: { type: string }
+        kind: { type: string, enum: [cat, dog] }
+        nickname: { type: [string, 'null'] }
+        born_at: { type: string, format: date-time }
+        home: { $ref: '#/components/schemas/Address' }
+        metadata: { type: object, additionalProperties: true }
+        owner:
+          type: object
+          required: [name]
+          properties:
+            name: { type: string }
+            mood: { type: string, enum: [happy, sad] }

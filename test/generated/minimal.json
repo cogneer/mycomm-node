@@ -1,0 +1,6550 @@
+{
+  "responses": [
+    {
+      "operation": "account.get",
+      "key": "account.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "Example type",
+        "name": "Example name",
+        "status": "Example status",
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "external_ref": null,
+        "settings": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "account.update",
+      "key": "account.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "Example type",
+        "name": "Example name",
+        "status": "Example status",
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "external_ref": null,
+        "settings": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "apiKeys.list",
+      "key": "apiKeys.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "apiKeys.create",
+      "key": "apiKeys.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "kind": "account",
+        "name": "Example name",
+        "prefix": "Example prefix",
+        "scope": {
+          "inbox_ids": null,
+          "channel_types": null
+        },
+        "abilities": [],
+        "allowed_ips": null,
+        "last_used_at": null,
+        "last_used_ip": null,
+        "expires_at": null,
+        "revoked_at": null,
+        "actor": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "token": "mc_test_example"
+      }
+    },
+    {
+      "operation": "apiKeys.rotate",
+      "key": "apiKeys.rotate",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "kind": "account",
+        "name": "Example name",
+        "prefix": "Example prefix",
+        "scope": {
+          "inbox_ids": null,
+          "channel_types": null
+        },
+        "abilities": [],
+        "allowed_ips": null,
+        "last_used_at": null,
+        "last_used_ip": null,
+        "expires_at": null,
+        "revoked_at": null,
+        "actor": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "token": "mc_test_example",
+        "replaces": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "expires_at": null,
+          "revoked_at": null
+        }
+      }
+    },
+    {
+      "operation": "automationRules.list",
+      "key": "automationRules.list",
+      "status": 200,
+      "body": {
+        "data": []
+      }
+    },
+    {
+      "operation": "automationRules.create",
+      "key": "automationRules.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "keyword",
+        "name": "Example name",
+        "position": 1,
+        "active": true,
+        "match": {},
+        "actions": [],
+        "schedule": null,
+        "cooldown_minutes": 1,
+        "actor": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "automationRules.reorder",
+      "key": "automationRules.reorder",
+      "status": 200,
+      "body": {
+        "data": []
+      }
+    },
+    {
+      "operation": "automationRules.get",
+      "key": "automationRules.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "keyword",
+        "name": "Example name",
+        "position": 1,
+        "active": true,
+        "match": {},
+        "actions": [],
+        "schedule": null,
+        "cooldown_minutes": 1,
+        "actor": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "automationRules.update",
+      "key": "automationRules.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "keyword",
+        "name": "Example name",
+        "position": 1,
+        "active": true,
+        "match": {},
+        "actions": [],
+        "schedule": null,
+        "cooldown_minutes": 1,
+        "actor": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "automationRules.test",
+      "key": "automationRules.test",
+      "status": 200,
+      "body": {
+        "matched_rule_id": null,
+        "rule_type": null,
+        "actions": [],
+        "reply_preview": null,
+        "outcome": "applied"
+      }
+    },
+    {
+      "operation": "automationRuns.list",
+      "key": "automationRuns.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "campaigns.recipients.list",
+      "key": "campaigns.recipients.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "campaigns.report",
+      "key": "campaigns.report",
+      "status": 200,
+      "body": {
+        "campaign_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "status": "draft",
+        "stats": {
+          "total": 1,
+          "sent": 1,
+          "delivered": 1,
+          "failed": 1
+        },
+        "rates": {
+          "delivery_rate": null,
+          "failure_rate": null,
+          "reply_rate": null,
+          "opt_out_rate": null,
+          "click_rate": null
+        },
+        "failures_by_code": {},
+        "timeline": [],
+        "links": [],
+        "started_at": null,
+        "completed_at": null
+      }
+    },
+    {
+      "operation": "campaigns.list",
+      "key": "campaigns.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "campaigns.create",
+      "key": "campaigns.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": null,
+        "status": "draft",
+        "body": null,
+        "template_id": null,
+        "media_id": null,
+        "variables": {},
+        "audience": {
+          "group_ids": [],
+          "smart_list_ids": [],
+          "import_id": null
+        },
+        "exclude": {
+          "group_ids": []
+        },
+        "category": "marketing",
+        "compliance": {
+          "consent_asserted_at": null,
+          "consent_asserted_by": null,
+          "service_message": true
+        },
+        "append_opt_out_text": true,
+        "shorten_links": true,
+        "track_clicks": true,
+        "scheduled_at": null,
+        "started_at": null,
+        "paused_at": null,
+        "completed_at": null,
+        "cancelled_at": null,
+        "eta_at": null,
+        "stats": {
+          "total": 1,
+          "skipped": {}
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "campaigns.show",
+      "key": "campaigns.show",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": null,
+        "status": "draft",
+        "body": null,
+        "template_id": null,
+        "media_id": null,
+        "variables": {},
+        "audience": {
+          "group_ids": [],
+          "smart_list_ids": [],
+          "import_id": null
+        },
+        "exclude": {
+          "group_ids": []
+        },
+        "category": "marketing",
+        "compliance": {
+          "consent_asserted_at": null,
+          "consent_asserted_by": null,
+          "service_message": true
+        },
+        "append_opt_out_text": true,
+        "shorten_links": true,
+        "track_clicks": true,
+        "scheduled_at": null,
+        "started_at": null,
+        "paused_at": null,
+        "completed_at": null,
+        "cancelled_at": null,
+        "eta_at": null,
+        "stats": {
+          "total": 1,
+          "skipped": {}
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "campaigns.update",
+      "key": "campaigns.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": null,
+        "status": "draft",
+        "body": null,
+        "template_id": null,
+        "media_id": null,
+        "variables": {},
+        "audience": {
+          "group_ids": [],
+          "smart_list_ids": [],
+          "import_id": null
+        },
+        "exclude": {
+          "group_ids": []
+        },
+        "category": "marketing",
+        "compliance": {
+          "consent_asserted_at": null,
+          "consent_asserted_by": null,
+          "service_message": true
+        },
+        "append_opt_out_text": true,
+        "shorten_links": true,
+        "track_clicks": true,
+        "scheduled_at": null,
+        "started_at": null,
+        "paused_at": null,
+        "completed_at": null,
+        "cancelled_at": null,
+        "eta_at": null,
+        "stats": {
+          "total": 1,
+          "skipped": {}
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "campaigns.estimate",
+      "key": "campaigns.estimate",
+      "status": 200,
+      "body": {
+        "recipients": 1,
+        "skipped": {},
+        "segments_per_message": {
+          "min": 1,
+          "max": 1
+        },
+        "total_segments": 1,
+        "start_at": "2026-10-01T09:15:02Z",
+        "eta_at": null,
+        "warnings": []
+      }
+    },
+    {
+      "operation": "campaigns.start",
+      "key": "campaigns.start",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": null,
+        "status": "draft",
+        "body": null,
+        "template_id": null,
+        "media_id": null,
+        "variables": {},
+        "audience": {
+          "group_ids": [],
+          "smart_list_ids": [],
+          "import_id": null
+        },
+        "exclude": {
+          "group_ids": []
+        },
+        "category": "marketing",
+        "compliance": {
+          "consent_asserted_at": null,
+          "consent_asserted_by": null,
+          "service_message": true
+        },
+        "append_opt_out_text": true,
+        "shorten_links": true,
+        "track_clicks": true,
+        "scheduled_at": null,
+        "started_at": null,
+        "paused_at": null,
+        "completed_at": null,
+        "cancelled_at": null,
+        "eta_at": null,
+        "stats": {
+          "total": 1,
+          "skipped": {}
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "campaigns.unschedule",
+      "key": "campaigns.unschedule",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": null,
+        "status": "draft",
+        "body": null,
+        "template_id": null,
+        "media_id": null,
+        "variables": {},
+        "audience": {
+          "group_ids": [],
+          "smart_list_ids": [],
+          "import_id": null
+        },
+        "exclude": {
+          "group_ids": []
+        },
+        "category": "marketing",
+        "compliance": {
+          "consent_asserted_at": null,
+          "consent_asserted_by": null,
+          "service_message": true
+        },
+        "append_opt_out_text": true,
+        "shorten_links": true,
+        "track_clicks": true,
+        "scheduled_at": null,
+        "started_at": null,
+        "paused_at": null,
+        "completed_at": null,
+        "cancelled_at": null,
+        "eta_at": null,
+        "stats": {
+          "total": 1,
+          "skipped": {}
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "campaigns.pause",
+      "key": "campaigns.pause",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": null,
+        "status": "draft",
+        "body": null,
+        "template_id": null,
+        "media_id": null,
+        "variables": {},
+        "audience": {
+          "group_ids": [],
+          "smart_list_ids": [],
+          "import_id": null
+        },
+        "exclude": {
+          "group_ids": []
+        },
+        "category": "marketing",
+        "compliance": {
+          "consent_asserted_at": null,
+          "consent_asserted_by": null,
+          "service_message": true
+        },
+        "append_opt_out_text": true,
+        "shorten_links": true,
+        "track_clicks": true,
+        "scheduled_at": null,
+        "started_at": null,
+        "paused_at": null,
+        "completed_at": null,
+        "cancelled_at": null,
+        "eta_at": null,
+        "stats": {
+          "total": 1,
+          "skipped": {}
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "campaigns.resume",
+      "key": "campaigns.resume",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": null,
+        "status": "draft",
+        "body": null,
+        "template_id": null,
+        "media_id": null,
+        "variables": {},
+        "audience": {
+          "group_ids": [],
+          "smart_list_ids": [],
+          "import_id": null
+        },
+        "exclude": {
+          "group_ids": []
+        },
+        "category": "marketing",
+        "compliance": {
+          "consent_asserted_at": null,
+          "consent_asserted_by": null,
+          "service_message": true
+        },
+        "append_opt_out_text": true,
+        "shorten_links": true,
+        "track_clicks": true,
+        "scheduled_at": null,
+        "started_at": null,
+        "paused_at": null,
+        "completed_at": null,
+        "cancelled_at": null,
+        "eta_at": null,
+        "stats": {
+          "total": 1,
+          "skipped": {}
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "campaigns.cancel",
+      "key": "campaigns.cancel",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": null,
+        "status": "draft",
+        "body": null,
+        "template_id": null,
+        "media_id": null,
+        "variables": {},
+        "audience": {
+          "group_ids": [],
+          "smart_list_ids": [],
+          "import_id": null
+        },
+        "exclude": {
+          "group_ids": []
+        },
+        "category": "marketing",
+        "compliance": {
+          "consent_asserted_at": null,
+          "consent_asserted_by": null,
+          "service_message": true
+        },
+        "append_opt_out_text": true,
+        "shorten_links": true,
+        "track_clicks": true,
+        "scheduled_at": null,
+        "started_at": null,
+        "paused_at": null,
+        "completed_at": null,
+        "cancelled_at": null,
+        "eta_at": null,
+        "stats": {
+          "total": 1,
+          "skipped": {}
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.get",
+      "key": "channels.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "main_inbox_id": null,
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "reply_window_days": 1,
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.update",
+      "key": "channels.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "main_inbox_id": null,
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "reply_window_days": 1,
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.pause",
+      "key": "channels.pause",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "main_inbox_id": null,
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "reply_window_days": 1,
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.resume",
+      "key": "channels.resume",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "main_inbox_id": null,
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "reply_window_days": 1,
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.disconnect",
+      "key": "channels.disconnect",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "main_inbox_id": null,
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "reply_window_days": 1,
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.connectSim",
+      "key": "channels.connectSim",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "main_inbox_id": null,
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "reply_window_days": 1,
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.verify",
+      "key": "channels.verify",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "main_inbox_id": null,
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "reply_window_days": 1,
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.list",
+      "key": "channels.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "channels.updateRatePolicy",
+      "key": "channels.updateRatePolicy",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "main_inbox_id": null,
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "reply_window_days": 1,
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.types",
+      "key": "channels.types",
+      "status": 200,
+      "body": {
+        "data": []
+      }
+    },
+    {
+      "operation": "connectSessions.create",
+      "key": "connectSessions.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "status": "open",
+        "expires_at": "2026-10-01T09:15:02Z",
+        "return_url": null,
+        "allowed_origins": null,
+        "locale": null,
+        "device_id": null,
+        "channel_id": null,
+        "completed_at": null,
+        "revoked_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "url": "https://example.com/mycomm"
+      }
+    },
+    {
+      "operation": "connectSessions.get",
+      "key": "connectSessions.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "status": "open",
+        "expires_at": "2026-10-01T09:15:02Z",
+        "return_url": null,
+        "allowed_origins": null,
+        "locale": null,
+        "device_id": null,
+        "channel_id": null,
+        "completed_at": null,
+        "revoked_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contactFields.list",
+      "key": "contactFields.list",
+      "status": 200,
+      "body": {
+        "data": []
+      }
+    },
+    {
+      "operation": "contactFields.create",
+      "key": "contactFields.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "key": "Example key",
+        "label": "Example label",
+        "type": "text",
+        "options": null,
+        "position": 1,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contactFields.update",
+      "key": "contactFields.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "key": "Example key",
+        "label": "Example label",
+        "type": "text",
+        "options": null,
+        "position": 1,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.identities.create",
+      "key": "contacts.identities.create",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone",
+        "address": "+923001234567",
+        "display": null,
+        "meta": {},
+        "country_iso": null,
+        "is_primary": true,
+        "suppressed": true,
+        "blocked_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.identities.create",
+      "key": "contacts.identities.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone",
+        "address": "+923001234567",
+        "display": null,
+        "meta": {},
+        "country_iso": null,
+        "is_primary": true,
+        "suppressed": true,
+        "blocked_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.identities.update",
+      "key": "contacts.identities.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone",
+        "address": "+923001234567",
+        "display": null,
+        "meta": {},
+        "country_iso": null,
+        "is_primary": true,
+        "suppressed": true,
+        "blocked_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.identities.block",
+      "key": "contacts.identities.block",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone",
+        "address": "+923001234567",
+        "display": null,
+        "meta": {},
+        "country_iso": null,
+        "is_primary": true,
+        "suppressed": true,
+        "blocked_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.identities.unblock",
+      "key": "contacts.identities.unblock",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone",
+        "address": "+923001234567",
+        "display": null,
+        "meta": {},
+        "country_iso": null,
+        "is_primary": true,
+        "suppressed": true,
+        "blocked_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.optOut",
+      "key": "contacts.optOut",
+      "status": 200,
+      "body": {
+        "suppressed": 1,
+        "already_suppressed": 1
+      }
+    },
+    {
+      "operation": "contacts.upsertByIdentity",
+      "key": "contacts.upsertByIdentity",
+      "status": 200,
+      "body": {
+        "id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "first_name": "Amina",
+        "last_name": "Khan",
+        "display_name": "Amina Khan",
+        "email": "amina@example.com",
+        "timezone": "Asia/Karachi",
+        "language": "en",
+        "custom_fields": {
+          "plan": "gold"
+        },
+        "identities": [
+          {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567",
+            "meta": {},
+            "country_iso": "PK",
+            "is_primary": true,
+            "suppressed": false,
+            "blocked_at": null,
+            "created_at": "2026-09-12T10:04:11Z"
+          }
+        ],
+        "group_ids": ["0198e0d2-8a40-7f15-a6b3-2c9e4d1f7a09"],
+        "source": "api",
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-09-12T10:04:11Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.upsertByIdentity",
+      "key": "contacts.upsertByIdentity",
+      "status": 201,
+      "body": {
+        "id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "first_name": "Amina",
+        "last_name": "Khan",
+        "display_name": "Amina Khan",
+        "email": "amina@example.com",
+        "timezone": "Asia/Karachi",
+        "language": "en",
+        "custom_fields": {
+          "plan": "gold"
+        },
+        "identities": [
+          {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567",
+            "meta": {},
+            "country_iso": "PK",
+            "is_primary": true,
+            "suppressed": false,
+            "blocked_at": null,
+            "created_at": "2026-09-12T10:04:11Z"
+          }
+        ],
+        "group_ids": ["0198e0d2-8a40-7f15-a6b3-2c9e4d1f7a09"],
+        "source": "api",
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-09-12T10:04:11Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.bulkUpsert",
+      "key": "contacts.bulkUpsert",
+      "status": 200,
+      "body": {
+        "summary": {
+          "created": 1,
+          "updated": 1,
+          "rejected": 1
+        },
+        "results": []
+      }
+    },
+    {
+      "operation": "contacts.list",
+      "key": "contacts.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "contacts.create",
+      "key": "contacts.create",
+      "status": 201,
+      "body": {
+        "id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "first_name": "Amina",
+        "last_name": "Khan",
+        "display_name": "Amina Khan",
+        "email": "amina@example.com",
+        "timezone": "Asia/Karachi",
+        "language": "en",
+        "custom_fields": {
+          "plan": "gold"
+        },
+        "identities": [
+          {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567",
+            "meta": {},
+            "country_iso": "PK",
+            "is_primary": true,
+            "suppressed": false,
+            "blocked_at": null,
+            "created_at": "2026-09-12T10:04:11Z"
+          }
+        ],
+        "group_ids": ["0198e0d2-8a40-7f15-a6b3-2c9e4d1f7a09"],
+        "source": "api",
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-09-12T10:04:11Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.show",
+      "key": "contacts.show",
+      "status": 200,
+      "body": {
+        "id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "first_name": "Amina",
+        "last_name": "Khan",
+        "display_name": "Amina Khan",
+        "email": "amina@example.com",
+        "timezone": "Asia/Karachi",
+        "language": "en",
+        "custom_fields": {
+          "plan": "gold"
+        },
+        "identities": [
+          {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567",
+            "meta": {},
+            "country_iso": "PK",
+            "is_primary": true,
+            "suppressed": false,
+            "blocked_at": null,
+            "created_at": "2026-09-12T10:04:11Z"
+          }
+        ],
+        "group_ids": ["0198e0d2-8a40-7f15-a6b3-2c9e4d1f7a09"],
+        "source": "api",
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-09-12T10:04:11Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.update",
+      "key": "contacts.update",
+      "status": 200,
+      "body": {
+        "id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "first_name": "Amina",
+        "last_name": "Khan",
+        "display_name": "Amina Khan",
+        "email": "amina@example.com",
+        "timezone": "Asia/Karachi",
+        "language": "en",
+        "custom_fields": {
+          "plan": "gold"
+        },
+        "identities": [
+          {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567",
+            "meta": {},
+            "country_iso": "PK",
+            "is_primary": true,
+            "suppressed": false,
+            "blocked_at": null,
+            "created_at": "2026-09-12T10:04:11Z"
+          }
+        ],
+        "group_ids": ["0198e0d2-8a40-7f15-a6b3-2c9e4d1f7a09"],
+        "source": "api",
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-09-12T10:04:11Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "contacts.delete",
+      "key": "contacts.delete",
+      "status": 202,
+      "body": {
+        "status": "erasing"
+      }
+    },
+    {
+      "operation": "contacts.conversations",
+      "key": "contacts.conversations",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "conversations.read",
+      "key": "conversations.read",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "address": null,
+        "contact_display_name": null,
+        "status": "Example status",
+        "unread_count": 1,
+        "last_message_id": null,
+        "last_message_at": null,
+        "last_message_preview": null,
+        "last_direction": null,
+        "last_outbound_at": null,
+        "last_inbound_at": null,
+        "blocked_at": null,
+        "suppressed": true,
+        "channel_meta": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "conversations.unread",
+      "key": "conversations.unread",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "address": null,
+        "contact_display_name": null,
+        "status": "Example status",
+        "unread_count": 1,
+        "last_message_id": null,
+        "last_message_at": null,
+        "last_message_preview": null,
+        "last_direction": null,
+        "last_outbound_at": null,
+        "last_inbound_at": null,
+        "blocked_at": null,
+        "suppressed": true,
+        "channel_meta": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "conversations.archive",
+      "key": "conversations.archive",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "address": null,
+        "contact_display_name": null,
+        "status": "Example status",
+        "unread_count": 1,
+        "last_message_id": null,
+        "last_message_at": null,
+        "last_message_preview": null,
+        "last_direction": null,
+        "last_outbound_at": null,
+        "last_inbound_at": null,
+        "blocked_at": null,
+        "suppressed": true,
+        "channel_meta": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "conversations.unarchive",
+      "key": "conversations.unarchive",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "address": null,
+        "contact_display_name": null,
+        "status": "Example status",
+        "unread_count": 1,
+        "last_message_id": null,
+        "last_message_at": null,
+        "last_message_preview": null,
+        "last_direction": null,
+        "last_outbound_at": null,
+        "last_inbound_at": null,
+        "blocked_at": null,
+        "suppressed": true,
+        "channel_meta": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "conversations.block",
+      "key": "conversations.block",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "address": null,
+        "contact_display_name": null,
+        "status": "Example status",
+        "unread_count": 1,
+        "last_message_id": null,
+        "last_message_at": null,
+        "last_message_preview": null,
+        "last_direction": null,
+        "last_outbound_at": null,
+        "last_inbound_at": null,
+        "blocked_at": null,
+        "suppressed": true,
+        "channel_meta": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "conversations.unblock",
+      "key": "conversations.unblock",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "address": null,
+        "contact_display_name": null,
+        "status": "Example status",
+        "unread_count": 1,
+        "last_message_id": null,
+        "last_message_at": null,
+        "last_message_preview": null,
+        "last_direction": null,
+        "last_outbound_at": null,
+        "last_inbound_at": null,
+        "blocked_at": null,
+        "suppressed": true,
+        "channel_meta": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "conversations.show",
+      "key": "conversations.show",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "address": null,
+        "contact_display_name": null,
+        "status": "Example status",
+        "unread_count": 1,
+        "last_message_id": null,
+        "last_message_at": null,
+        "last_message_preview": null,
+        "last_direction": null,
+        "last_outbound_at": null,
+        "last_inbound_at": null,
+        "blocked_at": null,
+        "suppressed": true,
+        "channel_meta": {},
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "conversations.delete",
+      "key": "conversations.delete",
+      "status": 202,
+      "body": {
+        "status": "deleting"
+      }
+    },
+    {
+      "operation": "conversations.list",
+      "key": "conversations.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "conversations.messages",
+      "key": "conversations.messages",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "conversations.reply",
+      "key": "conversations.reply",
+      "status": 200,
+      "body": {
+        "dry_run": true,
+        "id": null,
+        "status": null,
+        "warnings": []
+      }
+    },
+    {
+      "operation": "conversations.reply",
+      "key": "conversations.reply",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "conversation_id": null,
+        "contact_id": null,
+        "identity": null,
+        "direction": "outbound",
+        "type": "sms",
+        "origin": "portal",
+        "from": null,
+        "to": null,
+        "content_type": "text",
+        "content": {},
+        "body": null,
+        "encoding": null,
+        "segments": null,
+        "media": [],
+        "channel_meta": {},
+        "provider_message_id": null,
+        "category": null,
+        "lane": null,
+        "status": "queued",
+        "hold_reason": null,
+        "send_after": null,
+        "expires_at": null,
+        "attempts": 1,
+        "failure": null,
+        "cancel_requested_at": null,
+        "reference_id": null,
+        "metadata": {},
+        "template_id": null,
+        "campaign_id": null,
+        "actor": {
+          "type": "user",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "sent_at": null,
+        "delivered_at": null,
+        "failed_at": null,
+        "expired_at": null,
+        "cancelled_at": null,
+        "received_at": null,
+        "read_at": null,
+        "phone_timestamp": null,
+        "warnings": []
+      }
+    },
+    {
+      "operation": "devices.list",
+      "key": "devices.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "devices.get",
+      "key": "devices.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": null,
+        "status": "active",
+        "manufacturer": null,
+        "model": null,
+        "os_version": null,
+        "app_version_name": null,
+        "app_version_code": null,
+        "update_available": true,
+        "connection_state": "online",
+        "connection_reasons": [],
+        "paused": true,
+        "pause_reason": null,
+        "os_limit_raised": true,
+        "os_limit_value": null,
+        "os_limit_changed_at": null,
+        "health": {
+          "power": {},
+          "network": {},
+          "permissions": {},
+          "battery_optimization_ignored": null,
+          "rcs_confirmed_off_at": null,
+          "storage": {}
+        },
+        "sims": [],
+        "paired_at": null,
+        "last_heartbeat_at": null,
+        "last_pull_at": null,
+        "last_report_at": null,
+        "revoked_at": null,
+        "revoked_reason": null,
+        "drain_until": null
+      }
+    },
+    {
+      "operation": "devices.update",
+      "key": "devices.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": null,
+        "status": "active",
+        "manufacturer": null,
+        "model": null,
+        "os_version": null,
+        "app_version_name": null,
+        "app_version_code": null,
+        "update_available": true,
+        "connection_state": "online",
+        "connection_reasons": [],
+        "paused": true,
+        "pause_reason": null,
+        "os_limit_raised": true,
+        "os_limit_value": null,
+        "os_limit_changed_at": null,
+        "health": {
+          "power": {},
+          "network": {},
+          "permissions": {},
+          "battery_optimization_ignored": null,
+          "rcs_confirmed_off_at": null,
+          "storage": {}
+        },
+        "sims": [],
+        "paired_at": null,
+        "last_heartbeat_at": null,
+        "last_pull_at": null,
+        "last_report_at": null,
+        "revoked_at": null,
+        "revoked_reason": null,
+        "drain_until": null
+      }
+    },
+    {
+      "operation": "devices.pause",
+      "key": "devices.pause",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": null,
+        "status": "active",
+        "manufacturer": null,
+        "model": null,
+        "os_version": null,
+        "app_version_name": null,
+        "app_version_code": null,
+        "update_available": true,
+        "connection_state": "online",
+        "connection_reasons": [],
+        "paused": true,
+        "pause_reason": null,
+        "os_limit_raised": true,
+        "os_limit_value": null,
+        "os_limit_changed_at": null,
+        "health": {
+          "power": {},
+          "network": {},
+          "permissions": {},
+          "battery_optimization_ignored": null,
+          "rcs_confirmed_off_at": null,
+          "storage": {}
+        },
+        "sims": [],
+        "paired_at": null,
+        "last_heartbeat_at": null,
+        "last_pull_at": null,
+        "last_report_at": null,
+        "revoked_at": null,
+        "revoked_reason": null,
+        "drain_until": null
+      }
+    },
+    {
+      "operation": "devices.resume",
+      "key": "devices.resume",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": null,
+        "status": "active",
+        "manufacturer": null,
+        "model": null,
+        "os_version": null,
+        "app_version_name": null,
+        "app_version_code": null,
+        "update_available": true,
+        "connection_state": "online",
+        "connection_reasons": [],
+        "paused": true,
+        "pause_reason": null,
+        "os_limit_raised": true,
+        "os_limit_value": null,
+        "os_limit_changed_at": null,
+        "health": {
+          "power": {},
+          "network": {},
+          "permissions": {},
+          "battery_optimization_ignored": null,
+          "rcs_confirmed_off_at": null,
+          "storage": {}
+        },
+        "sims": [],
+        "paired_at": null,
+        "last_heartbeat_at": null,
+        "last_pull_at": null,
+        "last_report_at": null,
+        "revoked_at": null,
+        "revoked_reason": null,
+        "drain_until": null
+      }
+    },
+    {
+      "operation": "devices.revoke",
+      "key": "devices.revoke",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": null,
+        "status": "active",
+        "manufacturer": null,
+        "model": null,
+        "os_version": null,
+        "app_version_name": null,
+        "app_version_code": null,
+        "update_available": true,
+        "connection_state": "online",
+        "connection_reasons": [],
+        "paused": true,
+        "pause_reason": null,
+        "os_limit_raised": true,
+        "os_limit_value": null,
+        "os_limit_changed_at": null,
+        "health": {
+          "power": {},
+          "network": {},
+          "permissions": {},
+          "battery_optimization_ignored": null,
+          "rcs_confirmed_off_at": null,
+          "storage": {}
+        },
+        "sims": [],
+        "paired_at": null,
+        "last_heartbeat_at": null,
+        "last_pull_at": null,
+        "last_report_at": null,
+        "revoked_at": null,
+        "revoked_reason": null,
+        "drain_until": null
+      }
+    },
+    {
+      "operation": "devices.sims.list",
+      "key": "devices.sims.list",
+      "status": 200,
+      "body": {
+        "data": []
+      }
+    },
+    {
+      "operation": "exports.list",
+      "key": "exports.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "exports.create",
+      "key": "exports.create",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "messages_csv",
+        "status": "queued",
+        "params": {},
+        "url": null,
+        "url_expires_at": null,
+        "expires_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "completed_at": null
+      }
+    },
+    {
+      "operation": "exports.get",
+      "key": "exports.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "messages_csv",
+        "status": "queued",
+        "params": {},
+        "url": null,
+        "url_expires_at": null,
+        "expires_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "completed_at": null
+      }
+    },
+    {
+      "operation": "groups.list",
+      "key": "groups.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "groups.create",
+      "key": "groups.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "description": null,
+        "member_count": 1,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "groups.show",
+      "key": "groups.show",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "description": null,
+        "member_count": 1,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "groups.update",
+      "key": "groups.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "description": null,
+        "member_count": 1,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "groups.members.list",
+      "key": "groups.members.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "groups.members.add",
+      "key": "groups.members.add",
+      "status": 200,
+      "body": {
+        "added": 1,
+        "already_member": 1,
+        "not_found": []
+      }
+    },
+    {
+      "operation": "groups.members.remove",
+      "key": "groups.members.remove",
+      "status": 200,
+      "body": {
+        "removed": 1,
+        "not_member": 1
+      }
+    },
+    {
+      "operation": "imports.list",
+      "key": "imports.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "imports.create",
+      "key": "imports.create",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone_history",
+        "status": "uploaded",
+        "channel_id": null,
+        "options": {},
+        "totals": {
+          "rows": 1,
+          "created": 1,
+          "updated": 1,
+          "skipped": 1,
+          "errors": 1
+        },
+        "confirmation": null,
+        "error": null,
+        "error_report_url": null,
+        "error_report_url_expires_at": null,
+        "started_at": null,
+        "completed_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "imports.create",
+      "key": "imports.createFromFile",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone_history",
+        "status": "uploaded",
+        "channel_id": null,
+        "options": {},
+        "totals": {
+          "rows": 1,
+          "created": 1,
+          "updated": 1,
+          "skipped": 1,
+          "errors": 1
+        },
+        "confirmation": null,
+        "error": null,
+        "error_report_url": null,
+        "error_report_url_expires_at": null,
+        "started_at": null,
+        "completed_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "imports.get",
+      "key": "imports.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone_history",
+        "status": "uploaded",
+        "channel_id": null,
+        "options": {},
+        "totals": {
+          "rows": 1,
+          "created": 1,
+          "updated": 1,
+          "skipped": 1,
+          "errors": 1
+        },
+        "confirmation": null,
+        "error": null,
+        "error_report_url": null,
+        "error_report_url_expires_at": null,
+        "started_at": null,
+        "completed_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "imports.cancel",
+      "key": "imports.cancel",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "phone_history",
+        "status": "uploaded",
+        "channel_id": null,
+        "options": {},
+        "totals": {
+          "rows": 1,
+          "created": 1,
+          "updated": 1,
+          "skipped": 1,
+          "errors": 1
+        },
+        "confirmation": null,
+        "error": null,
+        "error_report_url": null,
+        "error_report_url_expires_at": null,
+        "started_at": null,
+        "completed_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "inboxes.list",
+      "key": "inboxes.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "inboxes.create",
+      "key": "inboxes.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "kind": "main",
+        "name": "Example name",
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": null,
+          "display_address": null,
+          "status": "Example status"
+        },
+        "settings": {
+          "business_hours": null,
+          "signature": null
+        },
+        "archived_at": null,
+        "open_conversations": 1,
+        "unread_conversations": 1,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "inboxes.archive",
+      "key": "inboxes.archive",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "kind": "main",
+        "name": "Example name",
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": null,
+          "display_address": null,
+          "status": "Example status"
+        },
+        "settings": {
+          "business_hours": null,
+          "signature": null
+        },
+        "archived_at": null,
+        "open_conversations": 1,
+        "unread_conversations": 1,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "inboxes.unarchive",
+      "key": "inboxes.unarchive",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "kind": "main",
+        "name": "Example name",
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": null,
+          "display_address": null,
+          "status": "Example status"
+        },
+        "settings": {
+          "business_hours": null,
+          "signature": null
+        },
+        "archived_at": null,
+        "open_conversations": 1,
+        "unread_conversations": 1,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "inboxes.get",
+      "key": "inboxes.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "kind": "main",
+        "name": "Example name",
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": null,
+          "display_address": null,
+          "status": "Example status"
+        },
+        "settings": {
+          "business_hours": null,
+          "signature": null
+        },
+        "archived_at": null,
+        "open_conversations": 1,
+        "unread_conversations": 1,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "inboxes.update",
+      "key": "inboxes.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "kind": "main",
+        "name": "Example name",
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": null,
+          "display_address": null,
+          "status": "Example status"
+        },
+        "settings": {
+          "business_hours": null,
+          "signature": null
+        },
+        "archived_at": null,
+        "open_conversations": 1,
+        "unread_conversations": 1,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "media.upload",
+      "key": "media.upload",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "mime": "image/jpeg",
+        "size_bytes": 1,
+        "width": null,
+        "height": null,
+        "duration_ms": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "original_name": null,
+        "purpose": "Example purpose",
+        "message_id": null,
+        "url": "https://example.com/mycomm",
+        "url_expires_at": "2026-10-01T09:15:02Z",
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "media.get",
+      "key": "media.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "mime": "image/jpeg",
+        "size_bytes": 1,
+        "width": null,
+        "height": null,
+        "duration_ms": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "original_name": null,
+        "purpose": "Example purpose",
+        "message_id": null,
+        "url": "https://example.com/mycomm",
+        "url_expires_at": "2026-10-01T09:15:02Z",
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "messages.cancel",
+      "key": "messages.cancel",
+      "status": 200,
+      "body": {
+        "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+        "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+        "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+        "channel_type": "android_sim",
+        "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+        "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+        "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "identity": {
+          "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+          "type": "phone",
+          "address": "+923001234567",
+          "display": "+92 300 1234567"
+        },
+        "direction": "outbound",
+        "type": "sms",
+        "origin": "api",
+        "from": "+923451234567",
+        "to": "+923001234567",
+        "content_type": "text",
+        "content": {
+          "type": "text",
+          "body": "Your order #1094 is ready for pickup."
+        },
+        "body": "Your order #1094 is ready for pickup.",
+        "encoding": "gsm7",
+        "segments": 1,
+        "media": [],
+        "channel_meta": {},
+        "provider_message_id": null,
+        "category": "transactional",
+        "lane": "normal",
+        "status": "queued",
+        "hold_reason": null,
+        "send_after": null,
+        "expires_at": "2026-10-02T09:15:02Z",
+        "attempts": 0,
+        "failure": null,
+        "cancel_requested_at": null,
+        "reference_id": "order-1094",
+        "metadata": {
+          "order_id": "1094"
+        },
+        "template_id": null,
+        "campaign_id": null,
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "sent_at": null,
+        "delivered_at": null,
+        "failed_at": null,
+        "expired_at": null,
+        "cancelled_at": null,
+        "received_at": null,
+        "read_at": null,
+        "phone_timestamp": null
+      }
+    },
+    {
+      "operation": "messages.cancel",
+      "key": "messages.cancel",
+      "status": 202,
+      "body": {
+        "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+        "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+        "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+        "channel_type": "android_sim",
+        "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+        "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+        "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "identity": {
+          "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+          "type": "phone",
+          "address": "+923001234567",
+          "display": "+92 300 1234567"
+        },
+        "direction": "outbound",
+        "type": "sms",
+        "origin": "api",
+        "from": "+923451234567",
+        "to": "+923001234567",
+        "content_type": "text",
+        "content": {
+          "type": "text",
+          "body": "Your order #1094 is ready for pickup."
+        },
+        "body": "Your order #1094 is ready for pickup.",
+        "encoding": "gsm7",
+        "segments": 1,
+        "media": [],
+        "channel_meta": {},
+        "provider_message_id": null,
+        "category": "transactional",
+        "lane": "normal",
+        "status": "queued",
+        "hold_reason": null,
+        "send_after": null,
+        "expires_at": "2026-10-02T09:15:02Z",
+        "attempts": 0,
+        "failure": null,
+        "cancel_requested_at": null,
+        "reference_id": "order-1094",
+        "metadata": {
+          "order_id": "1094"
+        },
+        "template_id": null,
+        "campaign_id": null,
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "sent_at": null,
+        "delivered_at": null,
+        "failed_at": null,
+        "expired_at": null,
+        "cancelled_at": null,
+        "received_at": null,
+        "read_at": null,
+        "phone_timestamp": null
+      }
+    },
+    {
+      "operation": "messages.retry",
+      "key": "messages.retry",
+      "status": 200,
+      "body": {
+        "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+        "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+        "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+        "channel_type": "android_sim",
+        "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+        "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+        "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "identity": {
+          "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+          "type": "phone",
+          "address": "+923001234567",
+          "display": "+92 300 1234567"
+        },
+        "direction": "outbound",
+        "type": "sms",
+        "origin": "api",
+        "from": "+923451234567",
+        "to": "+923001234567",
+        "content_type": "text",
+        "content": {
+          "type": "text",
+          "body": "Your order #1094 is ready for pickup."
+        },
+        "body": "Your order #1094 is ready for pickup.",
+        "encoding": "gsm7",
+        "segments": 1,
+        "media": [],
+        "channel_meta": {},
+        "provider_message_id": null,
+        "category": "transactional",
+        "lane": "normal",
+        "status": "queued",
+        "hold_reason": null,
+        "send_after": null,
+        "expires_at": "2026-10-02T09:15:02Z",
+        "attempts": 0,
+        "failure": null,
+        "cancel_requested_at": null,
+        "reference_id": "order-1094",
+        "metadata": {
+          "order_id": "1094"
+        },
+        "template_id": null,
+        "campaign_id": null,
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "sent_at": null,
+        "delivered_at": null,
+        "failed_at": null,
+        "expired_at": null,
+        "cancelled_at": null,
+        "received_at": null,
+        "read_at": null,
+        "phone_timestamp": null
+      }
+    },
+    {
+      "operation": "messages.sendBatch",
+      "key": "messages.sendBatch",
+      "status": 200,
+      "body": {
+        "summary": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "results": []
+      }
+    },
+    {
+      "operation": "messages.list",
+      "key": "messages.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "messages.send",
+      "key": "messages.send",
+      "status": 200,
+      "body": {
+        "dry_run": true,
+        "id": null,
+        "status": null,
+        "warnings": []
+      }
+    },
+    {
+      "operation": "messages.send",
+      "key": "messages.send",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "channel_type": null,
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "conversation_id": null,
+        "contact_id": null,
+        "identity": null,
+        "direction": "outbound",
+        "type": "sms",
+        "origin": "portal",
+        "from": null,
+        "to": null,
+        "content_type": "text",
+        "content": {},
+        "body": null,
+        "encoding": null,
+        "segments": null,
+        "media": [],
+        "channel_meta": {},
+        "provider_message_id": null,
+        "category": null,
+        "lane": null,
+        "status": "queued",
+        "hold_reason": null,
+        "send_after": null,
+        "expires_at": null,
+        "attempts": 1,
+        "failure": null,
+        "cancel_requested_at": null,
+        "reference_id": null,
+        "metadata": {},
+        "template_id": null,
+        "campaign_id": null,
+        "actor": {
+          "type": "user",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "sent_at": null,
+        "delivered_at": null,
+        "failed_at": null,
+        "expired_at": null,
+        "cancelled_at": null,
+        "received_at": null,
+        "read_at": null,
+        "phone_timestamp": null,
+        "warnings": []
+      }
+    },
+    {
+      "operation": "messages.show",
+      "key": "messages.show",
+      "status": 200,
+      "body": {
+        "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+        "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+        "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+        "channel_type": "android_sim",
+        "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+        "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+        "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+        "identity": {
+          "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+          "type": "phone",
+          "address": "+923001234567",
+          "display": "+92 300 1234567"
+        },
+        "direction": "outbound",
+        "type": "sms",
+        "origin": "api",
+        "from": "+923451234567",
+        "to": "+923001234567",
+        "content_type": "text",
+        "content": {
+          "type": "text",
+          "body": "Your order #1094 is ready for pickup."
+        },
+        "body": "Your order #1094 is ready for pickup.",
+        "encoding": "gsm7",
+        "segments": 1,
+        "media": [],
+        "channel_meta": {},
+        "provider_message_id": null,
+        "category": "transactional",
+        "lane": "normal",
+        "status": "queued",
+        "hold_reason": null,
+        "send_after": null,
+        "expires_at": "2026-10-02T09:15:02Z",
+        "attempts": 0,
+        "failure": null,
+        "cancel_requested_at": null,
+        "reference_id": "order-1094",
+        "metadata": {
+          "order_id": "1094"
+        },
+        "template_id": null,
+        "campaign_id": null,
+        "actor": {
+          "type": "api_key",
+          "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "sent_at": null,
+        "delivered_at": null,
+        "failed_at": null,
+        "expired_at": null,
+        "cancelled_at": null,
+        "received_at": null,
+        "read_at": null,
+        "phone_timestamp": null
+      }
+    },
+    {
+      "operation": "messages.events",
+      "key": "messages.events",
+      "status": 200,
+      "body": {
+        "data": []
+      }
+    },
+    {
+      "operation": "pairingCodes.create",
+      "key": "pairingCodes.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "code": null,
+        "qr_payload": null,
+        "expires_at": "2026-10-01T09:15:02Z",
+        "download_url": "https://example.com/mycomm",
+        "status": "pending",
+        "device_id": null,
+        "device_name": null,
+        "last_error": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "pairingCodes.get",
+      "key": "pairingCodes.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "code": null,
+        "qr_payload": null,
+        "expires_at": "2026-10-01T09:15:02Z",
+        "download_url": "https://example.com/mycomm",
+        "status": "pending",
+        "device_id": null,
+        "device_name": null,
+        "last_error": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "smartLists.list",
+      "key": "smartLists.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "smartLists.create",
+      "key": "smartLists.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "filter": {
+          "match": "all",
+          "conditions": []
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "smartLists.preview",
+      "key": "smartLists.preview",
+      "status": 200,
+      "body": {
+        "count": 1,
+        "sample": []
+      }
+    },
+    {
+      "operation": "smartLists.show",
+      "key": "smartLists.show",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "filter": {
+          "match": "all",
+          "conditions": []
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "smartLists.update",
+      "key": "smartLists.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "filter": {
+          "match": "all",
+          "conditions": []
+        },
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "smartLists.members.list",
+      "key": "smartLists.members.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "smartLists.count",
+      "key": "smartLists.count",
+      "status": 200,
+      "body": {
+        "count": 1
+      }
+    },
+    {
+      "operation": "stats.daily",
+      "key": "stats.daily",
+      "status": 200,
+      "body": {
+        "timezone": "Asia/Karachi",
+        "from": "2026-10-01",
+        "to": "2026-10-01",
+        "group_by": "none",
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "stats.summary",
+      "key": "stats.summary",
+      "status": 200,
+      "body": {
+        "timezone": "Asia/Karachi",
+        "from": "2026-10-01",
+        "to": "2026-10-01",
+        "totals": {
+          "sent_messages": 1,
+          "sent_segments": 1,
+          "delivered": 1,
+          "read": 1,
+          "failed": 1,
+          "expired": 1,
+          "cancelled": 1,
+          "received": 1,
+          "media_sent": 1,
+          "media_received": 1,
+          "clicks": 1,
+          "opt_outs": 1,
+          "opt_ins": 1
+        },
+        "rates": {
+          "delivery_rate": null,
+          "failure_rate": null,
+          "read_rate": null
+        },
+        "failures_by_code": {},
+        "queue_now": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "channels": {
+          "active": 1,
+          "paused": 1,
+          "pending_verification": 1,
+          "disconnected": 1
+        },
+        "devices": {
+          "online": 1,
+          "degraded": 1,
+          "offline": 1
+        }
+      }
+    },
+    {
+      "operation": "suppressions.list",
+      "key": "suppressions.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "suppressions.create",
+      "key": "suppressions.create",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "identity_type": "Example identity type",
+        "address": "+923001234567",
+        "reason": "keyword",
+        "keyword": null,
+        "source_message_id": null,
+        "note": null,
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "suppressions.create",
+      "key": "suppressions.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "identity_type": "Example identity type",
+        "address": "+923001234567",
+        "reason": "keyword",
+        "keyword": null,
+        "source_message_id": null,
+        "note": null,
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "suppressions.check",
+      "key": "suppressions.check",
+      "status": 200,
+      "body": {
+        "address": "+923001234567",
+        "suppressed": true,
+        "suppression": null
+      }
+    },
+    {
+      "operation": "consentEvents.list",
+      "key": "consentEvents.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "templates.list",
+      "key": "templates.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "templates.create",
+      "key": "templates.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "body": "Example body",
+        "category": "transactional",
+        "media_id": null,
+        "variables": [],
+        "channel_type": null,
+        "language": null,
+        "provider_name": null,
+        "provider_status": null,
+        "components": null,
+        "archived_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z",
+        "warnings": []
+      }
+    },
+    {
+      "operation": "templates.preview",
+      "key": "templates.preview",
+      "status": 200,
+      "body": {
+        "body": "Example body",
+        "encoding": "gsm7",
+        "segments": 1,
+        "characters": 1,
+        "missing_variables": [],
+        "fallbacks_used": [],
+        "non_gsm_characters": []
+      }
+    },
+    {
+      "operation": "templates.show",
+      "key": "templates.show",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "body": "Example body",
+        "category": "transactional",
+        "media_id": null,
+        "variables": [],
+        "channel_type": null,
+        "language": null,
+        "provider_name": null,
+        "provider_status": null,
+        "components": null,
+        "archived_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "templates.update",
+      "key": "templates.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "body": "Example body",
+        "category": "transactional",
+        "media_id": null,
+        "variables": [],
+        "channel_type": null,
+        "language": null,
+        "provider_name": null,
+        "provider_status": null,
+        "components": null,
+        "archived_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z",
+        "warnings": []
+      }
+    },
+    {
+      "operation": "templates.archive",
+      "key": "templates.archive",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "body": "Example body",
+        "category": "transactional",
+        "media_id": null,
+        "variables": [],
+        "channel_type": null,
+        "language": null,
+        "provider_name": null,
+        "provider_status": null,
+        "components": null,
+        "archived_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "templates.restore",
+      "key": "templates.restore",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "name": "Example name",
+        "body": "Example body",
+        "category": "transactional",
+        "media_id": null,
+        "variables": [],
+        "channel_type": null,
+        "language": null,
+        "provider_name": null,
+        "provider_status": null,
+        "components": null,
+        "archived_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "templates.render",
+      "key": "templates.render",
+      "status": 200,
+      "body": {
+        "body": "Example body",
+        "encoding": "gsm7",
+        "segments": 1,
+        "characters": 1,
+        "missing_variables": [],
+        "fallbacks_used": [],
+        "non_gsm_characters": []
+      }
+    },
+    {
+      "operation": "webhookDeliveries.list",
+      "key": "webhookDeliveries.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "webhookDeliveries.bulkReplay",
+      "key": "webhookDeliveries.bulkReplay",
+      "status": 202,
+      "body": {
+        "replayed": 1
+      }
+    },
+    {
+      "operation": "webhookDeliveries.get",
+      "key": "webhookDeliveries.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "endpoint_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "event_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "event_type": "Example event type",
+        "status": "pending",
+        "attempts": 1,
+        "next_attempt_at": null,
+        "last_attempt_at": null,
+        "delivered_at": null,
+        "last_status_code": null,
+        "last_error": null,
+        "last_response_excerpt": null,
+        "response_ms": null,
+        "payload": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "webhookDeliveries.replay",
+      "key": "webhookDeliveries.replay",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "endpoint_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "event_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "event_type": "Example event type",
+        "status": "pending",
+        "attempts": 1,
+        "next_attempt_at": null,
+        "last_attempt_at": null,
+        "delivered_at": null,
+        "last_status_code": null,
+        "last_error": null,
+        "last_response_excerpt": null,
+        "response_ms": null,
+        "payload": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "webhookEndpoints.list",
+      "key": "webhookEndpoints.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "webhookEndpoints.create",
+      "key": "webhookEndpoints.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "url": "https://example.com/mycomm",
+        "description": null,
+        "events": [],
+        "inbox_ids": null,
+        "channel_types": null,
+        "include_managed_accounts": true,
+        "active": true,
+        "disabled_at": null,
+        "disabled_reason": null,
+        "consecutive_failures": 1,
+        "failing_since": null,
+        "previous_secret_expires_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z",
+        "secret": "mc_test_example"
+      }
+    },
+    {
+      "operation": "webhookEndpoints.get",
+      "key": "webhookEndpoints.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "url": "https://example.com/mycomm",
+        "description": null,
+        "events": [],
+        "inbox_ids": null,
+        "channel_types": null,
+        "include_managed_accounts": true,
+        "active": true,
+        "disabled_at": null,
+        "disabled_reason": null,
+        "consecutive_failures": 1,
+        "failing_since": null,
+        "previous_secret_expires_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "webhookEndpoints.update",
+      "key": "webhookEndpoints.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "url": "https://example.com/mycomm",
+        "description": null,
+        "events": [],
+        "inbox_ids": null,
+        "channel_types": null,
+        "include_managed_accounts": true,
+        "active": true,
+        "disabled_at": null,
+        "disabled_reason": null,
+        "consecutive_failures": 1,
+        "failing_since": null,
+        "previous_secret_expires_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "webhookEndpoints.rotateSecret",
+      "key": "webhookEndpoints.rotateSecret",
+      "status": 200,
+      "body": {
+        "secret": "mc_test_example",
+        "previous_secret_expires_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "webhookEndpoints.test",
+      "key": "webhookEndpoints.test",
+      "status": 200,
+      "body": {
+        "delivery_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "success": true,
+        "status_code": null,
+        "response_ms": null,
+        "error": null
+      }
+    },
+    {
+      "operation": "partner.usage.get",
+      "key": "partner.usage.get",
+      "status": 200,
+      "body": {
+        "from": "2026-10-01",
+        "to": "2026-10-01",
+        "totals": {
+          "sent_messages": 1,
+          "sent_segments": 1,
+          "delivered": 1,
+          "read": 1,
+          "failed": 1,
+          "expired": 1,
+          "cancelled": 1,
+          "received": 1,
+          "media_sent": 1,
+          "media_received": 1,
+          "clicks": 1,
+          "opt_outs": 1,
+          "opt_ins": 1,
+          "accounts": 1,
+          "by_channel_type": {}
+        },
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "partner.accounts.list",
+      "key": "partner.accounts.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "partner.accounts.provision",
+      "key": "partner.accounts.provision",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "managed",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "status": "active",
+        "suspended_reason": null,
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "settings": {},
+        "counts": {
+          "devices_active": 1,
+          "devices_online": 1,
+          "channels_active": 1,
+          "channels_needing_attention": 1,
+          "channels_by_type": {}
+        },
+        "deletion_requested_at": null,
+        "purge_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "partner.accounts.provision",
+      "key": "partner.accounts.provision",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "managed",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "status": "active",
+        "suspended_reason": null,
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "settings": {},
+        "counts": {
+          "devices_active": 1,
+          "devices_online": 1,
+          "channels_active": 1,
+          "channels_needing_attention": 1,
+          "channels_by_type": {}
+        },
+        "deletion_requested_at": null,
+        "purge_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "partner.accounts.get",
+      "key": "partner.accounts.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "managed",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "status": "active",
+        "suspended_reason": null,
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "settings": {},
+        "counts": {
+          "devices_active": 1,
+          "devices_online": 1,
+          "channels_active": 1,
+          "channels_needing_attention": 1,
+          "channels_by_type": {}
+        },
+        "deletion_requested_at": null,
+        "purge_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "partner.accounts.update",
+      "key": "partner.accounts.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "managed",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "status": "active",
+        "suspended_reason": null,
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "settings": {},
+        "counts": {
+          "devices_active": 1,
+          "devices_online": 1,
+          "channels_active": 1,
+          "channels_needing_attention": 1,
+          "channels_by_type": {}
+        },
+        "deletion_requested_at": null,
+        "purge_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "partner.accounts.delete",
+      "key": "partner.accounts.delete",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "managed",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "status": "active",
+        "suspended_reason": null,
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "settings": {},
+        "counts": {
+          "devices_active": 1,
+          "devices_online": 1,
+          "channels_active": 1,
+          "channels_needing_attention": 1,
+          "channels_by_type": {}
+        },
+        "deletion_requested_at": null,
+        "purge_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "partner.accounts.suspend",
+      "key": "partner.accounts.suspend",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "managed",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "status": "active",
+        "suspended_reason": null,
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "settings": {},
+        "counts": {
+          "devices_active": 1,
+          "devices_online": 1,
+          "channels_active": 1,
+          "channels_needing_attention": 1,
+          "channels_by_type": {}
+        },
+        "deletion_requested_at": null,
+        "purge_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "partner.accounts.reactivate",
+      "key": "partner.accounts.reactivate",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "managed",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "status": "active",
+        "suspended_reason": null,
+        "country_iso": "PK",
+        "timezone": "Asia/Karachi",
+        "default_locale": "en",
+        "settings": {},
+        "counts": {
+          "devices_active": 1,
+          "devices_online": 1,
+          "channels_active": 1,
+          "channels_needing_attention": 1,
+          "channels_by_type": {}
+        },
+        "deletion_requested_at": null,
+        "purge_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "updated_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "partner.accountKeys.list",
+      "key": "partner.accountKeys.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "partner.accountKeys.create",
+      "key": "partner.accountKeys.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "kind": "account",
+        "name": "Example name",
+        "prefix": "Example prefix",
+        "scope": {
+          "inbox_ids": null,
+          "channel_types": null
+        },
+        "abilities": [],
+        "allowed_ips": null,
+        "last_used_at": null,
+        "last_used_ip": null,
+        "expires_at": null,
+        "revoked_at": null,
+        "actor": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "token": "mc_test_example"
+      }
+    }
+  ],
+  "events": {
+    "campaign.scheduled": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "campaign.scheduled",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "campaign": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": "Example name",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": null,
+          "status": "draft",
+          "body": null,
+          "template_id": null,
+          "media_id": null,
+          "variables": {},
+          "audience": {
+            "group_ids": [],
+            "smart_list_ids": [],
+            "import_id": null
+          },
+          "exclude": {
+            "group_ids": []
+          },
+          "category": "marketing",
+          "compliance": {
+            "consent_asserted_at": null,
+            "consent_asserted_by": null,
+            "service_message": true
+          },
+          "append_opt_out_text": true,
+          "shorten_links": true,
+          "track_clicks": true,
+          "scheduled_at": null,
+          "started_at": null,
+          "paused_at": null,
+          "completed_at": null,
+          "cancelled_at": null,
+          "eta_at": null,
+          "stats": {
+            "total": 1,
+            "skipped": {}
+          },
+          "actor": {
+            "type": "Example type",
+            "id": null
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "campaign.unscheduled": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "campaign.unscheduled",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "campaign": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": "Example name",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": null,
+          "status": "draft",
+          "body": null,
+          "template_id": null,
+          "media_id": null,
+          "variables": {},
+          "audience": {
+            "group_ids": [],
+            "smart_list_ids": [],
+            "import_id": null
+          },
+          "exclude": {
+            "group_ids": []
+          },
+          "category": "marketing",
+          "compliance": {
+            "consent_asserted_at": null,
+            "consent_asserted_by": null,
+            "service_message": true
+          },
+          "append_opt_out_text": true,
+          "shorten_links": true,
+          "track_clicks": true,
+          "scheduled_at": null,
+          "started_at": null,
+          "paused_at": null,
+          "completed_at": null,
+          "cancelled_at": null,
+          "eta_at": null,
+          "stats": {
+            "total": 1,
+            "skipped": {}
+          },
+          "actor": {
+            "type": "Example type",
+            "id": null
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "campaign.started": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "campaign.started",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "campaign": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": "Example name",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": null,
+          "status": "draft",
+          "body": null,
+          "template_id": null,
+          "media_id": null,
+          "variables": {},
+          "audience": {
+            "group_ids": [],
+            "smart_list_ids": [],
+            "import_id": null
+          },
+          "exclude": {
+            "group_ids": []
+          },
+          "category": "marketing",
+          "compliance": {
+            "consent_asserted_at": null,
+            "consent_asserted_by": null,
+            "service_message": true
+          },
+          "append_opt_out_text": true,
+          "shorten_links": true,
+          "track_clicks": true,
+          "scheduled_at": null,
+          "started_at": null,
+          "paused_at": null,
+          "completed_at": null,
+          "cancelled_at": null,
+          "eta_at": null,
+          "stats": {
+            "total": 1,
+            "skipped": {}
+          },
+          "actor": {
+            "type": "Example type",
+            "id": null
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        }
+      }
+    },
+    "campaign.paused": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "campaign.paused",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "campaign": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": "Example name",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": null,
+          "status": "draft",
+          "body": null,
+          "template_id": null,
+          "media_id": null,
+          "variables": {},
+          "audience": {
+            "group_ids": [],
+            "smart_list_ids": [],
+            "import_id": null
+          },
+          "exclude": {
+            "group_ids": []
+          },
+          "category": "marketing",
+          "compliance": {
+            "consent_asserted_at": null,
+            "consent_asserted_by": null,
+            "service_message": true
+          },
+          "append_opt_out_text": true,
+          "shorten_links": true,
+          "track_clicks": true,
+          "scheduled_at": null,
+          "started_at": null,
+          "paused_at": null,
+          "completed_at": null,
+          "cancelled_at": null,
+          "eta_at": null,
+          "stats": {
+            "total": 1,
+            "skipped": {}
+          },
+          "actor": {
+            "type": "Example type",
+            "id": null
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "campaign.resumed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "campaign.resumed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "campaign": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": "Example name",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": null,
+          "status": "draft",
+          "body": null,
+          "template_id": null,
+          "media_id": null,
+          "variables": {},
+          "audience": {
+            "group_ids": [],
+            "smart_list_ids": [],
+            "import_id": null
+          },
+          "exclude": {
+            "group_ids": []
+          },
+          "category": "marketing",
+          "compliance": {
+            "consent_asserted_at": null,
+            "consent_asserted_by": null,
+            "service_message": true
+          },
+          "append_opt_out_text": true,
+          "shorten_links": true,
+          "track_clicks": true,
+          "scheduled_at": null,
+          "started_at": null,
+          "paused_at": null,
+          "completed_at": null,
+          "cancelled_at": null,
+          "eta_at": null,
+          "stats": {
+            "total": 1,
+            "skipped": {}
+          },
+          "actor": {
+            "type": "Example type",
+            "id": null
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "campaign.completed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "campaign.completed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "campaign": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": "Example name",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": null,
+          "status": "draft",
+          "body": null,
+          "template_id": null,
+          "media_id": null,
+          "variables": {},
+          "audience": {
+            "group_ids": [],
+            "smart_list_ids": [],
+            "import_id": null
+          },
+          "exclude": {
+            "group_ids": []
+          },
+          "category": "marketing",
+          "compliance": {
+            "consent_asserted_at": null,
+            "consent_asserted_by": null,
+            "service_message": true
+          },
+          "append_opt_out_text": true,
+          "shorten_links": true,
+          "track_clicks": true,
+          "scheduled_at": null,
+          "started_at": null,
+          "paused_at": null,
+          "completed_at": null,
+          "cancelled_at": null,
+          "eta_at": null,
+          "stats": {
+            "total": 1,
+            "skipped": {}
+          },
+          "actor": {
+            "type": "Example type",
+            "id": null
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        }
+      }
+    },
+    "campaign.cancelled": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "campaign.cancelled",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "campaign": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": "Example name",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": null,
+          "status": "draft",
+          "body": null,
+          "template_id": null,
+          "media_id": null,
+          "variables": {},
+          "audience": {
+            "group_ids": [],
+            "smart_list_ids": [],
+            "import_id": null
+          },
+          "exclude": {
+            "group_ids": []
+          },
+          "category": "marketing",
+          "compliance": {
+            "consent_asserted_at": null,
+            "consent_asserted_by": null,
+            "service_message": true
+          },
+          "append_opt_out_text": true,
+          "shorten_links": true,
+          "track_clicks": true,
+          "scheduled_at": null,
+          "started_at": null,
+          "paused_at": null,
+          "completed_at": null,
+          "cancelled_at": null,
+          "eta_at": null,
+          "stats": {
+            "total": 1,
+            "skipped": {}
+          },
+          "actor": {
+            "type": "Example type",
+            "id": null
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "contact.created": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "contact.created",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "contact": {
+          "id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "first_name": "Amina",
+          "last_name": "Khan",
+          "display_name": "Amina Khan",
+          "email": "amina@example.com",
+          "timezone": "Asia/Karachi",
+          "language": "en",
+          "custom_fields": {
+            "plan": "gold"
+          },
+          "identities": [
+            {
+              "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+              "type": "phone",
+              "address": "+923001234567",
+              "display": "+92 300 1234567",
+              "meta": {},
+              "country_iso": "PK",
+              "is_primary": true,
+              "suppressed": false,
+              "blocked_at": null,
+              "created_at": "2026-09-12T10:04:11Z"
+            }
+          ],
+          "group_ids": ["0198e0d2-8a40-7f15-a6b3-2c9e4d1f7a09"],
+          "source": "api",
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-09-12T10:04:11Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        }
+      }
+    },
+    "contact.updated": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "contact.updated",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "contact": {
+          "id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "first_name": "Amina",
+          "last_name": "Khan",
+          "display_name": "Amina Khan",
+          "email": "amina@example.com",
+          "timezone": "Asia/Karachi",
+          "language": "en",
+          "custom_fields": {
+            "plan": "gold"
+          },
+          "identities": [
+            {
+              "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+              "type": "phone",
+              "address": "+923001234567",
+              "display": "+92 300 1234567",
+              "meta": {},
+              "country_iso": "PK",
+              "is_primary": true,
+              "suppressed": false,
+              "blocked_at": null,
+              "created_at": "2026-09-12T10:04:11Z"
+            }
+          ],
+          "group_ids": ["0198e0d2-8a40-7f15-a6b3-2c9e4d1f7a09"],
+          "source": "api",
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-09-12T10:04:11Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "changed": []
+      }
+    },
+    "contact.deleted": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "contact.deleted",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "erased": true,
+        "merged_into": null
+      }
+    },
+    "import.completed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "import.completed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "import": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "phone_history",
+          "status": "uploaded",
+          "channel_id": null,
+          "options": {},
+          "totals": {
+            "rows": 1,
+            "created": 1,
+            "updated": 1,
+            "skipped": 1,
+            "errors": 1
+          },
+          "confirmation": null,
+          "error": null,
+          "error_report_url": null,
+          "error_report_url_expires_at": null,
+          "started_at": null,
+          "completed_at": null,
+          "created_at": "2026-10-01T09:15:02Z"
+        }
+      }
+    },
+    "import.failed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "import.failed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "import": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "phone_history",
+          "status": "uploaded",
+          "channel_id": null,
+          "options": {},
+          "totals": {
+            "rows": 1,
+            "created": 1,
+            "updated": 1,
+            "skipped": 1,
+            "errors": 1
+          },
+          "confirmation": null,
+          "error": null,
+          "error_report_url": null,
+          "error_report_url_expires_at": null,
+          "started_at": null,
+          "completed_at": null,
+          "created_at": "2026-10-01T09:15:02Z"
+        }
+      }
+    },
+    "export.completed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "export.completed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "export": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "messages_csv",
+          "status": "queued",
+          "params": {},
+          "url": null,
+          "url_expires_at": null,
+          "expires_at": null,
+          "created_at": "2026-10-01T09:15:02Z",
+          "completed_at": null
+        }
+      }
+    },
+    "link.clicked": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "link.clicked",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "short_link_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "slug": null,
+        "target_url": null,
+        "message_id": null,
+        "campaign_id": null,
+        "contact_id": null,
+        "clicked_at": "2026-10-01T09:15:02Z",
+        "country_iso": null,
+        "click_count": null
+      }
+    },
+    "channel.connected": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "channel.connected",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": "+923001234567",
+          "display_address": null,
+          "status": "pending_verification",
+          "pause_reason": null,
+          "paused_at": null,
+          "disconnect_reason": null,
+          "device_id": null,
+          "device_sim_id": null,
+          "main_inbox_id": null,
+          "capabilities": {
+            "text_max_chars": null,
+            "segmented": true,
+            "max_segments": null,
+            "media": {},
+            "max_media_items": 1,
+            "delivery_reports": true,
+            "read_receipts": true,
+            "typing": true,
+            "reactions": true,
+            "edit_delete": true,
+            "buttons": true,
+            "location": true,
+            "business_initiated": true,
+            "session_window_seconds": null,
+            "groups": true
+          },
+          "allowed_destination_countries": null,
+          "skip_business_senders": true,
+          "rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null,
+            "acknowledged_risk_at": null
+          },
+          "rate_policy_source": "suggested",
+          "rate_policy_risk": "green",
+          "suggested_rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null
+          },
+          "rate_policy_ceiling": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1
+          },
+          "warmup": {
+            "active": true,
+            "day": 1,
+            "ends_at": null,
+            "today_cap": null
+          },
+          "health": {
+            "score": null,
+            "band": null,
+            "evaluated_at": null,
+            "quarantine_until": null,
+            "components": {}
+          },
+          "queue": {
+            "queued": 1,
+            "held": 1,
+            "leased": 1
+          },
+          "usage": {
+            "segments_15m": 1,
+            "segments_1h": 1,
+            "segments_24h": 1
+          },
+          "reply_window_days": 1,
+          "throttled_until": null,
+          "verification": null,
+          "verified_at": null,
+          "connected_at": null,
+          "disconnected_at": null,
+          "created_at": "2026-10-01T09:15:02Z"
+        }
+      }
+    },
+    "channel.verification_failed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "channel.verification_failed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": "+923001234567",
+          "display_address": null,
+          "status": "pending_verification",
+          "pause_reason": null,
+          "paused_at": null,
+          "disconnect_reason": null,
+          "device_id": null,
+          "device_sim_id": null,
+          "main_inbox_id": null,
+          "capabilities": {
+            "text_max_chars": null,
+            "segmented": true,
+            "max_segments": null,
+            "media": {},
+            "max_media_items": 1,
+            "delivery_reports": true,
+            "read_receipts": true,
+            "typing": true,
+            "reactions": true,
+            "edit_delete": true,
+            "buttons": true,
+            "location": true,
+            "business_initiated": true,
+            "session_window_seconds": null,
+            "groups": true
+          },
+          "allowed_destination_countries": null,
+          "skip_business_senders": true,
+          "rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null,
+            "acknowledged_risk_at": null
+          },
+          "rate_policy_source": "suggested",
+          "rate_policy_risk": "green",
+          "suggested_rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null
+          },
+          "rate_policy_ceiling": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1
+          },
+          "warmup": {
+            "active": true,
+            "day": 1,
+            "ends_at": null,
+            "today_cap": null
+          },
+          "health": {
+            "score": null,
+            "band": null,
+            "evaluated_at": null,
+            "quarantine_until": null,
+            "components": {}
+          },
+          "queue": {
+            "queued": 1,
+            "held": 1,
+            "leased": 1
+          },
+          "usage": {
+            "segments_15m": 1,
+            "segments_1h": 1,
+            "segments_24h": 1
+          },
+          "reply_window_days": 1,
+          "throttled_until": null,
+          "verification": null,
+          "verified_at": null,
+          "connected_at": null,
+          "disconnected_at": null,
+          "created_at": "2026-10-01T09:15:02Z"
+        },
+        "reason": "timeout"
+      }
+    },
+    "channel.disconnected": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "channel.disconnected",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": "+923001234567",
+          "display_address": null,
+          "status": "pending_verification",
+          "pause_reason": null,
+          "paused_at": null,
+          "disconnect_reason": null,
+          "device_id": null,
+          "device_sim_id": null,
+          "main_inbox_id": null,
+          "capabilities": {
+            "text_max_chars": null,
+            "segmented": true,
+            "max_segments": null,
+            "media": {},
+            "max_media_items": 1,
+            "delivery_reports": true,
+            "read_receipts": true,
+            "typing": true,
+            "reactions": true,
+            "edit_delete": true,
+            "buttons": true,
+            "location": true,
+            "business_initiated": true,
+            "session_window_seconds": null,
+            "groups": true
+          },
+          "allowed_destination_countries": null,
+          "skip_business_senders": true,
+          "rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null,
+            "acknowledged_risk_at": null
+          },
+          "rate_policy_source": "suggested",
+          "rate_policy_risk": "green",
+          "suggested_rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null
+          },
+          "rate_policy_ceiling": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1
+          },
+          "warmup": {
+            "active": true,
+            "day": 1,
+            "ends_at": null,
+            "today_cap": null
+          },
+          "health": {
+            "score": null,
+            "band": null,
+            "evaluated_at": null,
+            "quarantine_until": null,
+            "components": {}
+          },
+          "queue": {
+            "queued": 1,
+            "held": 1,
+            "leased": 1
+          },
+          "usage": {
+            "segments_15m": 1,
+            "segments_1h": 1,
+            "segments_24h": 1
+          },
+          "reply_window_days": 1,
+          "throttled_until": null,
+          "verification": null,
+          "verified_at": null,
+          "connected_at": null,
+          "disconnected_at": null,
+          "created_at": "2026-10-01T09:15:02Z"
+        },
+        "reason": "owner"
+      }
+    },
+    "channel.paused": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "channel.paused",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": "+923001234567",
+          "display_address": null,
+          "status": "pending_verification",
+          "pause_reason": null,
+          "paused_at": null,
+          "disconnect_reason": null,
+          "device_id": null,
+          "device_sim_id": null,
+          "main_inbox_id": null,
+          "capabilities": {
+            "text_max_chars": null,
+            "segmented": true,
+            "max_segments": null,
+            "media": {},
+            "max_media_items": 1,
+            "delivery_reports": true,
+            "read_receipts": true,
+            "typing": true,
+            "reactions": true,
+            "edit_delete": true,
+            "buttons": true,
+            "location": true,
+            "business_initiated": true,
+            "session_window_seconds": null,
+            "groups": true
+          },
+          "allowed_destination_countries": null,
+          "skip_business_senders": true,
+          "rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null,
+            "acknowledged_risk_at": null
+          },
+          "rate_policy_source": "suggested",
+          "rate_policy_risk": "green",
+          "suggested_rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null
+          },
+          "rate_policy_ceiling": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1
+          },
+          "warmup": {
+            "active": true,
+            "day": 1,
+            "ends_at": null,
+            "today_cap": null
+          },
+          "health": {
+            "score": null,
+            "band": null,
+            "evaluated_at": null,
+            "quarantine_until": null,
+            "components": {}
+          },
+          "queue": {
+            "queued": 1,
+            "held": 1,
+            "leased": 1
+          },
+          "usage": {
+            "segments_15m": 1,
+            "segments_1h": 1,
+            "segments_24h": 1
+          },
+          "reply_window_days": 1,
+          "throttled_until": null,
+          "verification": null,
+          "verified_at": null,
+          "connected_at": null,
+          "disconnected_at": null,
+          "created_at": "2026-10-01T09:15:02Z"
+        },
+        "reason": "owner",
+        "dominant_code": null,
+        "streak": null
+      }
+    },
+    "channel.resumed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "channel.resumed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "channel": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "android_sim",
+          "name": "Example name",
+          "address": "+923001234567",
+          "display_address": null,
+          "status": "pending_verification",
+          "pause_reason": null,
+          "paused_at": null,
+          "disconnect_reason": null,
+          "device_id": null,
+          "device_sim_id": null,
+          "main_inbox_id": null,
+          "capabilities": {
+            "text_max_chars": null,
+            "segmented": true,
+            "max_segments": null,
+            "media": {},
+            "max_media_items": 1,
+            "delivery_reports": true,
+            "read_receipts": true,
+            "typing": true,
+            "reactions": true,
+            "edit_delete": true,
+            "buttons": true,
+            "location": true,
+            "business_initiated": true,
+            "session_window_seconds": null,
+            "groups": true
+          },
+          "allowed_destination_countries": null,
+          "skip_business_senders": true,
+          "rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null,
+            "acknowledged_risk_at": null
+          },
+          "rate_policy_source": "suggested",
+          "rate_policy_risk": "green",
+          "suggested_rate_policy": {
+            "schema": "Example schema",
+            "interval_ms": {
+              "min": 1,
+              "max": 1
+            },
+            "caps": {
+              "per_min": 1,
+              "per_15m": 1,
+              "per_hour": 1,
+              "per_day": 1,
+              "new_recipients_per_day": null
+            },
+            "warmup": {
+              "enabled": true
+            },
+            "active_hours": null,
+            "bulk_hours": null
+          },
+          "rate_policy_ceiling": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1
+          },
+          "warmup": {
+            "active": true,
+            "day": 1,
+            "ends_at": null,
+            "today_cap": null
+          },
+          "health": {
+            "score": null,
+            "band": null,
+            "evaluated_at": null,
+            "quarantine_until": null,
+            "components": {}
+          },
+          "queue": {
+            "queued": 1,
+            "held": 1,
+            "leased": 1
+          },
+          "usage": {
+            "segments_15m": 1,
+            "segments_1h": 1,
+            "segments_24h": 1
+          },
+          "reply_window_days": 1,
+          "throttled_until": null,
+          "verification": null,
+          "verified_at": null,
+          "connected_at": null,
+          "disconnected_at": null,
+          "created_at": "2026-10-01T09:15:02Z"
+        }
+      }
+    },
+    "channel.health_changed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "channel.health_changed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "previous_band": null
+      }
+    },
+    "channel.volume_warning": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "channel.volume_warning",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "window": "24h",
+        "used_segments": 1,
+        "cap": 1,
+        "date": "Example date"
+      }
+    },
+    "channel.qr_updated": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "channel.qr_updated",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "qr_png_base64": null,
+        "expires_at": null
+      }
+    },
+    "device.paired": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "device.paired",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "device": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": null,
+          "status": "active",
+          "manufacturer": null,
+          "model": null,
+          "os_version": null,
+          "app_version_name": null,
+          "app_version_code": null,
+          "update_available": true,
+          "connection_state": "online",
+          "connection_reasons": [],
+          "paused": true,
+          "pause_reason": null,
+          "os_limit_raised": true,
+          "os_limit_value": null,
+          "os_limit_changed_at": null,
+          "health": {
+            "power": {},
+            "network": {},
+            "permissions": {},
+            "battery_optimization_ignored": null,
+            "rcs_confirmed_off_at": null,
+            "storage": {}
+          },
+          "sims": [],
+          "paired_at": null,
+          "last_heartbeat_at": null,
+          "last_pull_at": null,
+          "last_report_at": null,
+          "revoked_at": null,
+          "revoked_reason": null,
+          "drain_until": null
+        },
+        "pairing_code_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"
+      }
+    },
+    "device.online": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "device.online",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "device": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": null,
+          "status": "active",
+          "manufacturer": null,
+          "model": null,
+          "os_version": null,
+          "app_version_name": null,
+          "app_version_code": null,
+          "update_available": true,
+          "connection_state": "online",
+          "connection_reasons": [],
+          "paused": true,
+          "pause_reason": null,
+          "os_limit_raised": true,
+          "os_limit_value": null,
+          "os_limit_changed_at": null,
+          "health": {
+            "power": {},
+            "network": {},
+            "permissions": {},
+            "battery_optimization_ignored": null,
+            "rcs_confirmed_off_at": null,
+            "storage": {}
+          },
+          "sims": [],
+          "paired_at": null,
+          "last_heartbeat_at": null,
+          "last_pull_at": null,
+          "last_report_at": null,
+          "revoked_at": null,
+          "revoked_reason": null,
+          "drain_until": null
+        },
+        "previous_state": "online"
+      }
+    },
+    "device.degraded": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "device.degraded",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "device": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": null,
+          "status": "active",
+          "manufacturer": null,
+          "model": null,
+          "os_version": null,
+          "app_version_name": null,
+          "app_version_code": null,
+          "update_available": true,
+          "connection_state": "online",
+          "connection_reasons": [],
+          "paused": true,
+          "pause_reason": null,
+          "os_limit_raised": true,
+          "os_limit_value": null,
+          "os_limit_changed_at": null,
+          "health": {
+            "power": {},
+            "network": {},
+            "permissions": {},
+            "battery_optimization_ignored": null,
+            "rcs_confirmed_off_at": null,
+            "storage": {}
+          },
+          "sims": [],
+          "paired_at": null,
+          "last_heartbeat_at": null,
+          "last_pull_at": null,
+          "last_report_at": null,
+          "revoked_at": null,
+          "revoked_reason": null,
+          "drain_until": null
+        },
+        "previous_state": "online"
+      }
+    },
+    "device.offline": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "device.offline",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "device": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": null,
+          "status": "active",
+          "manufacturer": null,
+          "model": null,
+          "os_version": null,
+          "app_version_name": null,
+          "app_version_code": null,
+          "update_available": true,
+          "connection_state": "online",
+          "connection_reasons": [],
+          "paused": true,
+          "pause_reason": null,
+          "os_limit_raised": true,
+          "os_limit_value": null,
+          "os_limit_changed_at": null,
+          "health": {
+            "power": {},
+            "network": {},
+            "permissions": {},
+            "battery_optimization_ignored": null,
+            "rcs_confirmed_off_at": null,
+            "storage": {}
+          },
+          "sims": [],
+          "paired_at": null,
+          "last_heartbeat_at": null,
+          "last_pull_at": null,
+          "last_report_at": null,
+          "revoked_at": null,
+          "revoked_reason": null,
+          "drain_until": null
+        },
+        "previous_state": "online"
+      }
+    },
+    "device.revoked": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "device.revoked",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "device": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "name": null,
+          "status": "active",
+          "manufacturer": null,
+          "model": null,
+          "os_version": null,
+          "app_version_name": null,
+          "app_version_code": null,
+          "update_available": true,
+          "connection_state": "online",
+          "connection_reasons": [],
+          "paused": true,
+          "pause_reason": null,
+          "os_limit_raised": true,
+          "os_limit_value": null,
+          "os_limit_changed_at": null,
+          "health": {
+            "power": {},
+            "network": {},
+            "permissions": {},
+            "battery_optimization_ignored": null,
+            "rcs_confirmed_off_at": null,
+            "storage": {}
+          },
+          "sims": [],
+          "paired_at": null,
+          "last_heartbeat_at": null,
+          "last_pull_at": null,
+          "last_report_at": null,
+          "revoked_at": null,
+          "revoked_reason": null,
+          "drain_until": null
+        },
+        "reason": "owner"
+      }
+    },
+    "account.suspended": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "account.suspended",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "account": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "direct",
+          "external_ref": null,
+          "name": "Example name",
+          "status": "active",
+          "suspended_reason": null,
+          "country_iso": "PK",
+          "timezone": "Asia/Karachi",
+          "default_locale": "en",
+          "settings": {},
+          "counts": {
+            "devices_active": 1,
+            "devices_online": 1,
+            "channels_active": 1,
+            "channels_needing_attention": 1,
+            "channels_by_type": {}
+          },
+          "deletion_requested_at": null,
+          "purge_at": null,
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "reason": null
+      }
+    },
+    "account.reactivated": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "account.reactivated",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "account": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "direct",
+          "external_ref": null,
+          "name": "Example name",
+          "status": "active",
+          "suspended_reason": null,
+          "country_iso": "PK",
+          "timezone": "Asia/Karachi",
+          "default_locale": "en",
+          "settings": {},
+          "counts": {
+            "devices_active": 1,
+            "devices_online": 1,
+            "channels_active": 1,
+            "channels_needing_attention": 1,
+            "channels_by_type": {}
+          },
+          "deletion_requested_at": null,
+          "purge_at": null,
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "reason": null
+      }
+    },
+    "account.deletion_scheduled": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "account.deletion_scheduled",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "account": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "type": "direct",
+          "external_ref": null,
+          "name": "Example name",
+          "status": "active",
+          "suspended_reason": null,
+          "country_iso": "PK",
+          "timezone": "Asia/Karachi",
+          "default_locale": "en",
+          "settings": {},
+          "counts": {
+            "devices_active": 1,
+            "devices_online": 1,
+            "channels_active": 1,
+            "channels_needing_attention": 1,
+            "channels_by_type": {}
+          },
+          "deletion_requested_at": null,
+          "purge_at": null,
+          "created_at": "2026-10-01T09:15:02Z",
+          "updated_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "reason": null
+      }
+    },
+    "message.queued": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "message.queued",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "message": {
+          "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+          "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+          "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+          "channel_type": "android_sim",
+          "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+          "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+          "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "identity": {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567"
+          },
+          "direction": "outbound",
+          "type": "sms",
+          "origin": "api",
+          "from": "+923451234567",
+          "to": "+923001234567",
+          "content_type": "text",
+          "content": {
+            "type": "text",
+            "body": "Your order #1094 is ready for pickup."
+          },
+          "body": "Your order #1094 is ready for pickup.",
+          "encoding": "gsm7",
+          "segments": 1,
+          "media": [],
+          "channel_meta": {},
+          "provider_message_id": null,
+          "category": "transactional",
+          "lane": "normal",
+          "status": "queued",
+          "hold_reason": null,
+          "send_after": null,
+          "expires_at": "2026-10-02T09:15:02Z",
+          "attempts": 0,
+          "failure": null,
+          "cancel_requested_at": null,
+          "reference_id": "order-1094",
+          "metadata": {
+            "order_id": "1094"
+          },
+          "template_id": null,
+          "campaign_id": null,
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "sent_at": null,
+          "delivered_at": null,
+          "failed_at": null,
+          "expired_at": null,
+          "cancelled_at": null,
+          "received_at": null,
+          "read_at": null,
+          "phone_timestamp": null
+        },
+        "conversation": {
+          "id": null,
+          "created": true
+        }
+      }
+    },
+    "message.sent": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "message.sent",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "message": {
+          "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+          "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+          "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+          "channel_type": "android_sim",
+          "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+          "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+          "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "identity": {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567"
+          },
+          "direction": "outbound",
+          "type": "sms",
+          "origin": "api",
+          "from": "+923451234567",
+          "to": "+923001234567",
+          "content_type": "text",
+          "content": {
+            "type": "text",
+            "body": "Your order #1094 is ready for pickup."
+          },
+          "body": "Your order #1094 is ready for pickup.",
+          "encoding": "gsm7",
+          "segments": 1,
+          "media": [],
+          "channel_meta": {},
+          "provider_message_id": null,
+          "category": "transactional",
+          "lane": "normal",
+          "status": "queued",
+          "hold_reason": null,
+          "send_after": null,
+          "expires_at": "2026-10-02T09:15:02Z",
+          "attempts": 0,
+          "failure": null,
+          "cancel_requested_at": null,
+          "reference_id": "order-1094",
+          "metadata": {
+            "order_id": "1094"
+          },
+          "template_id": null,
+          "campaign_id": null,
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "sent_at": null,
+          "delivered_at": null,
+          "failed_at": null,
+          "expired_at": null,
+          "cancelled_at": null,
+          "received_at": null,
+          "read_at": null,
+          "phone_timestamp": null
+        },
+        "conversation": {
+          "id": null,
+          "created": true
+        }
+      }
+    },
+    "message.delivered": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "message.delivered",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "message": {
+          "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+          "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+          "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+          "channel_type": "android_sim",
+          "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+          "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+          "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "identity": {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567"
+          },
+          "direction": "outbound",
+          "type": "sms",
+          "origin": "api",
+          "from": "+923451234567",
+          "to": "+923001234567",
+          "content_type": "text",
+          "content": {
+            "type": "text",
+            "body": "Your order #1094 is ready for pickup."
+          },
+          "body": "Your order #1094 is ready for pickup.",
+          "encoding": "gsm7",
+          "segments": 1,
+          "media": [],
+          "channel_meta": {},
+          "provider_message_id": null,
+          "category": "transactional",
+          "lane": "normal",
+          "status": "queued",
+          "hold_reason": null,
+          "send_after": null,
+          "expires_at": "2026-10-02T09:15:02Z",
+          "attempts": 0,
+          "failure": null,
+          "cancel_requested_at": null,
+          "reference_id": "order-1094",
+          "metadata": {
+            "order_id": "1094"
+          },
+          "template_id": null,
+          "campaign_id": null,
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "sent_at": null,
+          "delivered_at": null,
+          "failed_at": null,
+          "expired_at": null,
+          "cancelled_at": null,
+          "received_at": null,
+          "read_at": null,
+          "phone_timestamp": null
+        },
+        "conversation": {
+          "id": null,
+          "created": true
+        }
+      }
+    },
+    "message.read": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "message.read",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "message": {
+          "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+          "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+          "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+          "channel_type": "android_sim",
+          "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+          "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+          "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "identity": {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567"
+          },
+          "direction": "outbound",
+          "type": "sms",
+          "origin": "api",
+          "from": "+923451234567",
+          "to": "+923001234567",
+          "content_type": "text",
+          "content": {
+            "type": "text",
+            "body": "Your order #1094 is ready for pickup."
+          },
+          "body": "Your order #1094 is ready for pickup.",
+          "encoding": "gsm7",
+          "segments": 1,
+          "media": [],
+          "channel_meta": {},
+          "provider_message_id": null,
+          "category": "transactional",
+          "lane": "normal",
+          "status": "queued",
+          "hold_reason": null,
+          "send_after": null,
+          "expires_at": "2026-10-02T09:15:02Z",
+          "attempts": 0,
+          "failure": null,
+          "cancel_requested_at": null,
+          "reference_id": "order-1094",
+          "metadata": {
+            "order_id": "1094"
+          },
+          "template_id": null,
+          "campaign_id": null,
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "sent_at": null,
+          "delivered_at": null,
+          "failed_at": null,
+          "expired_at": null,
+          "cancelled_at": null,
+          "received_at": null,
+          "read_at": null,
+          "phone_timestamp": null
+        },
+        "conversation": {
+          "id": null,
+          "created": true
+        }
+      }
+    },
+    "message.failed": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "message.failed",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "message": {
+          "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+          "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+          "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+          "channel_type": "android_sim",
+          "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+          "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+          "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "identity": {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567"
+          },
+          "direction": "outbound",
+          "type": "sms",
+          "origin": "api",
+          "from": "+923451234567",
+          "to": "+923001234567",
+          "content_type": "text",
+          "content": {
+            "type": "text",
+            "body": "Your order #1094 is ready for pickup."
+          },
+          "body": "Your order #1094 is ready for pickup.",
+          "encoding": "gsm7",
+          "segments": 1,
+          "media": [],
+          "channel_meta": {},
+          "provider_message_id": null,
+          "category": "transactional",
+          "lane": "normal",
+          "status": "queued",
+          "hold_reason": null,
+          "send_after": null,
+          "expires_at": "2026-10-02T09:15:02Z",
+          "attempts": 0,
+          "failure": null,
+          "cancel_requested_at": null,
+          "reference_id": "order-1094",
+          "metadata": {
+            "order_id": "1094"
+          },
+          "template_id": null,
+          "campaign_id": null,
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "sent_at": null,
+          "delivered_at": null,
+          "failed_at": null,
+          "expired_at": null,
+          "cancelled_at": null,
+          "received_at": null,
+          "read_at": null,
+          "phone_timestamp": null
+        },
+        "conversation": {
+          "id": null,
+          "created": true
+        }
+      }
+    },
+    "message.expired": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "message.expired",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "message": {
+          "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+          "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+          "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+          "channel_type": "android_sim",
+          "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+          "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+          "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "identity": {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567"
+          },
+          "direction": "outbound",
+          "type": "sms",
+          "origin": "api",
+          "from": "+923451234567",
+          "to": "+923001234567",
+          "content_type": "text",
+          "content": {
+            "type": "text",
+            "body": "Your order #1094 is ready for pickup."
+          },
+          "body": "Your order #1094 is ready for pickup.",
+          "encoding": "gsm7",
+          "segments": 1,
+          "media": [],
+          "channel_meta": {},
+          "provider_message_id": null,
+          "category": "transactional",
+          "lane": "normal",
+          "status": "queued",
+          "hold_reason": null,
+          "send_after": null,
+          "expires_at": "2026-10-02T09:15:02Z",
+          "attempts": 0,
+          "failure": null,
+          "cancel_requested_at": null,
+          "reference_id": "order-1094",
+          "metadata": {
+            "order_id": "1094"
+          },
+          "template_id": null,
+          "campaign_id": null,
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "sent_at": null,
+          "delivered_at": null,
+          "failed_at": null,
+          "expired_at": null,
+          "cancelled_at": null,
+          "received_at": null,
+          "read_at": null,
+          "phone_timestamp": null
+        },
+        "conversation": {
+          "id": null,
+          "created": true
+        }
+      }
+    },
+    "message.cancelled": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "message.cancelled",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "message": {
+          "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+          "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+          "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+          "channel_type": "android_sim",
+          "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+          "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+          "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "identity": {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567"
+          },
+          "direction": "outbound",
+          "type": "sms",
+          "origin": "api",
+          "from": "+923451234567",
+          "to": "+923001234567",
+          "content_type": "text",
+          "content": {
+            "type": "text",
+            "body": "Your order #1094 is ready for pickup."
+          },
+          "body": "Your order #1094 is ready for pickup.",
+          "encoding": "gsm7",
+          "segments": 1,
+          "media": [],
+          "channel_meta": {},
+          "provider_message_id": null,
+          "category": "transactional",
+          "lane": "normal",
+          "status": "queued",
+          "hold_reason": null,
+          "send_after": null,
+          "expires_at": "2026-10-02T09:15:02Z",
+          "attempts": 0,
+          "failure": null,
+          "cancel_requested_at": null,
+          "reference_id": "order-1094",
+          "metadata": {
+            "order_id": "1094"
+          },
+          "template_id": null,
+          "campaign_id": null,
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "sent_at": null,
+          "delivered_at": null,
+          "failed_at": null,
+          "expired_at": null,
+          "cancelled_at": null,
+          "received_at": null,
+          "read_at": null,
+          "phone_timestamp": null
+        },
+        "conversation": {
+          "id": null,
+          "created": true
+        },
+        "reason": null
+      }
+    },
+    "message.received": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "message.received",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "message": {
+          "id": "0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10",
+          "account_id": "0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01",
+          "channel_id": "0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02",
+          "channel_type": "android_sim",
+          "inbox_id": "0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03",
+          "conversation_id": "0198f3a2-7a05-7d33-9f10-2b6c8e1d5a04",
+          "contact_id": "0198ea17-5c28-7b94-8e07-3a9d1f4c6b05",
+          "identity": {
+            "id": "0198ea17-5c31-7e02-b5a8-4f2e0d7c9a06",
+            "type": "phone",
+            "address": "+923001234567",
+            "display": "+92 300 1234567"
+          },
+          "direction": "outbound",
+          "type": "sms",
+          "origin": "api",
+          "from": "+923451234567",
+          "to": "+923001234567",
+          "content_type": "text",
+          "content": {
+            "type": "text",
+            "body": "Your order #1094 is ready for pickup."
+          },
+          "body": "Your order #1094 is ready for pickup.",
+          "encoding": "gsm7",
+          "segments": 1,
+          "media": [],
+          "channel_meta": {},
+          "provider_message_id": null,
+          "category": "transactional",
+          "lane": "normal",
+          "status": "queued",
+          "hold_reason": null,
+          "send_after": null,
+          "expires_at": "2026-10-02T09:15:02Z",
+          "attempts": 0,
+          "failure": null,
+          "cancel_requested_at": null,
+          "reference_id": "order-1094",
+          "metadata": {
+            "order_id": "1094"
+          },
+          "template_id": null,
+          "campaign_id": null,
+          "actor": {
+            "type": "api_key",
+            "id": "0198e0c1-6f20-7a4d-9b13-7e5c2a8d4f07"
+          },
+          "created_at": "2026-10-01T09:15:02Z",
+          "sent_at": null,
+          "delivered_at": null,
+          "failed_at": null,
+          "expired_at": null,
+          "cancelled_at": null,
+          "received_at": null,
+          "read_at": null,
+          "phone_timestamp": null
+        },
+        "conversation": {
+          "id": null,
+          "created": true
+        },
+        "contact_created": true
+      }
+    },
+    "conversation.read": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "conversation.read",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "conversation": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_type": null,
+          "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "address": null,
+          "contact_display_name": null,
+          "status": "Example status",
+          "unread_count": 1,
+          "last_message_id": null,
+          "last_message_at": null,
+          "last_message_preview": null,
+          "last_direction": null,
+          "last_outbound_at": null,
+          "last_inbound_at": null,
+          "blocked_at": null,
+          "suppressed": true,
+          "channel_meta": {},
+          "created_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "conversation.unread": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "conversation.unread",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "conversation": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_type": null,
+          "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "address": null,
+          "contact_display_name": null,
+          "status": "Example status",
+          "unread_count": 1,
+          "last_message_id": null,
+          "last_message_at": null,
+          "last_message_preview": null,
+          "last_direction": null,
+          "last_outbound_at": null,
+          "last_inbound_at": null,
+          "blocked_at": null,
+          "suppressed": true,
+          "channel_meta": {},
+          "created_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "conversation.archived": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "conversation.archived",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "conversation": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_type": null,
+          "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "address": null,
+          "contact_display_name": null,
+          "status": "Example status",
+          "unread_count": 1,
+          "last_message_id": null,
+          "last_message_at": null,
+          "last_message_preview": null,
+          "last_direction": null,
+          "last_outbound_at": null,
+          "last_inbound_at": null,
+          "blocked_at": null,
+          "suppressed": true,
+          "channel_meta": {},
+          "created_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "conversation.unarchived": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "conversation.unarchived",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "conversation": {
+          "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "channel_type": null,
+          "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "contact_identity_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+          "address": null,
+          "contact_display_name": null,
+          "status": "Example status",
+          "unread_count": 1,
+          "last_message_id": null,
+          "last_message_at": null,
+          "last_message_preview": null,
+          "last_direction": null,
+          "last_outbound_at": null,
+          "last_inbound_at": null,
+          "blocked_at": null,
+          "suppressed": true,
+          "channel_meta": {},
+          "created_at": "2026-10-01T09:15:02Z"
+        },
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "conversation.deleted": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "conversation.deleted",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "conversation_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "actor": {
+          "type": "Example type",
+          "id": null
+        }
+      }
+    },
+    "contact.opted_out": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "contact.opted_out",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "identity_type": null,
+        "address": null,
+        "method": null,
+        "keyword": null,
+        "message_id": null,
+        "suppression_id": null,
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "occurred_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    "contact.opted_in": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "contact.opted_in",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "identity_type": null,
+        "address": null,
+        "method": null,
+        "keyword": null,
+        "message_id": null,
+        "suppression_id": null,
+        "actor": {
+          "type": "Example type",
+          "id": null
+        },
+        "occurred_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    "ping": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "ping",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "inbox_id": null,
+      "channel": null,
+      "data": {
+        "endpoint_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "message": "Example message"
+      }
+    }
+  }
+}

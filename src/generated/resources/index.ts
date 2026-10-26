@@ -1,0 +1,115 @@
+// Generated from the MyComm OpenAPI documents by generator/. Do not edit: run `npm run generate`.
+
+import type { Connection } from '../../core/connection.js';
+import { AccountResource } from './account.js';
+import { ApiKeysResource } from './api-keys.js';
+import { AutomationRulesResource } from './automation-rules.js';
+import { AutomationRunsResource } from './automation-runs.js';
+import { CampaignsResource } from './campaigns.js';
+import { ChannelsResource } from './channels.js';
+import { ConnectSessionsResource } from './connect-sessions.js';
+import { ContactFieldsResource } from './contact-fields.js';
+import { ContactsResource } from './contacts.js';
+import { ConversationsResource } from './conversations.js';
+import { DevicesResource } from './devices.js';
+import { ExportsResource } from './exports.js';
+import { GroupsResource } from './groups.js';
+import { ImportsResource } from './imports.js';
+import { InboxesResource } from './inboxes.js';
+import { MediaResource } from './media.js';
+import { MessagesResource } from './messages.js';
+import { PairingCodesResource } from './pairing-codes.js';
+import { SmartListsResource } from './smart-lists.js';
+import { StatsResource } from './stats.js';
+import { SuppressionsResource } from './suppressions.js';
+import { ConsentEventsResource } from './consent-events.js';
+import { TemplatesResource } from './templates.js';
+import { WebhookDeliveriesResource } from './webhook-deliveries.js';
+import { WebhookEndpointsResource } from './webhook-endpoints.js';
+import { PartnerResource } from './partner.js';
+export * from './account.js';
+export * from './api-keys.js';
+export * from './automation-rules.js';
+export * from './automation-runs.js';
+export * from './campaigns.js';
+export * from './channels.js';
+export * from './connect-sessions.js';
+export * from './contact-fields.js';
+export * from './contacts.js';
+export * from './conversations.js';
+export * from './devices.js';
+export * from './exports.js';
+export * from './groups.js';
+export * from './imports.js';
+export * from './inboxes.js';
+export * from './media.js';
+export * from './messages.js';
+export * from './pairing-codes.js';
+export * from './smart-lists.js';
+export * from './stats.js';
+export * from './suppressions.js';
+export * from './consent-events.js';
+export * from './templates.js';
+export * from './webhook-deliveries.js';
+export * from './webhook-endpoints.js';
+export * from './partner.js';
+
+/** The top-level resources of the API. */
+export class Resources {
+  readonly account: AccountResource;
+  readonly apiKeys: ApiKeysResource;
+  readonly automationRules: AutomationRulesResource;
+  readonly automationRuns: AutomationRunsResource;
+  readonly campaigns: CampaignsResource;
+  readonly channels: ChannelsResource;
+  readonly connectSessions: ConnectSessionsResource;
+  readonly contactFields: ContactFieldsResource;
+  readonly contacts: ContactsResource;
+  readonly conversations: ConversationsResource;
+  readonly devices: DevicesResource;
+  readonly exports: ExportsResource;
+  readonly groups: GroupsResource;
+  readonly imports: ImportsResource;
+  readonly inboxes: InboxesResource;
+  readonly media: MediaResource;
+  readonly messages: MessagesResource;
+  readonly pairingCodes: PairingCodesResource;
+  readonly smartLists: SmartListsResource;
+  readonly stats: StatsResource;
+  readonly suppressions: SuppressionsResource;
+  readonly consentEvents: ConsentEventsResource;
+  readonly templates: TemplatesResource;
+  readonly webhookDeliveries: WebhookDeliveriesResource;
+  readonly webhookEndpoints: WebhookEndpointsResource;
+  readonly partner: PartnerResource;
+
+  /** @internal */
+  constructor(connection: Connection) {
+    this.account = new AccountResource(connection);
+    this.apiKeys = new ApiKeysResource(connection);
+    this.automationRules = new AutomationRulesResource(connection);
+    this.automationRuns = new AutomationRunsResource(connection);
+    this.campaigns = new CampaignsResource(connection);
+    this.channels = new ChannelsResource(connection);
+    this.connectSessions = new ConnectSessionsResource(connection);
+    this.contactFields = new ContactFieldsResource(connection);
+    this.contacts = new ContactsResource(connection);
+    this.conversations = new ConversationsResource(connection);
+    this.devices = new DevicesResource(connection);
+    this.exports = new ExportsResource(connection);
+    this.groups = new GroupsResource(connection);
+    this.imports = new ImportsResource(connection);
+    this.inboxes = new InboxesResource(connection);
+    this.media = new MediaResource(connection);
+    this.messages = new MessagesResource(connection);
+    this.pairingCodes = new PairingCodesResource(connection);
+    this.smartLists = new SmartListsResource(connection);
+    this.stats = new StatsResource(connection);
+    this.suppressions = new SuppressionsResource(connection);
+    this.consentEvents = new ConsentEventsResource(connection);
+    this.templates = new TemplatesResource(connection);
+    this.webhookDeliveries = new WebhookDeliveriesResource(connection);
+    this.webhookEndpoints = new WebhookEndpointsResource(connection);
+    this.partner = new PartnerResource(connection);
+  }
+}

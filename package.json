@@ -1,0 +1,79 @@
+{
+  "name": "@mycomm/node",
+  "version": "1.0.0",
+  "description": "Official Node.js and TypeScript SDK for the MyComm messaging API: messages, contacts, conversations, channels, webhooks and the partner API.",
+  "license": "MIT",
+  "author": "Cogneer (https://cogneer.tech)",
+  "homepage": "https://mycomm.cogneer.tech/docs/guides/node-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cogneer/mycomm-node.git"
+  },
+  "bugs": "https://github.com/cogneer/mycomm-node/issues",
+  "keywords": [
+    "mycomm",
+    "sms",
+    "whatsapp",
+    "messaging",
+    "api",
+    "sdk",
+    "webhooks",
+    "typescript"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./testing": {
+      "import": {
+        "types": "./dist/esm/testing/index.d.ts",
+        "default": "./dist/esm/testing/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/testing/index.d.ts",
+        "default": "./dist/cjs/testing/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "generate": "tsx generator/generate.ts",
+    "fresh": "npm run generate && git diff --exit-code -- src/generated src/testing/examples.ts test/generated && test -z \"$(git status --porcelain -- src/generated src/testing/examples.ts test/generated)\"",
+    "lint": "tsc --noEmit -p tsconfig.json && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "build": "node build.mjs",
+    "check": "npm run lint && npm test && npm run build",
+    "prepublishOnly": "npm run check",
+    "spec:sync": "node scripts/spec-sync.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7",
+    "yaml": "^2.9.1"
+  }
+}

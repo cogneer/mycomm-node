@@ -1,0 +1,27 @@
+name: Spec drift
+
+# The SDK is generated from a copy of the API's OpenAPI documents (spec/). The API bumps `info.version` on every change of
+# its contract, so a difference between the live version and the copy means the SDK is behind.
+on:
+  schedule:
+    - cron: '23 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  drift:
+    name: The copy in spec/ is the live version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare the versions
+        env:
+          DOCS_URL: https://mycomm.cogneer.tech
+        run: |
+          live=$(curl -fsS "$DOCS_URL/docs/openapi/public.json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["info"]["version"])')
+          copy=$(python3 -c 'import re; print(re.search(r"^  version: \"?([^\"\n]+)", open("spec/public.yaml").read(), re.M).group(1))')
+          echo "live: $live, spec/: $copy"
+          if [ "$live" != "$copy" ]; then
+            echo "::error::spec/public.yaml is $copy but the API serves $live. Run npm run spec:sync -- <backend>, npm run generate, and release."
+            exit 1
+          fi
