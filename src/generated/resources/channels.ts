@@ -51,8 +51,8 @@ export class ChannelsResource {
    * Pause a channel.
    *
    * Requires `channels:write`. `active` → `paused` with `pause_reason: owner`. Messages are still accepted and
-   * wait until the channel is resumed.paused`. A channel in any other state is `409 INVALID_STATE` with
-   * `allowed_from: [active]`.
+   * wait until the channel is resumed. Emits `channel.paused`. A channel in any other state is `409 INVALID_STATE`
+   * with `allowed_from: [active]`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `pauseChannel`
    */
@@ -81,8 +81,8 @@ export class ChannelsResource {
    *
    * Requires `channels:write`. → `disconnected` with `disconnect_reason: owner`; the number is released for use
    * elsewhere, queued outbound messages fail with `CHANNEL_DISCONNECTED`, inboxes and history stay readable and
-   * sends get `CHANNEL_INACTIVE`.disconnected`. A `pending_verification` channel that never connected is deleted
-   * instead (`204`).
+   * sends get `CHANNEL_INACTIVE`. Emits `channel.disconnected`. A `pending_verification` channel that never
+   * connected is deleted instead (`204`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `disconnectChannel`
    */
@@ -93,9 +93,10 @@ export class ChannelsResource {
   /**
    * Connect a SIM.
    *
-   * Requires `channels:write`.status` is `pending`. After the tap the phone texts a 6-digit code to the number and
-   * catches it.verification_failed` and on `GET /v1/channels/{id}`. `address` is optional when the SIM reports its
-   * number or the platform's inbound probe is configured; otherwise `422 ADDRESS_REQUIRED`.
+   * Requires `channels:write`. Creates a channel in `pending_verification` for the SIM and asks the person holding
+   * the phone to confirm the connection; while the prompt is open `verification.step` is `awaiting_confirmation`
+   * and `verification.confirmation.status` is `pending`. After the tap the phone texts a 6-digit code to the
+   * number and catches it.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `connectSimChannel`
    */
@@ -189,9 +190,9 @@ export class ChannelsResource {
    * List channel types.
    *
    * Requires `channels:read`. Every channel type with what this account can connect and what each type can do, so
-   * a partner UI adapts without hard-coding SMS.allowed_types`; a type that has not shipped yet carries
-   * `available_from`. In v1 only `android_sim` is available. The list is about the account, not an inbox, so a key
-   * restricted to inboxes gets the full answer.
+   * a partner UI adapts without hard-coding SMS. `available` is `true` when the type is enabled on the platform
+   * and allowed by the account's `settings.channels.allowed_types`; a type that has not shipped yet carries
+   * `available_from`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listChannelTypes`
    */

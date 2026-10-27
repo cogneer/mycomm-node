@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { format, resolveConfig } from 'prettier';
 import { describe, expect, it } from 'vitest';
-import { Emitter } from '../generator/emitter.js';
+import { Emitter, lead } from '../generator/emitter.js';
 import { UUID, example, minimalExample } from '../generator/examples.js';
 import { docLines, enumCase, inline, pascal, singular } from '../generator/names.js';
 import { Operations } from '../generator/operations.js';
@@ -160,6 +160,16 @@ describe('the generator', () => {
     [singular, 'status', 'status'],
   ])('derives names: %o(%s) is %s', (derive, input, expected) => {
     expect(derive(input)).toBe(expected);
+  });
+
+  it('keeps a sentence whole when a dot sits inside it', () => {
+    const description =
+      'Requires `channels:write`. The link stops working at once. Only an `open`\nsession can be revoked; any other ' +
+      'status is `409 INVALID_STATE` with `details.status`.\n\nA second paragraph.';
+    expect(lead(description)).toBe(
+      'Requires `channels:write`. The link stops working at once. Only an `open` session can be revoked; any other ' +
+        'status is `409 INVALID_STATE` with `details.status`.',
+    );
   });
 
   it('keeps internal section pointers and comment terminators out of the docs', () => {

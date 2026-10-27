@@ -46,9 +46,9 @@ export class SuppressionsResource {
    * Suppress a number.
    *
    * Requires `suppressions:write` (never held by a restricted key). `identity_type` defaults to `phone` (the only
-   * type in v1) and `reason` to `api`; the API may write `api`, `complaint` or `dnc`.164 (a number without country
-   * code is read in the account country; one that is not a valid number is `422 VALIDATION_FAILED` with
-   * `INVALID_NUMBER` on `address`).
+   * type in v1) and `reason` to `api`; the API may write `api`, `complaint` or `dnc`. The address is stored in
+   * E.164 (a number without country code is read in the account country; one that is not a valid number is `422
+   * VALIDATION_FAILED` with `INVALID_NUMBER` on `address`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createSuppression`
    */
@@ -59,10 +59,10 @@ export class SuppressionsResource {
   /**
    * Remove a suppression.
    *
-   * Requires `suppressions:write`.opted_in`; the `opt_out` consent event stays (the consent trail is append-only).
+   * Requires `suppressions:write`. Deletes the suppression, writes a `consent_events` `opt_in` (method `api`, the
+   * note) and emits `contact.opted_in`; the `opt_out` consent event stays (the consent trail is append-only).
    * `consent_note` is required when the suppression's `reason` is `keyword`: without it the answer is `422
-   * CONSENT_NOTE_REQUIRED` and the number stays suppressed. `204`. A suppression that is absent or in another
-   * account is `404`.
+   * CONSENT_NOTE_REQUIRED` and the number stays suppressed.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `removeSuppression`
    */
@@ -73,9 +73,9 @@ export class SuppressionsResource {
   /**
    * Check whether an address is suppressed.
    *
-   * Requires `suppressions:read`.164 number (a number without country code is read in the account country; one
-   * that is not a valid number is `422 VALIDATION_FAILED` with `INVALID_NUMBER` on `address`). `identity_type`
-   * defaults to `phone`. The answer echoes the normalised address.
+   * Requires `suppressions:read`. `address` is the E.164 number (a number without country code is read in the
+   * account country; one that is not a valid number is `422 VALIDATION_FAILED` with `INVALID_NUMBER` on
+   * `address`). `identity_type` defaults to `phone`. The answer echoes the normalised address.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `checkSuppression`
    */

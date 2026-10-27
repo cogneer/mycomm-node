@@ -40,7 +40,8 @@ export class ConnectSessionsResource {
   /**
    * Revoke a connect session.
    *
-   * Requires `channels:write`. The link stops working at once, also for a page already open.status`.
+   * Requires `channels:write`. The link stops working at once, also for a page already open. Only an `open`
+   * session can be revoked; any other status is `409 INVALID_STATE` with `details.status`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `deleteConnectSession`
    */

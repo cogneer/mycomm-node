@@ -1,6 +1,6 @@
 {
   "name": "@mycomm/node",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Official Node.js and TypeScript SDK for the MyComm messaging API: messages, contacts, conversations, channels, webhooks and the partner API.",
   "license": "MIT",
   "author": "Cogneer (https://cogneer.tech)",

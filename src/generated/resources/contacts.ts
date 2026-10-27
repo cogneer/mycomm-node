@@ -35,10 +35,9 @@ export class ContactsResource {
   /**
    * Opt a contact out everywhere.
    *
-   * Requires `suppressions:write` (never held by a restricted key).opted_out`, and its queued marketing is
-   * cancelled. Identities already suppressed, for any reason, are left unchanged and counted in
-   * `already_suppressed`, so repeating the call writes nothing new. All identities are suppressed in one
-   * transaction.
+   * Requires `suppressions:write` (never held by a restricted key). Suppresses every identity of the contact, on
+   * every channel, that is not suppressed yet: each gets a suppression with reason `api` and the optional `note`,
+   * a `consent_events` `opt_out` (method `api`) and a `contact.opted_out`, and its queued marketing is cancelled.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `optOutContact`
    */
@@ -49,10 +48,11 @@ export class ContactsResource {
   /**
    * Upsert a contact by phone number.
    *
-   * Requires `contacts:write`.164 with the account country), including a soft-deleted one, which is restored. When
-   * found, the sent fields are merged as in `PATCH /v1/contacts/{id}` (top-level fields replace, `null` empties
-   * one; `custom_fields` merges key by key, a `null` value removes a key) and the answer is `200`; otherwise a
-   * contact is created with that identity as primary and the answer is `201`.
+   * Requires `contacts:write`. Finds the contact holding `identity` (the address is normalised to E.164 with the
+   * account country), including a soft-deleted one, which is restored. When found, the sent fields are merged as
+   * in `PATCH /v1/contacts/{id}` (top-level fields replace, `null` empties one; `custom_fields` merges key by key,
+   * a `null` value removes a key) and the answer is `200`; otherwise a contact is created with that identity as
+   * primary and the answer is `201`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `upsertContactByIdentity`
    */
@@ -102,8 +102,10 @@ export class ContactsResource {
   /**
    * Create a contact.
    *
-   * Requires `contacts:write`.164 using the account country (`422 INVALID_NUMBER`).contact_id`. `custom_fields`
-   * keys must be defined contact fields. `group_ids` adds the memberships.created`.
+   * Requires `contacts:write`. At least one identity; `phone` is the only type in v1 (`422
+   * IDENTITY_TYPE_UNAVAILABLE` for the others) and the address is normalised to E.164 using the account country
+   * (`422 INVALID_NUMBER`). A number held by another contact answers `409 IDENTITY_TAKEN` with
+   * `details.contact_id`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createContact`
    */
@@ -127,7 +129,7 @@ export class ContactsResource {
    *
    * Requires `contacts:write`. Top-level fields replace the stored value (`null` empties it); `custom_fields`
    * merges key by key (`null` removes a key); `group_ids` replaces the memberships when sent. Identities have
-   * their own endpoints.updated` when something changed.
+   * their own endpoints. Emits `contact.updated` when something changed.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `updateContact`
    */
@@ -138,8 +140,12 @@ export class ContactsResource {
   /**
    * Delete a contact.
    *
-   * Requires `contacts:write`.deleted` (`erased: false`) and answers `204`.164) and aggregates (`usage_daily`,
-   * campaign stats) are kept. Answers `202 {"status": "erasing"}`; a soft-deleted contact can be erased too.
+   * Requires `contacts:write`. Soft delete: the contact is hidden from lists, groups and audiences while its
+   * conversations and messages stay; emits `contact.deleted` (`erased: false`) and answers `204`. With
+   * `?erase=true` (GDPR erasure) the contact, its identities, group memberships, conversations, messages, message
+   * events, media, short links and link clicks are permanently deleted by a queued job, which emits
+   * `contact.deleted` (`erased: true`); suppressions and consent events (plain E.164) and aggregates
+   * (`usage_daily`, campaign stats) are kept.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `deleteContact`
    */
@@ -168,10 +174,10 @@ export class ContactsIdentitiesResource {
   /**
    * Add an identity to a contact.
    *
-   * Requires `contacts:write`.164 with the account country (`422 INVALID_NUMBER`); `whatsapp` and `telegram`
-   * identities are added with their channels (`422 IDENTITY_TYPE_UNAVAILABLE` before). `sender_id` identities are
-   * created by MyComm from inbound only (`422 INVALID_NUMBER`).contact_id`; one this contact already holds answers
-   * `200` and creates nothing.
+   * Requires `contacts:write`. `type` is `phone` in v1 and the address is normalised to E.164 with the account
+   * country (`422 INVALID_NUMBER`); `whatsapp` and `telegram` identities are added with their channels (`422
+   * IDENTITY_TYPE_UNAVAILABLE` before). `sender_id` identities are created by MyComm from inbound only (`422
+   * INVALID_NUMBER`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createContactIdentity`
    */
@@ -216,9 +222,10 @@ export class ContactsIdentitiesResource {
   /**
    * Block an identity account-wide.
    *
-   * Requires `contacts:write`. Sets `blocked_at` for every inbox and channel of the account.cancelled`, reason
-   * `contact_blocked`).received` webhook; opt-out and opt-in keywords still apply. Campaign recipients are skipped
-   * (`blocked`). Any identity can be blocked, a `sender_id` one included.
+   * Requires `contacts:write`. Sets `blocked_at` for every inbox and channel of the account. New outbound to the
+   * identity is refused (`CONTACT_BLOCKED`) and its `queued` outbound is cancelled (`message.cancelled`, reason
+   * `contact_blocked`). Inbound is still stored but is not counted as unread, runs no automation, sends no
+   * notification and emits no `message.received` webhook; opt-out and opt-in keywords still apply.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `blockContactIdentity`
    */
@@ -232,7 +239,8 @@ export class ContactsIdentitiesResource {
    * Unblock an identity.
    *
    * Requires `contacts:write`. Clears `blocked_at`, account-wide. Nothing is replayed: messages received or
-   * cancelled while blocked stay as they are. Idempotent.updated`. Send an empty JSON object `{}` as the body.
+   * cancelled while blocked stay as they are. Idempotent. Emits `contact.updated`. Send an empty JSON object `{}`
+   * as the body.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unblockContactIdentity`
    */

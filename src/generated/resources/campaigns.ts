@@ -28,10 +28,9 @@ export class CampaignsResource {
   /**
    * Campaign report.
    *
-   * Requires `campaigns:read`. The aggregate report of a campaign, live while it runs and after it
-   * ends.stats`.sent` as denominator (`delivery_rate` = delivered / sent, `click_rate` = unique clicks / sent) and
-   * are `null` while nothing was sent. `failures_by_code` counts the campaign's failed messages by failure code
-   * (`UNKNOWN` when none was reported).
+   * Requires `campaigns:read`. The aggregate report of a campaign, live while it runs and after it ends. `stats`
+   * is `campaigns.stats`. Rates use `stats.sent` as denominator (`delivery_rate` = delivered / sent, `click_rate`
+   * = unique clicks / sent) and are `null` while nothing was sent.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getCampaignReport`
    */
@@ -43,8 +42,8 @@ export class CampaignsResource {
    * List campaigns.
    *
    * Requires `campaigns:read`. Campaigns of the account, newest first (`sort=-created_at`, the only sort), with
-   * cursor pagination.addresses`; read the campaign for them. A key limited to some inboxes never holds
-   * `campaigns:read` and answers `403 ABILITY_MISSING`.
+   * cursor pagination. An item carries no `audience.addresses`; read the campaign for them. A key limited to some
+   * inboxes never holds `campaigns:read` and answers `403 ABILITY_MISSING`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listCampaigns`
    */
@@ -130,12 +129,9 @@ export class CampaignsResource {
   /**
    * Start or schedule a campaign.
    *
-   * Requires `campaigns:write`.started`). From `scheduled`: no `scheduled_at` (or a past one) runs it now, a new
-   * future time reschedules it. The start checks run again and answer `422`: `CHANNEL_INACTIVE`, `BODY_EMPTY`,
-   * `TEMPLATE_INVALID`, `CHANNEL_CAPABILITY_UNSUPPORTED`, `MEDIA_TYPE_UNSUPPORTED`, `SEND_AFTER_TOO_FAR`,
-   * `AUDIENCE_EMPTY`, `LINK_BLOCKED`, `LINK_PUBLIC_SHORTENER`, `TOO_MANY_LINKS`, `CONTENT_PROHIBITED`,
-   * `CONSENT_ASSERTION_REQUIRED`, `CONSENT_PROVENANCE_MISSING`, `MARKETING_NOT_ALLOWED`, `CATEGORY_MISMATCH`,
-   * `ACCOUNT_THROTTLED`, `NEW_ACCOUNT_LIMIT` or `VALIDATION_FAILED`.
+   * Requires `campaigns:write`. From `draft`: `scheduled` when `scheduled_at` is in the future
+   * (`campaign.scheduled`), else `running` (the audience is expanded then, `campaign.started`). From `scheduled`:
+   * no `scheduled_at` (or a past one) runs it now, a new future time reschedules it.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `startCampaign`
    */
@@ -146,8 +142,8 @@ export class CampaignsResource {
   /**
    * Unschedule a campaign.
    *
-   * Requires `campaigns:write`.unscheduled`); edit it, then start it again. `409 INVALID_STATE` from any other
-   * status.
+   * Requires `campaigns:write`. `scheduled` back to `draft` with `scheduled_at` cleared (`campaign.unscheduled`);
+   * edit it, then start it again. `409 INVALID_STATE` from any other status.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unscheduleCampaign`
    */
@@ -172,7 +168,8 @@ export class CampaignsResource {
    * Resume a campaign.
    *
    * Requires `campaigns:write`. `paused` to `running`; held messages are released. `409 INVALID_STATE` from any
-   * other status.risk_state: frozen`.
+   * other status. While the account is frozen the campaign stays paused and the call answers `422
+   * ACCOUNT_THROTTLED` with `details.risk_state: frozen`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `resumeCampaign`
    */
@@ -183,8 +180,9 @@ export class CampaignsResource {
   /**
    * Cancel a campaign.
    *
-   * Requires `campaigns:write`. `draft`, `scheduled`, `running` or `paused` to `cancelled`.cancelled`, reason
-   * `campaign_cancelled`). `409 INVALID_STATE` from `completed` or `cancelled`.
+   * Requires `campaigns:write`. `draft`, `scheduled`, `running` or `paused` to `cancelled`. Pending recipients and
+   * queued campaign messages become `cancelled` (`message.cancelled`, reason `campaign_cancelled`). `409
+   * INVALID_STATE` from `completed` or `cancelled`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `cancelCampaign`
    */

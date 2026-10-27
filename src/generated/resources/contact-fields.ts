@@ -50,9 +50,9 @@ export class ContactFieldsResource {
   /**
    * Delete a custom contact field.
    *
-   * Requires `contacts:write`. Removes the definition and its key from every contact.used_by` (the users of the
-   * field, each `{type, id, name}`) while a smart-list filter references it; edit or delete those smart lists
-   * first.
+   * Requires `contacts:write`. Removes the definition and its key from every contact. Refused with `409`
+   * `INVALID_STATE` and `details.used_by` (the users of the field, each `{type, id, name}`) while a smart-list
+   * filter references it; edit or delete those smart lists first.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `deleteContactField`
    */

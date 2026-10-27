@@ -46,10 +46,10 @@ export class TemplatesResource {
   /**
    * Create a template.
    *
-   * Requires `templates:write`.position`. Names are unique among non-archived templates, ignoring case (`409
-   * NAME_TAKEN`). A body linking through a public URL shortener answers `422 LINK_PUBLIC_SHORTENER`, one estimated
-   * over 10 SMS parts `422 BODY_TOO_LONG`. Variables that are neither contact nor custom fields are allowed (they
-   * must be supplied at send) and listed in `warnings`.
+   * Requires `templates:write`. `body` uses the variable syntax (`{{ name }}`, `{{ name | "fallback" }}`); a
+   * syntax error answers `422 TEMPLATE_INVALID` with `details.position`. Names are unique among non-archived
+   * templates, ignoring case (`409 NAME_TAKEN`). A body linking through a public URL shortener answers `422
+   * LINK_PUBLIC_SHORTENER`, one estimated over 10 SMS parts `422 BODY_TOO_LONG`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createTemplate`
    */

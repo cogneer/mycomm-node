@@ -27,7 +27,8 @@ export class PairingCodesResource {
   /**
    * Get a pairing code.
    *
-   * Requires `channels:read`.paired`. `code` and `qr_payload` are `null` here because the code is stored hashed.
+   * Requires `channels:read`. Poll every 3 to 5 seconds while the QR is displayed, or wait for `device.paired`.
+   * `code` and `qr_payload` are `null` here because the code is stored hashed.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getPairingCode`
    */

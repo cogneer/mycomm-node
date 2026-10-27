@@ -391,20 +391,21 @@ export class Emitter {
 const REFERENCE = 'https://mycomm.cogneer.tech/docs/api';
 
 /** The opening of a description: its first paragraph, cut after the sentence that passes 280 characters. */
-function lead(text: string | null): string {
+export function lead(text: string | null): string {
   const paragraph = (
     (text ?? '')
       .replaceAll('\r', '')
       .trim()
       .split(/\n\s*\n/)[0] ?? ''
   ).replace(/\s+/g, ' ');
-  const sentences = paragraph.match(/[^.!?]+(?:[.!?]+(?=\s|$)|$)/g) ?? [paragraph];
+  // A sentence ends at . ! or ? followed by a space: a dot inside code (`details.status`) or a number does not end one.
+  const sentences = paragraph.trim().split(/(?<=[.!?])\s+/);
   let out = '';
   for (const sentence of sentences) {
-    out += sentence;
+    out += (out === '' ? '' : ' ') + sentence;
     if (out.length > 280) break;
   }
-  return out.trim();
+  return out;
 }
 
 /**

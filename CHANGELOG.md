@@ -4,6 +4,14 @@ All notable changes to this package are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the package follows
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Doc comments that lost words: where a description had a dot inside code (such as `details.status`), the comment skipped
+  from that dot to the end of a later sentence, so `connectSessions.delete()` read "…also for a page already open.status`."
+(15 resources were affected). A sentence now ends only at `.`, `!`or`?` followed by a space.
+
 ## [1.0.0] - Unreleased
 
 The first release, built from the MyComm public API and partner API `1.0.0` (backend commit in `spec/SOURCE`), the frozen

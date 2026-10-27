@@ -81,10 +81,9 @@ export class PartnerAccountsResource {
   /**
    * Provision a managed account.
    *
-   * Idempotent by `external_ref`.auto_connect_sims` defaults to `true`. `200` returns the existing account with
-   * this `external_ref` **unchanged**, also when it is `pending_deletion` (the request's other fields are ignored;
-   * use `PATCH`). Concurrent duplicates resolve to one account. Keys with `allowed_account_ids` get `403
-   * PARTNER_KEY_RESTRICTED`; read-only keys `403 ABILITY_MISSING`.
+   * Idempotent by `external_ref`. `201` creates a managed account with no users; `channels.auto_connect_sims`
+   * defaults to `true`. `200` returns the existing account with this `external_ref` **unchanged**, also when it is
+   * `pending_deletion` (the request's other fields are ignored; use `PATCH`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `provisionManagedAccount`
    */
@@ -104,7 +103,8 @@ export class PartnerAccountsResource {
   /**
    * Update a managed account.
    *
-   * allowed_types`, which only the partner may set. The new `name` appears in the paired app. A taken
+   * `settings` is deep-merged with the rules of `PATCH /v1/account`, plus `limits.max_daily_segments` and
+   * `channels.allowed_types`, which only the partner may set. The new `name` appears in the paired app. A taken
    * `external_ref` is `409 EXTERNAL_REF_TAKEN`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `updateManagedAccount`
@@ -117,7 +117,7 @@ export class PartnerAccountsResource {
    * Schedule deletion of a managed account.
    *
    * Cancels queued messages and unfinished campaigns first, then revokes devices and account keys and disconnects
-   * channels.deletion_scheduled`. `reactivate` before `purge_at` (14 days) restores the data.
+   * channels. Emits `account.deletion_scheduled`. `reactivate` before `purge_at` (14 days) restores the data.
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `deleteManagedAccount`
    */
@@ -128,7 +128,7 @@ export class PartnerAccountsResource {
   /**
    * Suspend a managed account.
    *
-   * `status: suspended`; `/v1` writes then get `403 ACCOUNT_SUSPENDED`.suspended`.
+   * `status: suspended`; `/v1` writes then get `403 ACCOUNT_SUSPENDED`. Emits `account.suspended`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `suspendManagedAccount`
    */
@@ -139,8 +139,8 @@ export class PartnerAccountsResource {
   /**
    * Reactivate a managed account.
    *
-   * From `suspended`, or from `pending_deletion` before `purge_at`.reactivated`. A suspension set by MyComm
-   * support or a kill switch is not lifted by a partner (409 SUSPENDED_BY_SUPPORT).
+   * From `suspended`, or from `pending_deletion` before `purge_at`. Emits `account.reactivated`. A suspension set
+   * by MyComm support or a kill switch is not lifted by a partner (409 SUSPENDED_BY_SUPPORT).
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `reactivateManagedAccount`
    */

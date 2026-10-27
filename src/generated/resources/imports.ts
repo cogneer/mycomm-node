@@ -38,8 +38,10 @@ export class ImportsResource {
    *
    * The required ability depends on `type`: `contacts_csv` needs `contacts:write`, `suppressions_csv` needs
    * `suppressions:write`. `multipart/form-data` with `type`, `file` (CSV UTF-8 with a header row, at most 20 MB
-   * and 200,000 rows) and `options`, a JSON string.<key>`; `existing` is `fill_empty` (default), `overwrite` or
-   * `skip`; `consent_assertion` is `{asserted: true, source}`.
+   * and 200,000 rows) and `options`, a JSON string. For `contacts_csv`, `options.mapping` maps a column to
+   * `phone`, `first_name`, `last_name`, `full_name` (split at the last space), `email`, `timezone`, `language`,
+   * `group` or `custom.<key>`; `existing` is `fill_empty` (default), `overwrite` or `skip`; `consent_assertion` is
+   * `{asserted: true, source}`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createImport`
    */
@@ -52,8 +54,10 @@ export class ImportsResource {
    *
    * The required ability depends on `type`: `contacts_csv` needs `contacts:write`, `suppressions_csv` needs
    * `suppressions:write`. `multipart/form-data` with `type`, `file` (CSV UTF-8 with a header row, at most 20 MB
-   * and 200,000 rows) and `options`, a JSON string.<key>`; `existing` is `fill_empty` (default), `overwrite` or
-   * `skip`; `consent_assertion` is `{asserted: true, source}`.
+   * and 200,000 rows) and `options`, a JSON string. For `contacts_csv`, `options.mapping` maps a column to
+   * `phone`, `first_name`, `last_name`, `full_name` (split at the last space), `email`, `timezone`, `language`,
+   * `group` or `custom.<key>`; `existing` is `fill_empty` (default), `overwrite` or `skip`; `consent_assertion` is
+   * `{asserted: true, source}`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createImport`
    */

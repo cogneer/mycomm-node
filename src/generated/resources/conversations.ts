@@ -23,8 +23,8 @@ export class ConversationsResource {
   /**
    * Mark a conversation read.
    *
-   * Sets `unread_count` to 0 and stamps `read_at` on its unread inbound messages.read`. Requires
-   * `conversations:write`. A conversation outside the key's inbox scope answers 404.
+   * Sets `unread_count` to 0 and stamps `read_at` on its unread inbound messages. Emits `conversation.read`.
+   * Requires `conversations:write`. A conversation outside the key's inbox scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `markConversationRead`
    */
@@ -35,8 +35,8 @@ export class ConversationsResource {
   /**
    * Mark a conversation unread.
    *
-   * Sets `unread_count` to 1.unread`. Requires `conversations:write`. A conversation outside the key's inbox scope
-   * answers 404.
+   * Sets `unread_count` to 1. Emits `conversation.unread`. Requires `conversations:write`. A conversation outside
+   * the key's inbox scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `markConversationUnread`
    */
@@ -47,8 +47,8 @@ export class ConversationsResource {
   /**
    * Archive a conversation.
    *
-   * Sets `status` to `archived`; the next inbound message reopens it.archived`. Requires `conversations:write`. A
-   * conversation outside the key's inbox scope answers 404.
+   * Sets `status` to `archived`; the next inbound message reopens it. Emits `conversation.archived`. Requires
+   * `conversations:write`. A conversation outside the key's inbox scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `archiveConversation`
    */
@@ -59,8 +59,8 @@ export class ConversationsResource {
   /**
    * Unarchive a conversation.
    *
-   * Sets `status` back to `open`.unarchived`. Requires `conversations:write`. A conversation outside the key's
-   * inbox scope answers 404.
+   * Sets `status` back to `open`. Emits `conversation.unarchived`. Requires `conversations:write`. A conversation
+   * outside the key's inbox scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unarchiveConversation`
    */
@@ -110,8 +110,9 @@ export class ConversationsResource {
    * Delete a conversation.
    *
    * Permanently deletes the conversation with its messages, their events, media and short links. Requires
-   * `conversations:write`.deleted` when it is complete. Answers `202` at once; the conversation is no longer
-   * readable. A conversation outside the key's inbox scope answers 404.
+   * `conversations:write`. Queued outbound messages are cancelled first; the purge runs in the background and
+   * emits `conversation.deleted` when it is complete. Answers `202` at once; the conversation is no longer
+   * readable.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `deleteConversation`
    */
@@ -164,7 +165,8 @@ export class ConversationsResource {
    *
    * Sends a message in the thread. Requires `conversations:write` and `messages:send`. The body is the body of
    * `POST /v1/messages` without `to`, `contact_id`, `inbox_id`, `channel_id`, `from` and `channel_type`; the inbox
-   * and contact identity of the conversation are used.fields`.
+   * and contact identity of the conversation are used. Sending one of those fields answers `422 VALIDATION_FAILED`
+   * with the field in `details.fields`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `replyToConversation`
    */
@@ -178,7 +180,8 @@ export class ConversationsResource {
    *
    * Sends a message in the thread. Requires `conversations:write` and `messages:send`. The body is the body of
    * `POST /v1/messages` without `to`, `contact_id`, `inbox_id`, `channel_id`, `from` and `channel_type`; the inbox
-   * and contact identity of the conversation are used.fields`.
+   * and contact identity of the conversation are used. Sending one of those fields answers `422 VALIDATION_FAILED`
+   * with the field in `details.fields`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `replyToConversation`
    */

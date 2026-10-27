@@ -51,8 +51,9 @@ export class SmartListsResource {
   /**
    * Create a smart list.
    *
-   * Requires `groups:write`.pointer`, a JSON pointer to the bad node. The name is unique per account, ignoring
-   * case (`409 NAME_TAKEN`).
+   * Requires `groups:write`. `filter` is the smart list filter language; a filter that breaks it answers `422
+   * FILTER_INVALID` with `details.pointer`, a JSON pointer to the bad node. The name is unique per account,
+   * ignoring case (`409 NAME_TAKEN`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createSmartList`
    */
@@ -99,8 +100,8 @@ export class SmartListsResource {
   /**
    * Delete a smart list.
    *
-   * Requires `groups:write`.used_by` (each `{type, id, name}`) while an unfinished campaign (draft, scheduled,
-   * running or paused) targets the list.
+   * Requires `groups:write`. Refused with `409 INVALID_STATE` and `details.used_by` (each `{type, id, name}`)
+   * while an unfinished campaign (draft, scheduled, running or paused) targets the list.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `deleteSmartList`
    */

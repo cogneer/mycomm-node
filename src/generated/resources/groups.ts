@@ -85,9 +85,9 @@ export class GroupsResource {
   /**
    * Delete a group.
    *
-   * Requires `groups:write`. Removes the group and its memberships; the contacts stay.used_by` (each `{type, id,
-   * name}`) while a scheduled, running or paused campaign uses the group or an automation rule's add-to-group or
-   * remove-from-group action names it.
+   * Requires `groups:write`. Removes the group and its memberships; the contacts stay. Refused with `409`
+   * `INVALID_STATE` and `details.used_by` (each `{type, id, name}`) while a scheduled, running or paused campaign
+   * uses the group or an automation rule's add-to-group or remove-from-group action names it.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `deleteGroup`
    */
@@ -128,7 +128,7 @@ export class GroupsMembersResource {
    * Add contacts to a group.
    *
    * Requires `groups:write`. 1 to 1,000 contact ids. Unknown ids are reported in `not_found`; contacts already in
-   * the group count in `already_member`.updated` (changed `groups`).
+   * the group count in `already_member`. Each contact that joins emits `contact.updated` (changed `groups`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `addGroupMembers`
    */
@@ -139,8 +139,8 @@ export class GroupsMembersResource {
   /**
    * Remove contacts from a group.
    *
-   * Requires `groups:write`. 1 to 1,000 contact ids. Ids that are not members count in `not_member`.updated`
-   * (changed `groups`).
+   * Requires `groups:write`. 1 to 1,000 contact ids. Ids that are not members count in `not_member`. Each removed
+   * contact emits `contact.updated` (changed `groups`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `removeGroupMembers`
    */

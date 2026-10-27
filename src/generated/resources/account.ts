@@ -14,8 +14,8 @@ export class AccountResource {
   /**
    * Get the account.
    *
-   * The account the key belongs to. Needs no ability and also works for a suspended account.settings` without
-   * `notifications` and `onboarding`, which concern portal users only.
+   * The account the key belongs to. Needs no ability and also works for a suspended account. `settings` is
+   * `accounts.settings` without `notifications` and `onboarding`, which concern portal users only.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getAccount`
    */
@@ -27,8 +27,8 @@ export class AccountResource {
    * Update the account.
    *
    * Requires `account:write`. `settings` is deep-merged: arrays are replaced whole, language maps merge key by key
-   * and `null` removes a language.limits` is read-only for account keys (`422 VALIDATION_FAILED`). Changes are
-   * audit-logged.
+   * and `null` removes a language. `settings.limits` is read-only for account keys (`422 VALIDATION_FAILED`).
+   * Changes are audit-logged.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `updateAccount`
    */
