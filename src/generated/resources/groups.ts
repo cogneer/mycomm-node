@@ -32,9 +32,7 @@ export class GroupsResource {
    * Requires `contacts:read`. Groups of the account sorted by `name` (default) with cursor pagination. `q` matches
    * the name, case-insensitively.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listGroups`
    */
   list(params?: GroupsListParams, options?: RequestOptions): Promise<Page<Group>> {
     return this._connection.call('groups.list', [], params, options) as Promise<Page<Group>>;
@@ -46,9 +44,6 @@ export class GroupsResource {
    * `for await (const item of client.groups.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(params?: Omit<GroupsListParams, 'cursor'>, options?: RequestOptions): AsyncGenerator<Group> {
     return this._connection.all('groups.list', [], params, options) as AsyncGenerator<Group>;
@@ -59,9 +54,7 @@ export class GroupsResource {
    *
    * Requires `groups:write`. The name is unique per account, ignoring case (`409 NAME_TAKEN`).
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `createGroup`
    */
   create(params: GroupsCreateParams, options?: RequestOptions): Promise<WithMeta<Group>> {
     return this._connection.call('groups.create', [], params, options) as Promise<WithMeta<Group>>;
@@ -72,9 +65,7 @@ export class GroupsResource {
    *
    * Requires `contacts:read`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getGroup`
    */
   show(id: string, options?: RequestOptions): Promise<WithMeta<Group>> {
     return this._connection.call('groups.show', [id], undefined, options) as Promise<WithMeta<Group>>;
@@ -85,9 +76,7 @@ export class GroupsResource {
    *
    * Requires `groups:write`. Changes `name` and `description`; a duplicate name answers `409 NAME_TAKEN`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `updateGroup`
    */
   update(id: string, params?: GroupsUpdateParams, options?: RequestOptions): Promise<WithMeta<Group>> {
     return this._connection.call('groups.update', [id], params, options) as Promise<WithMeta<Group>>;
@@ -96,13 +85,11 @@ export class GroupsResource {
   /**
    * Delete a group.
    *
-   * Requires `groups:write`. Removes the group and its memberships; the contacts stay. Refused with `409`
-   * `INVALID_STATE` and `details.used_by` (each `{type, id, name}`) while a scheduled, running or paused campaign
-   * uses the group or an automation rule's add-to-group or remove-from-group action names it.
+   * Requires `groups:write`. Removes the group and its memberships; the contacts stay.used_by` (each `{type, id,
+   * name}`) while a scheduled, running or paused campaign uses the group or an automation rule's add-to-group or
+   * remove-from-group action names it.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `deleteGroup`
    */
   delete(id: string, options?: RequestOptions): Promise<void> {
     return this._connection.call('groups.delete', [id], undefined, options) as Promise<void>;
@@ -120,9 +107,7 @@ export class GroupsMembersResource {
    * Requires `contacts:read`. The contacts of the group with the filters and resource of `GET /v1/contacts`;
    * soft-deleted contacts are not listed.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listGroupMembers`
    */
   list(id: string, params?: GroupsMembersListParams, options?: RequestOptions): Promise<Page<Contact>> {
     return this._connection.call('groups.members.list', [id], params, options) as Promise<Page<Contact>>;
@@ -134,9 +119,6 @@ export class GroupsMembersResource {
    * `for await (const item of client.groups.members.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(id: string, params?: Omit<GroupsMembersListParams, 'cursor'>, options?: RequestOptions): AsyncGenerator<Contact> {
     return this._connection.all('groups.members.list', [id], params, options) as AsyncGenerator<Contact>;
@@ -146,11 +128,9 @@ export class GroupsMembersResource {
    * Add contacts to a group.
    *
    * Requires `groups:write`. 1 to 1,000 contact ids. Unknown ids are reported in `not_found`; contacts already in
-   * the group count in `already_member`. Each contact that joins emits `contact.updated` (changed `groups`).
+   * the group count in `already_member`.updated` (changed `groups`).
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `addGroupMembers`
    */
   add(id: string, params: GroupsMembersAddParams, options?: RequestOptions): Promise<WithMeta<GroupsMembersAddResponse>> {
     return this._connection.call('groups.members.add', [id], params, options) as Promise<WithMeta<GroupsMembersAddResponse>>;
@@ -159,12 +139,10 @@ export class GroupsMembersResource {
   /**
    * Remove contacts from a group.
    *
-   * Requires `groups:write`. 1 to 1,000 contact ids. Ids that are not members count in `not_member`. Each removed
-   * contact emits `contact.updated` (changed `groups`).
+   * Requires `groups:write`. 1 to 1,000 contact ids. Ids that are not members count in `not_member`.updated`
+   * (changed `groups`).
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `removeGroupMembers`
    */
   remove(
     id: string,

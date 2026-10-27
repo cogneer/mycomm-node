@@ -7,14 +7,12 @@ import type { Uploadable } from '../core/uploads.js';
  */
 export type Open<T extends string> = T | (string & {});
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationRuleType>`. */
 export type AutomationRuleType = 'keyword' | 'away';
 export const AutomationRuleType = {
   Keyword: 'keyword',
   Away: 'away',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationRuleMatchMode>`. */
 export type AutomationRuleMatchMode = 'exact' | 'starts_with' | 'contains';
 export const AutomationRuleMatchMode = {
   Exact: 'exact',
@@ -22,28 +20,24 @@ export const AutomationRuleMatchMode = {
   Contains: 'contains',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationGroupActionType>`. */
 export type AutomationGroupActionType = 'add_to_group' | 'remove_from_group';
 export const AutomationGroupActionType = {
   AddToGroup: 'add_to_group',
   RemoveFromGroup: 'remove_from_group',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationFlagActionType>`. */
 export type AutomationFlagActionType = 'mark_read' | 'archive';
 export const AutomationFlagActionType = {
   MarkRead: 'mark_read',
   Archive: 'archive',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationRuleCreateType>`. */
 export type AutomationRuleCreateType = 'keyword' | 'away';
 export const AutomationRuleCreateType = {
   Keyword: 'keyword',
   Away: 'away',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationRuleMatchInputMode>`. */
 export type AutomationRuleMatchInputMode = 'exact' | 'starts_with' | 'contains';
 export const AutomationRuleMatchInputMode = {
   Exact: 'exact',
@@ -51,7 +45,6 @@ export const AutomationRuleMatchInputMode = {
   Contains: 'contains',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationDryRunRuleType>`. */
 export type AutomationDryRunRuleType = 'keyword' | 'away';
 export const AutomationDryRunRuleType = {
   Keyword: 'keyword',
@@ -61,8 +54,6 @@ export const AutomationDryRunRuleType = {
 /**
  * `applied` would run the actions; `skipped:*` is the guard that would hold the reply back (a paused
  * conversation is `skipped:loop_guard`); `no_match` runs nothing.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationDryRunOutcome>`.
  */
 export type AutomationDryRunOutcome = 'applied' | 'skipped:cooldown' | 'skipped:channel_cap' | 'skipped:loop_guard' | 'no_match';
 export const AutomationDryRunOutcome = {
@@ -73,7 +64,6 @@ export const AutomationDryRunOutcome = {
   NoMatch: 'no_match',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationRunOutcome>`. */
 export type AutomationRunOutcome = 'applied' | 'skipped:cooldown' | 'skipped:channel_cap' | 'skipped:loop_guard';
 export const AutomationRunOutcome = {
   Applied: 'applied',
@@ -82,7 +72,6 @@ export const AutomationRunOutcome = {
   SkippedLoopGuard: 'skipped:loop_guard',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationActionResultStatus>`. */
 export type AutomationActionResultStatus = 'queued' | 'applied' | 'failed' | 'skipped';
 export const AutomationActionResultStatus = {
   Queued: 'queued',
@@ -91,7 +80,6 @@ export const AutomationActionResultStatus = {
   Skipped: 'skipped',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AutomationActionResultReason>`. */
 export type AutomationActionResultReason = 'cooldown' | 'channel_cap' | 'loop_guard';
 export const AutomationActionResultReason = {
   Cooldown: 'cooldown',
@@ -99,7 +87,6 @@ export const AutomationActionResultReason = {
   LoopGuard: 'loop_guard',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<CampaignRecipientStatus>`. */
 export type CampaignRecipientStatus =
   'pending' | 'queued' | 'skipped' | 'sent' | 'delivered' | 'failed' | 'expired' | 'cancelled';
 export const CampaignRecipientStatus = {
@@ -113,7 +100,6 @@ export const CampaignRecipientStatus = {
   Cancelled: 'cancelled',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<CampaignRecipientSkipReason>`. */
 export type CampaignRecipientSkipReason =
   | 'suppressed'
   | 'duplicate'
@@ -142,7 +128,6 @@ export const CampaignRecipientSkipReason = {
   BodyTooLong: 'body_too_long',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<CampaignStatus>`. */
 export type CampaignStatus = 'draft' | 'scheduled' | 'running' | 'paused' | 'completed' | 'cancelled';
 export const CampaignStatus = {
   Draft: 'draft',
@@ -153,28 +138,24 @@ export const CampaignStatus = {
   Cancelled: 'cancelled',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<CampaignCategory>`. */
 export type CampaignCategory = 'marketing' | 'transactional';
 export const CampaignCategory = {
   Marketing: 'marketing',
   Transactional: 'transactional',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<CampaignCreateCategory>`. */
 export type CampaignCreateCategory = 'marketing' | 'transactional';
 export const CampaignCreateCategory = {
   Marketing: 'marketing',
   Transactional: 'transactional',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<CampaignUpdateCategory>`. */
 export type CampaignUpdateCategory = 'marketing' | 'transactional';
 export const CampaignUpdateCategory = {
   Marketing: 'marketing',
   Transactional: 'transactional',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelType>`. */
 export type ChannelType = 'android_sim' | 'whatsapp_evolution' | 'telegram_bot';
 export const ChannelType = {
   AndroidSim: 'android_sim',
@@ -182,7 +163,6 @@ export const ChannelType = {
   TelegramBot: 'telegram_bot',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelStatus>`. */
 export type ChannelStatus = 'pending_verification' | 'active' | 'paused' | 'disconnected';
 export const ChannelStatus = {
   PendingVerification: 'pending_verification',
@@ -191,11 +171,7 @@ export const ChannelStatus = {
   Disconnected: 'disconnected',
 } as const;
 
-/**
- * Set while `paused`.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelPauseReason>`.
- */
+/** Set while `paused`. */
 export type ChannelPauseReason =
   | 'owner'
   | 'admin'
@@ -224,11 +200,7 @@ export const ChannelPauseReason = {
   AutoCredentialsInvalid: 'auto:credentials_invalid',
 } as const;
 
-/**
- * Set when `disconnected`.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelDisconnectReason>`.
- */
+/** Set when `disconnected`. */
 export type ChannelDisconnectReason =
   | 'owner'
   | 'admin_force_release'
@@ -253,18 +225,13 @@ export const ChannelDisconnectReason = {
   CredentialsInvalid: 'credentials_invalid',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelRatePolicySource>`. */
 export type ChannelRatePolicySource = 'suggested' | 'custom';
 export const ChannelRatePolicySource = {
   Suggested: 'suggested',
   Custom: 'custom',
 } as const;
 
-/**
- * Risk of the stored policy against the suggestion.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelRatePolicyRisk>`.
- */
+/** Risk of the stored policy against the suggestion. */
 export type ChannelRatePolicyRisk = 'green' | 'amber' | 'red';
 export const ChannelRatePolicyRisk = {
   Green: 'green',
@@ -272,7 +239,6 @@ export const ChannelRatePolicyRisk = {
   Red: 'red',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelHealthBand>`. */
 export type ChannelHealthBand = 'good' | 'fair' | 'poor' | 'critical';
 export const ChannelHealthBand = {
   Good: 'good',
@@ -281,7 +247,6 @@ export const ChannelHealthBand = {
   Critical: 'critical',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelVerificationStatus>`. */
 export type ChannelVerificationStatus = 'pending' | 'verified' | 'failed' | 'expired';
 export const ChannelVerificationStatus = {
   Pending: 'pending',
@@ -290,11 +255,7 @@ export const ChannelVerificationStatus = {
   Expired: 'expired',
 } as const;
 
-/**
- * The latest progress step.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelVerificationStep>`.
- */
+/** The latest progress step. */
 export type ChannelVerificationStep = 'started' | 'awaiting_confirmation' | 'confirmed' | 'code_sent' | 'verified' | 'failed';
 export const ChannelVerificationStep = {
   Started: 'started',
@@ -305,7 +266,6 @@ export const ChannelVerificationStep = {
   Failed: 'failed',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelVerificationMethod>`. */
 export type ChannelVerificationMethod = 'loopback' | 'inbound_probe' | 'qr_scan' | 'pairing_code' | 'bot_token';
 export const ChannelVerificationMethod = {
   Loopback: 'loopback',
@@ -315,7 +275,6 @@ export const ChannelVerificationMethod = {
   BotToken: 'bot_token',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelConfirmationStatus>`. */
 export type ChannelConfirmationStatus = 'pending' | 'confirmed' | 'declined' | 'expired';
 export const ChannelConfirmationStatus = {
   Pending: 'pending',
@@ -324,7 +283,6 @@ export const ChannelConfirmationStatus = {
   Expired: 'expired',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelVerificationFailureReason>`. */
 export type ChannelVerificationFailureReason =
   | 'timeout'
   | 'device_offline'
@@ -353,7 +311,6 @@ export const ChannelVerificationFailureReason = {
   CountryNotEnabled: 'country_not_enabled',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelConnectMethod>`. */
 export type ChannelConnectMethod = 'device_pairing' | 'qr_scan' | 'pairing_code' | 'bot_token';
 export const ChannelConnectMethod = {
   DevicePairing: 'device_pairing',
@@ -362,14 +319,12 @@ export const ChannelConnectMethod = {
   BotToken: 'bot_token',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelAddressFormat>`. */
 export type ChannelAddressFormat = 'e164' | 'telegram_user_id';
 export const ChannelAddressFormat = {
   E164: 'e164',
   TelegramUserId: 'telegram_user_id',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelContentType>`. */
 export type ChannelContentType = 'text' | 'media' | 'template' | 'interactive' | 'location' | 'reaction';
 export const ChannelContentType = {
   Text: 'text',
@@ -380,7 +335,6 @@ export const ChannelContentType = {
   Reaction: 'reaction',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ChannelDeliveryState>`. */
 export type ChannelDeliveryState = 'sent' | 'delivered' | 'read';
 export const ChannelDeliveryState = {
   Sent: 'sent',
@@ -388,7 +342,6 @@ export const ChannelDeliveryState = {
   Read: 'read',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ConnectSessionStatus>`. */
 export type ConnectSessionStatus = 'open' | 'completed' | 'revoked' | 'expired';
 export const ConnectSessionStatus = {
   Open: 'open',
@@ -397,7 +350,6 @@ export const ConnectSessionStatus = {
   Expired: 'expired',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ContactFieldType>`. */
 export type ContactFieldType = 'text' | 'number' | 'date' | 'boolean' | 'select';
 export const ContactFieldType = {
   Text: 'text',
@@ -407,7 +359,6 @@ export const ContactFieldType = {
   Select: 'select',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ContactIdentityType>`. */
 export type ContactIdentityType = 'phone' | 'sender_id' | 'whatsapp' | 'telegram';
 export const ContactIdentityType = {
   Phone: 'phone',
@@ -416,7 +367,6 @@ export const ContactIdentityType = {
   Telegram: 'telegram',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ContactSource>`. */
 export type ContactSource = 'manual' | 'import' | 'inbound' | 'api' | 'campaign';
 export const ContactSource = {
   Manual: 'manual',
@@ -426,7 +376,6 @@ export const ContactSource = {
   Campaign: 'campaign',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ContactBulkResultStatus>`. */
 export type ContactBulkResultStatus = 'created' | 'updated' | 'rejected';
 export const ContactBulkResultStatus = {
   Created: 'created',
@@ -437,8 +386,6 @@ export const ContactBulkResultStatus = {
 /**
  * `outbound` is a message you or an automation sent; `inbound` is one the contact sent. The values are generated
  * from the platform; a new one may appear.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<MessageDirection>`.
  */
 export type MessageDirection = 'outbound' | 'inbound';
 export const MessageDirection = {
@@ -449,8 +396,6 @@ export const MessageDirection = {
 /**
  * How the message travels. `sms` and `mms` are the SMS channel; the others belong to channels that are not
  * available yet. The values are generated from the platform; a new one may appear.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<MessageType>`.
  */
 export type MessageType = 'sms' | 'mms' | 'whatsapp' | 'telegram';
 export const MessageType = {
@@ -464,8 +409,6 @@ export const MessageType = {
  * Where the message came from: `api` is your request, `portal` a person using the portal, `campaign` and
  * `automation` the features of those names, `phone` a message typed on the phone, `import` a phone-history
  * import, `system` MyComm itself, `canary` a delivery check. A new value may appear.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<MessageOrigin>`.
  */
 export type MessageOrigin = 'portal' | 'api' | 'campaign' | 'automation' | 'phone' | 'import' | 'system' | 'canary';
 export const MessageOrigin = {
@@ -482,8 +425,6 @@ export const MessageOrigin = {
 /**
  * The kind of content in `content`. `text` and `media` are what the SMS channel sends; the rest belong to other
  * channels. A new value may appear.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<MessageContentType>`.
  */
 export type MessageContentType = 'text' | 'media' | 'interactive' | 'location' | 'reaction' | 'channel_template' | 'unsupported';
 export const MessageContentType = {
@@ -499,8 +440,6 @@ export const MessageContentType = {
 /**
  * `transactional` for messages the contact expects (codes, receipts); `marketing` for promotions, which are held
  * outside bulk hours and checked against opt-outs.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<MessageCategory>`.
  */
 export type MessageCategory = 'transactional' | 'marketing';
 export const MessageCategory = {
@@ -511,8 +450,6 @@ export const MessageCategory = {
 /**
  * The sending priority: `high` goes first, `normal` is the default, `bulk` waits for quiet capacity and requires
  * a `category`.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<MessageLane>`.
  */
 export type MessageLane = 'high' | 'normal' | 'bulk';
 export const MessageLane = {
@@ -525,8 +462,6 @@ export const MessageLane = {
  * Where an outbound message is: `queued` (accepted, may be held, see `hold_reason`), `leased` (a phone has it),
  * `sent`, `delivered`, `read`, `failed` (see `failure`), `expired`, `cancelled`. An inbound message is
  * `received`. A new value may appear.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<MessageStatus>`.
  */
 export type MessageStatus = 'queued' | 'leased' | 'sent' | 'delivered' | 'read' | 'failed' | 'expired' | 'cancelled' | 'received';
 export const MessageStatus = {
@@ -547,8 +482,6 @@ export const MessageStatus = {
  * the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused
  * (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing
  * approval (`link_restricted`) or a platform hold (`platform_hold`). A new value may appear.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<HoldReason>`.
  */
 export type HoldReason =
   | 'scheduled'
@@ -591,8 +524,6 @@ export const HoldReason = {
 /**
  * Who did it: a `user` in the portal, an `api_key`, a `partner_key`, an `automation` rule, a `campaign`, the
  * `system`, or a `device`. A new value may appear.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<ActorType>`.
  */
 export type ActorType = 'user' | 'api_key' | 'partner_key' | 'automation' | 'campaign' | 'system' | 'device' | 'admin';
 export const ActorType = {
@@ -606,14 +537,12 @@ export const ActorType = {
   Admin: 'admin',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<DeviceStatus>`. */
 export type DeviceStatus = 'active' | 'revoked';
 export const DeviceStatus = {
   Active: 'active',
   Revoked: 'revoked',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<DeviceConnectionState>`. */
 export type DeviceConnectionState = 'online' | 'degraded' | 'offline';
 export const DeviceConnectionState = {
   Online: 'online',
@@ -621,7 +550,6 @@ export const DeviceConnectionState = {
   Offline: 'offline',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<DevicePauseReason>`. */
 export type DevicePauseReason = 'owner' | 'admin' | 'account_suspended';
 export const DevicePauseReason = {
   Owner: 'owner',
@@ -629,14 +557,12 @@ export const DevicePauseReason = {
   AccountSuspended: 'account_suspended',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<DevicePowerMode>`. */
 export type DevicePowerMode = 'normal' | 'low';
 export const DevicePowerMode = {
   Normal: 'normal',
   Low: 'low',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<DeviceNetworkType>`. */
 export type DeviceNetworkType = 'wifi' | 'mobile' | 'ethernet' | 'none';
 export const DeviceNetworkType = {
   Wifi: 'wifi',
@@ -645,7 +571,6 @@ export const DeviceNetworkType = {
   None: 'none',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<DeviceSimServiceState>`. */
 export type DeviceSimServiceState = 'in_service' | 'out_of_service' | 'emergency_only' | 'power_off';
 export const DeviceSimServiceState = {
   InService: 'in_service',
@@ -654,7 +579,6 @@ export const DeviceSimServiceState = {
   PowerOff: 'power_off',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<DeviceRevokedReason>`. */
 export type DeviceRevokedReason = 'owner' | 'partner' | 'admin' | 'app_unpaired' | 'account_deleted';
 export const DeviceRevokedReason = {
   Owner: 'owner',
@@ -664,7 +588,6 @@ export const DeviceRevokedReason = {
   AccountDeleted: 'account_deleted',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ExportType>`. */
 export type ExportType = 'messages_csv' | 'contacts_csv' | 'campaign_report' | 'contact_json' | 'account_zip';
 export const ExportType = {
   MessagesCsv: 'messages_csv',
@@ -674,7 +597,6 @@ export const ExportType = {
   AccountZip: 'account_zip',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ExportStatus>`. */
 export type ExportStatus = 'queued' | 'running' | 'completed' | 'failed' | 'expired';
 export const ExportStatus = {
   Queued: 'queued',
@@ -684,7 +606,6 @@ export const ExportStatus = {
   Expired: 'expired',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ImportType>`. */
 export type ImportType = 'phone_history' | 'contacts_csv' | 'suppressions_csv';
 export const ImportType = {
   PhoneHistory: 'phone_history',
@@ -692,7 +613,6 @@ export const ImportType = {
   SuppressionsCsv: 'suppressions_csv',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ImportStatus>`. */
 export type ImportStatus =
   'uploaded' | 'mapping' | 'queued' | 'awaiting_device_confirmation' | 'running' | 'completed' | 'failed' | 'cancelled';
 export const ImportStatus = {
@@ -706,25 +626,19 @@ export const ImportStatus = {
   Cancelled: 'cancelled',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<InboxKind>`. */
 export type InboxKind = 'main' | 'integration';
 export const InboxKind = {
   Main: 'main',
   Integration: 'integration',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<SendBatchResultStatus>`. */
 export type SendBatchResultStatus = 'accepted' | 'rejected';
 export const SendBatchResultStatus = {
   Accepted: 'accepted',
   Rejected: 'rejected',
 } as const;
 
-/**
- * What happened to a message, as recorded in its history. A new value may appear.
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<MessageEventName>`.
- */
+/** What happened to a message, as recorded in its history. A new value may appear. */
 export type MessageEventName =
   | 'accepted'
   | 'held'
@@ -773,7 +687,6 @@ export const MessageEventName = {
   DeletedRemote: 'deleted_remote',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<PairingCodeStatus>`. */
 export type PairingCodeStatus = 'pending' | 'awaiting_confirmation' | 'consumed' | 'declined' | 'expired';
 export const PairingCodeStatus = {
   Pending: 'pending',
@@ -783,14 +696,12 @@ export const PairingCodeStatus = {
   Expired: 'expired',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<SmartListFilterMatch>`. */
 export type SmartListFilterMatch = 'all' | 'any';
 export const SmartListFilterMatch = {
   All: 'all',
   Any: 'any',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<StatsGroupBy>`. */
 export type StatsGroupBy = 'none' | 'channel' | 'inbox' | 'channel_type';
 export const StatsGroupBy = {
   None: 'none',
@@ -799,7 +710,6 @@ export const StatsGroupBy = {
   ChannelType: 'channel_type',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<SuppressionReason>`. */
 export type SuppressionReason = 'keyword' | 'manual' | 'import' | 'api' | 'complaint' | 'dnc' | 'invalid';
 export const SuppressionReason = {
   Keyword: 'keyword',
@@ -811,7 +721,6 @@ export const SuppressionReason = {
   Invalid: 'invalid',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<SuppressionCreateReason>`. */
 export type SuppressionCreateReason = 'api' | 'complaint' | 'dnc';
 export const SuppressionCreateReason = {
   Api: 'api',
@@ -819,28 +728,24 @@ export const SuppressionCreateReason = {
   Dnc: 'dnc',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<ConsentEventType>`. */
 export type ConsentEventType = 'opt_out' | 'opt_in';
 export const ConsentEventType = {
   OptOut: 'opt_out',
   OptIn: 'opt_in',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<TemplateCategory>`. */
 export type TemplateCategory = 'transactional' | 'marketing';
 export const TemplateCategory = {
   Transactional: 'transactional',
   Marketing: 'marketing',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<TemplateRenderEncoding>`. */
 export type TemplateRenderEncoding = 'gsm7' | 'ucs2';
 export const TemplateRenderEncoding = {
   Gsm7: 'gsm7',
   Ucs2: 'ucs2',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<WebhookDeliveryStatus>`. */
 export type WebhookDeliveryStatus = 'pending' | 'failed' | 'delivered' | 'dead';
 export const WebhookDeliveryStatus = {
   Pending: 'pending',
@@ -849,7 +754,6 @@ export const WebhookDeliveryStatus = {
   Dead: 'dead',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<WebhookDeliveriesBulkReplayStatus>`. */
 export type WebhookDeliveriesBulkReplayStatus = 'pending' | 'failed' | 'delivered' | 'dead';
 export const WebhookDeliveriesBulkReplayStatus = {
   Pending: 'pending',
@@ -858,7 +762,6 @@ export const WebhookDeliveriesBulkReplayStatus = {
   Dead: 'dead',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AccountStatus>`. */
 export type AccountStatus = 'active' | 'suspended' | 'pending_deletion';
 export const AccountStatus = {
   Active: 'active',
@@ -870,8 +773,6 @@ export const AccountStatus = {
  * Stable UPPER_SNAKE_CASE error code. Clients must tolerate codes added later. The list is generated from the
  * error catalogue and holds only the codes this API can return; each is described in the error reference
  * (`error.doc_url`).
- *
- * Answers may carry values added to the API after this SDK version: they are typed `Open<ErrorCode>`.
  */
 export type ErrorCode =
   | 'MALFORMED_REQUEST'
@@ -1061,7 +962,6 @@ export const ErrorCode = {
   ServiceUnavailable: 'SERVICE_UNAVAILABLE',
 } as const;
 
-/** Answers may carry values added to the API after this SDK version: they are typed `Open<AccountType>`. */
 export type AccountType = 'direct' | 'managed' | 'partner';
 export const AccountType = {
   Direct: 'direct',

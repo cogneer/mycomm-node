@@ -23,12 +23,10 @@ export class ConversationsResource {
   /**
    * Mark a conversation read.
    *
-   * Sets `unread_count` to 0 and stamps `read_at` on its unread inbound messages. Emits `conversation.read`.
-   * Requires `conversations:write`. A conversation outside the key's inbox scope answers 404.
+   * Sets `unread_count` to 0 and stamps `read_at` on its unread inbound messages.read`. Requires
+   * `conversations:write`. A conversation outside the key's inbox scope answers 404.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `markConversationRead`
    */
   read(id: string, options?: RequestOptions): Promise<WithMeta<Conversation>> {
     return this._connection.call('conversations.read', [id], undefined, options) as Promise<WithMeta<Conversation>>;
@@ -37,12 +35,10 @@ export class ConversationsResource {
   /**
    * Mark a conversation unread.
    *
-   * Sets `unread_count` to 1. Emits `conversation.unread`. Requires `conversations:write`. A conversation outside
-   * the key's inbox scope answers 404.
+   * Sets `unread_count` to 1.unread`. Requires `conversations:write`. A conversation outside the key's inbox scope
+   * answers 404.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `markConversationUnread`
    */
   unread(id: string, options?: RequestOptions): Promise<WithMeta<Conversation>> {
     return this._connection.call('conversations.unread', [id], undefined, options) as Promise<WithMeta<Conversation>>;
@@ -51,12 +47,10 @@ export class ConversationsResource {
   /**
    * Archive a conversation.
    *
-   * Sets `status` to `archived`; the next inbound message reopens it. Emits `conversation.archived`. Requires
-   * `conversations:write`. A conversation outside the key's inbox scope answers 404.
+   * Sets `status` to `archived`; the next inbound message reopens it.archived`. Requires `conversations:write`. A
+   * conversation outside the key's inbox scope answers 404.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `archiveConversation`
    */
   archive(id: string, options?: RequestOptions): Promise<WithMeta<Conversation>> {
     return this._connection.call('conversations.archive', [id], undefined, options) as Promise<WithMeta<Conversation>>;
@@ -65,12 +59,10 @@ export class ConversationsResource {
   /**
    * Unarchive a conversation.
    *
-   * Sets `status` back to `open`. Emits `conversation.unarchived`. Requires `conversations:write`. A conversation
-   * outside the key's inbox scope answers 404.
+   * Sets `status` back to `open`.unarchived`. Requires `conversations:write`. A conversation outside the key's
+   * inbox scope answers 404.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `unarchiveConversation`
    */
   unarchive(id: string, options?: RequestOptions): Promise<WithMeta<Conversation>> {
     return this._connection.call('conversations.unarchive', [id], undefined, options) as Promise<WithMeta<Conversation>>;
@@ -84,9 +76,7 @@ export class ConversationsResource {
    * shows the same `blocked_at`. Requires `conversations:write`. A conversation outside the key's inbox scope
    * answers 404.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `blockConversation`
    */
   block(id: string, options?: RequestOptions): Promise<WithMeta<Conversation>> {
     return this._connection.call('conversations.block', [id], undefined, options) as Promise<WithMeta<Conversation>>;
@@ -98,9 +88,7 @@ export class ConversationsResource {
    * Clears `blocked_at` of the conversation's contact identity, account-wide. Nothing is replayed. Requires
    * `conversations:write`. A conversation outside the key's inbox scope answers 404.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `unblockConversation`
    */
   unblock(id: string, options?: RequestOptions): Promise<WithMeta<Conversation>> {
     return this._connection.call('conversations.unblock', [id], undefined, options) as Promise<WithMeta<Conversation>>;
@@ -112,9 +100,7 @@ export class ConversationsResource {
    * Returns the conversation resource. Requires `conversations:read`. A conversation outside the key's inbox scope
    * answers 404.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getConversation`
    */
   show(id: string, options?: RequestOptions): Promise<WithMeta<Conversation>> {
     return this._connection.call('conversations.show', [id], undefined, options) as Promise<WithMeta<Conversation>>;
@@ -124,13 +110,10 @@ export class ConversationsResource {
    * Delete a conversation.
    *
    * Permanently deletes the conversation with its messages, their events, media and short links. Requires
-   * `conversations:write`. Queued outbound messages are cancelled first; the purge runs in the background and
-   * emits `conversation.deleted` when it is complete. Answers `202` at once; the conversation is no longer
+   * `conversations:write`.deleted` when it is complete. Answers `202` at once; the conversation is no longer
    * readable. A conversation outside the key's inbox scope answers 404.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `deleteConversation`
    */
   delete(id: string, options?: RequestOptions): Promise<WithMeta<ConversationsDeleteResponse>> {
     return this._connection.call('conversations.delete', [id], undefined, options) as Promise<
@@ -146,9 +129,7 @@ export class ConversationsResource {
    * messages is not listed. Comma lists match any of the values. `q` matches the contact name, address and last
    * message preview (case-insensitive, at least 2 characters).
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listConversations`
    */
   list(params?: ConversationsListParams, options?: RequestOptions): Promise<Page<Conversation>> {
     return this._connection.call('conversations.list', [], params, options) as Promise<Page<Conversation>>;
@@ -160,9 +141,6 @@ export class ConversationsResource {
    * `for await (const item of client.conversations.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(params?: Omit<ConversationsListParams, 'cursor'>, options?: RequestOptions): AsyncGenerator<Conversation> {
     return this._connection.all('conversations.list', [], params, options) as AsyncGenerator<Conversation>;
@@ -173,13 +151,9 @@ export class ConversationsResource {
    *
    * The messages of one conversation, newest first by default. Requires `conversations:read`. Both sort directions
    * use `COALESCE(phone_timestamp, created_at)`, so imported history keeps the time the phone recorded;
-   * `created_after` (inclusive) and `created_before` (exclusive) use the same time. Ties break on `id`. `q` is the
-   * full-text search on `body` of `GET /v1/messages` (at least 2 characters). A conversation outside the key's
-   * inbox scope answers 404.
+   * `created_after` (inclusive) and `created_before` (exclusive) use the same time.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listConversationMessages`
    */
   messages(id: string, params?: ConversationsMessagesParams, options?: RequestOptions): Promise<Page<Message>> {
     return this._connection.call('conversations.messages', [id], params, options) as Promise<Page<Message>>;
@@ -190,16 +164,9 @@ export class ConversationsResource {
    *
    * Sends a message in the thread. Requires `conversations:write` and `messages:send`. The body is the body of
    * `POST /v1/messages` without `to`, `contact_id`, `inbox_id`, `channel_id`, `from` and `channel_type`; the inbox
-   * and contact identity of the conversation are used. Sending one of those fields answers `422 VALIDATION_FAILED`
-   * with the field in `details.fields`.
+   * and contact identity of the conversation are used.fields`.
    *
-   * Everything else behaves as on `POST /v1/messages`: `202` with the message resource plus `warnings[]`,
-   * `dry_run`, `Idempotency-Key`, `reference_id` (`409 REFERENCE_ID_EXISTS`) and the `422` acceptance rejections
-   * of `POST /v1/messages`. A conversation outside the key's inbox scope answers 404.
-   *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `replyToConversation`
    */
   reply(
     id: string,
@@ -211,38 +178,15 @@ export class ConversationsResource {
    *
    * Sends a message in the thread. Requires `conversations:write` and `messages:send`. The body is the body of
    * `POST /v1/messages` without `to`, `contact_id`, `inbox_id`, `channel_id`, `from` and `channel_type`; the inbox
-   * and contact identity of the conversation are used. Sending one of those fields answers `422 VALIDATION_FAILED`
-   * with the field in `details.fields`.
+   * and contact identity of the conversation are used.fields`.
    *
-   * Everything else behaves as on `POST /v1/messages`: `202` with the message resource plus `warnings[]`,
-   * `dry_run`, `Idempotency-Key`, `reference_id` (`409 REFERENCE_ID_EXISTS`) and the `422` acceptance rejections
-   * of `POST /v1/messages`. A conversation outside the key's inbox scope answers 404.
-   *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `replyToConversation`
    */
   reply(
     id: string,
     params: ConversationsReplyParams & { dry_run: true },
     options?: RequestOptions,
   ): Promise<WithMeta<SendMessageDryRunResponse>>;
-  /**
-   * Reply in a conversation.
-   *
-   * Sends a message in the thread. Requires `conversations:write` and `messages:send`. The body is the body of
-   * `POST /v1/messages` without `to`, `contact_id`, `inbox_id`, `channel_id`, `from` and `channel_type`; the inbox
-   * and contact identity of the conversation are used. Sending one of those fields answers `422 VALIDATION_FAILED`
-   * with the field in `details.fields`.
-   *
-   * Everything else behaves as on `POST /v1/messages`: `202` with the message resource plus `warnings[]`,
-   * `dry_run`, `Idempotency-Key`, `reference_id` (`409 REFERENCE_ID_EXISTS`) and the `422` acceptance rejections
-   * of `POST /v1/messages`. A conversation outside the key's inbox scope answers 404.
-   *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
-   */
   reply(
     id: string,
     params?: ConversationsReplyParams,

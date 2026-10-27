@@ -17,12 +17,8 @@ export class ConnectSessionsResource {
    * Requires `channels:write`. Send your tenant's browser to `url` to connect a phone on MyComm's hosted page
    * without an API key in the browser. Works with an account key and with a partner key acting as a managed
    * account (`MyComm-Account`). `url` is returned only here and is a bearer credential: treat it like a password.
-   * At most 20 sessions are open per account (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are
-   * created per account per hour (`429 RATE_LIMITED`).
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `createConnectSession`
    */
   create(params?: ConnectSessionsCreateParams, options?: RequestOptions): Promise<WithMeta<ConnectSessionsCreateResponse>> {
     return this._connection.call('connectSessions.create', [], params, options) as Promise<
@@ -35,9 +31,7 @@ export class ConnectSessionsResource {
    *
    * Requires `channels:read`. The session without `url`; `status` reads `expired` once `expires_at` has passed.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getConnectSession`
    */
   get(id: string, options?: RequestOptions): Promise<WithMeta<ConnectSession>> {
     return this._connection.call('connectSessions.get', [id], undefined, options) as Promise<WithMeta<ConnectSession>>;
@@ -46,12 +40,9 @@ export class ConnectSessionsResource {
   /**
    * Revoke a connect session.
    *
-   * Requires `channels:write`. The link stops working at once, also for a page already open. Only an `open`
-   * session can be revoked; any other status is `409 INVALID_STATE` with `details.status`.
+   * Requires `channels:write`. The link stops working at once, also for a page already open.status`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `deleteConnectSession`
    */
   delete(id: string, options?: RequestOptions): Promise<void> {
     return this._connection.call('connectSessions.delete', [id], undefined, options) as Promise<void>;

@@ -26,9 +26,7 @@ export class WebhookEndpointsResource {
    * Requires `webhooks:write`. Secrets are never returned here. A restricted key sees only endpoints whose
    * `inbox_ids` is set and inside its scope.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listWebhookEndpoints`
    */
   list(params?: WebhookEndpointsListParams, options?: RequestOptions): Promise<Page<WebhookEndpoint>> {
     return this._connection.call('webhookEndpoints.list', [], params, options) as Promise<Page<WebhookEndpoint>>;
@@ -40,9 +38,6 @@ export class WebhookEndpointsResource {
    * `for await (const item of client.webhookEndpoints.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(params?: Omit<WebhookEndpointsListParams, 'cursor'>, options?: RequestOptions): AsyncGenerator<WebhookEndpoint> {
     return this._connection.all('webhookEndpoints.list', [], params, options) as AsyncGenerator<WebhookEndpoint>;
@@ -54,12 +49,9 @@ export class WebhookEndpointsResource {
    * Requires `webhooks:write`. The `url` must be `https`, carry no credentials and resolve only to public
    * addresses. `events` empty or omitted means every event except the opt-in ones. `inbox_ids` and `channel_types`
    * `null` mean all. At most 20 endpoints per account. A restricted key's endpoint defaults to (and must stay
-   * inside) its inboxes, takes the key's channel types and cannot include managed accounts. The `secret` is shown
-   * once, in this response.
+   * inside) its inboxes, takes the key's channel types and cannot include managed accounts.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `createWebhookEndpoint`
    */
   create(params: WebhookEndpointsCreateParams, options?: RequestOptions): Promise<WithMeta<CreatedWebhookEndpoint>> {
     return this._connection.call('webhookEndpoints.create', [], params, options) as Promise<WithMeta<CreatedWebhookEndpoint>>;
@@ -70,9 +62,7 @@ export class WebhookEndpointsResource {
    *
    * Requires `webhooks:write`. Never returns the secret. `404` outside a restricted key's scope.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getWebhookEndpoint`
    */
   get(id: string, options?: RequestOptions): Promise<WithMeta<WebhookEndpoint>> {
     return this._connection.call('webhookEndpoints.get', [id], undefined, options) as Promise<WithMeta<WebhookEndpoint>>;
@@ -84,9 +74,7 @@ export class WebhookEndpointsResource {
    * Requires `webhooks:write`. Only the fields sent change. `active: true` re-enables a disabled endpoint and
    * resets its failure counters. An endpoint with `include_managed_accounts` keeps `inbox_ids` `null`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `updateWebhookEndpoint`
    */
   update(id: string, params?: WebhookEndpointsUpdateParams, options?: RequestOptions): Promise<WithMeta<WebhookEndpoint>> {
     return this._connection.call('webhookEndpoints.update', [id], params, options) as Promise<WithMeta<WebhookEndpoint>>;
@@ -97,9 +85,7 @@ export class WebhookEndpointsResource {
    *
    * Requires `webhooks:write`. Pending deliveries are dropped.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `deleteWebhookEndpoint`
    */
   delete(id: string, options?: RequestOptions): Promise<void> {
     return this._connection.call('webhookEndpoints.delete', [id], undefined, options) as Promise<void>;
@@ -112,9 +98,7 @@ export class WebhookEndpointsResource {
    * `previous_secret_valid_seconds` (0 to 86400, default 86400); during the overlap every delivery carries both
    * signatures. Rotating again replaces the previous secret.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `rotateWebhookEndpointSecret`
    */
   rotateSecret(
     id: string,
@@ -132,9 +116,7 @@ export class WebhookEndpointsResource {
    * Requires `webhooks:write`. Sends a `ping` event now and waits up to 10 s for the answer. Works on disabled
    * endpoints; a failed ping is not retried.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `testWebhookEndpoint`
    */
   test(id: string, options?: RequestOptions): Promise<WithMeta<WebhookTestResult>> {
     return this._connection.call('webhookEndpoints.test', [id], undefined, options) as Promise<WithMeta<WebhookTestResult>>;

@@ -17,9 +17,7 @@ export class InboxesResource {
    * Requires `channels:read`. Archived inboxes are hidden unless `archived=true`. A key restricted to inboxes sees
    * only those.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listInboxes`
    */
   list(params?: InboxesListParams, options?: RequestOptions): Promise<Page<Inbox>> {
     return this._connection.call('inboxes.list', [], params, options) as Promise<Page<Inbox>>;
@@ -31,9 +29,6 @@ export class InboxesResource {
    * `for await (const item of client.inboxes.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(params?: Omit<InboxesListParams, 'cursor'>, options?: RequestOptions): AsyncGenerator<Inbox> {
     return this._connection.all('inboxes.list', [], params, options) as AsyncGenerator<Inbox>;
@@ -46,9 +41,7 @@ export class InboxesResource {
    * outside the key's scope; `409 NAME_TAKEN` `{field: "name"}` when the name is used on the channel
    * (case-insensitive).
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `createInbox`
    */
   create(params: InboxesCreateParams, options?: RequestOptions): Promise<WithMeta<Inbox>> {
     return this._connection.call('inboxes.create', [], params, options) as Promise<WithMeta<Inbox>>;
@@ -61,9 +54,7 @@ export class InboxesResource {
    * are refused (`INBOX_ARCHIVED`) and reply routing skips it. Keys restricted to it keep read access. Archiving
    * an archived inbox changes nothing.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `archiveInbox`
    */
   archive(id: string, options?: RequestOptions): Promise<WithMeta<Inbox>> {
     return this._connection.call('inboxes.archive', [id], undefined, options) as Promise<WithMeta<Inbox>>;
@@ -74,9 +65,7 @@ export class InboxesResource {
    *
    * Requires `channels:write`. Does nothing when the inbox is not archived.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `unarchiveInbox`
    */
   unarchive(id: string, options?: RequestOptions): Promise<WithMeta<Inbox>> {
     return this._connection.call('inboxes.unarchive', [id], undefined, options) as Promise<WithMeta<Inbox>>;
@@ -87,9 +76,7 @@ export class InboxesResource {
    *
    * Requires `channels:read`. `404` when the inbox is outside the key's scope.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getInbox`
    */
   get(id: string, options?: RequestOptions): Promise<WithMeta<Inbox>> {
     return this._connection.call('inboxes.get', [id], undefined, options) as Promise<WithMeta<Inbox>>;
@@ -101,9 +88,7 @@ export class InboxesResource {
    * Requires `channels:write`. `settings` keys are merged into the stored settings (a key set to `null` is
    * removed). `409 NAME_TAKEN` `{field: "name"}` when the name is used on the channel (case-insensitive).
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `updateInbox`
    */
   update(id: string, params?: InboxesUpdateParams, options?: RequestOptions): Promise<WithMeta<Inbox>> {
     return this._connection.call('inboxes.update', [id], params, options) as Promise<WithMeta<Inbox>>;

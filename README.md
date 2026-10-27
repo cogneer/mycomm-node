@@ -9,8 +9,8 @@ messages, manage contacts and conversations, receive webhooks, and (for partners
 - Lists you can `for await` over, across pages
 - Webhook signature verification and a type per event
 - A fake client for your own tests
-- No dependencies: built-in `fetch` and Web Crypto. Runs on Node.js 20+, Bun, Deno and edge runtimes; ES modules and
-  CommonJS
+- No dependencies: built-in `fetch` and Web Crypto. Runs on Node.js 20.19+, Bun, Deno and edge runtimes; an ES module that
+  CommonJS code loads with `require()` too; 105 kB to download, under 500 kB installed
 
 ## Install
 

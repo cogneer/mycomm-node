@@ -13,7 +13,7 @@ Every generated file starts with a comment that says so.
 
 ## Commands
 
-Node.js 22 (any version from 20 runs the SDK; the tooling wants 20 too).
+Node.js 22 (any version from 20.19 runs the SDK).
 
 ```bash
 npm ci
@@ -67,9 +67,10 @@ name drift apart, or when two operations of a resource would share a method name
 ## Before a release
 
 1. `npm run check`.
-2. Check the package as a user gets it: `npm pack`, install the tarball into an empty project with `typescript` and
-   `@types/node`, and compile an `.mts` file that imports `@mycomm/node` and `@mycomm/node/testing` and a `.cts` file that
-   does the same, with `"module": "NodeNext"`; run both.
+2. Check the package as a user gets it: `npm pack` (keep the unpacked size under 500 kB), install the tarball into an empty
+   project with `typescript` and `@types/node`, and compile an `.mts` file that imports `@mycomm/node` and
+   `@mycomm/node/testing` and a `.cts` file that does the same, with `"module": "NodeNext"`; run both, and a plain `.cjs`
+   file that calls `require('@mycomm/node')`.
 3. Run the SDK against a test account: send a dry run, list messages, create and delete a webhook endpoint, and verify a
    delivery signed by the backend's test action (`webhookEndpoints.test`).
 4. Bump `version` in `package.json` and `VERSION` in `src/core/version.ts` in the same commit, tag `vX.Y.Z`, and publish

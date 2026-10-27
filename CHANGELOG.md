@@ -28,4 +28,5 @@ contract. The same names and behaviour as `mycomm/mycomm-php` 1.0.1.
 - `client.verify()`: checks a key and, with a number, dry-runs a send. Sends nothing.
 - `toFile()` and `fileFromPath()` for uploads.
 - `@mycomm/node/testing`: `MyCommFake`, `FakeResponse` and `FakeWebhook`.
-- ES modules and CommonJS builds with type declarations; no runtime dependencies; Node.js 20+, Bun, Deno and edge runtimes.
+- An ES module with type declarations, which CommonJS code loads with `require()`; no runtime dependencies; Node.js 20.19+,
+  Bun, Deno and edge runtimes. 105 kB to download, under 500 kB installed.

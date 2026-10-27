@@ -16,8 +16,7 @@ export class ContactFieldsResource {
    *
    * Requires `contacts:read`. All definitions of the account ordered by `position`; not paginated.
    *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listContactFields`
    */
   list(options?: RequestOptions): Promise<Page<ContactField>> {
     return this._connection.call('contactFields.list', [], undefined, options) as Promise<Page<ContactField>>;
@@ -28,12 +27,9 @@ export class ContactFieldsResource {
    *
    * Requires `contacts:write`. `key` matches `^[a-z][a-z0-9_]{0,39}$` and is not reserved (`first_name`,
    * `last_name`, `full_name`, `email`, `phone`, `language`, `group`); `key` and `type` cannot change later.
-   * `options` is required for `select` and refused for other types. An account has at most 100 fields. `position`
-   * defaults to after the last field.
+   * `options` is required for `select` and refused for other types. An account has at most 100 fields.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `createContactField`
    */
   create(params: ContactFieldsCreateParams, options?: RequestOptions): Promise<WithMeta<ContactField>> {
     return this._connection.call('contactFields.create', [], params, options) as Promise<WithMeta<ContactField>>;
@@ -45,9 +41,7 @@ export class ContactFieldsResource {
    * Requires `contacts:write`. Changes `label`, `options` (select fields only) and `position`. Sending `key` or
    * `type` is refused with `422`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `updateContactField`
    */
   update(id: string, params?: ContactFieldsUpdateParams, options?: RequestOptions): Promise<WithMeta<ContactField>> {
     return this._connection.call('contactFields.update', [id], params, options) as Promise<WithMeta<ContactField>>;
@@ -56,13 +50,11 @@ export class ContactFieldsResource {
   /**
    * Delete a custom contact field.
    *
-   * Requires `contacts:write`. Removes the definition and its key from every contact. Refused with `409`
-   * `INVALID_STATE` and `details.used_by` (the users of the field, each `{type, id, name}`) while a smart-list
-   * filter references it; edit or delete those smart lists first.
+   * Requires `contacts:write`. Removes the definition and its key from every contact.used_by` (the users of the
+   * field, each `{type, id, name}`) while a smart-list filter references it; edit or delete those smart lists
+   * first.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `deleteContactField`
    */
   delete(id: string, options?: RequestOptions): Promise<void> {
     return this._connection.call('contactFields.delete', [id], undefined, options) as Promise<void>;

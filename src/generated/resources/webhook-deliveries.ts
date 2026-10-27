@@ -23,9 +23,7 @@ export class WebhookDeliveriesResource {
    * comma-separated for several), `event_type`, `event_id`, `created_after` (inclusive) and `created_before`
    * (exclusive). An endpoint outside the caller's scope answers `404 NOT_FOUND`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listWebhookDeliveries`
    */
   list(id: string, params?: WebhookDeliveriesListParams, options?: RequestOptions): Promise<Page<WebhookDelivery>> {
     return this._connection.call('webhookDeliveries.list', [id], params, options) as Promise<Page<WebhookDelivery>>;
@@ -37,9 +35,6 @@ export class WebhookDeliveriesResource {
    * `for await (const item of client.webhookDeliveries.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(
     id: string,
@@ -56,9 +51,7 @@ export class WebhookDeliveriesResource {
    * in `status` (default `dead`) created inside the optional window. Deliveries whose payload was removed after 30
    * days are skipped.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `replayWebhookDeliveries`
    */
   bulkReplay(
     id: string,
@@ -76,9 +69,7 @@ export class WebhookDeliveriesResource {
    * Requires `webhooks:write`. `payload` is the exact signed body (`null` after 30 days); `last_response_excerpt`
    * is the first 4 KB of the receiver's last response body.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getWebhookDelivery`
    */
   get(id: string, options?: RequestOptions): Promise<WithMeta<WebhookDelivery>> {
     return this._connection.call('webhookDeliveries.get', [id], undefined, options) as Promise<WithMeta<WebhookDelivery>>;
@@ -91,9 +82,7 @@ export class WebhookDeliveriesResource {
    * event `id`; status goes back to `pending` and attempts reset. `409 INVALID_STATE` when the payload was removed
    * after 30 days.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `replayWebhookDelivery`
    */
   replay(id: string, options?: RequestOptions): Promise<WithMeta<WebhookDelivery>> {
     return this._connection.call('webhookDeliveries.replay', [id], undefined, options) as Promise<WithMeta<WebhookDelivery>>;

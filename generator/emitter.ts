@@ -61,9 +61,8 @@ export class Emitter {
 
     for (const [name, definition] of Object.entries(enums)) {
       register(name, 'an enum');
+      // Answers type it `Open<Name>`, whose own doc says that newer values arrive as plain strings.
       const doc = docLines(definition.description);
-      if (doc.length > 0) doc.push('');
-      doc.push('Answers may carry values added to the API after this SDK version: they are typed `Open<' + name + '>`.');
       const used = new Set<string>();
       const cases = definition.values.map((value) => {
         let key = enumCase(value);
@@ -113,20 +112,19 @@ export class Emitter {
   }
 
   operations(operations: Operation[]): string {
-    let code = HEADER + "import type { OperationSpec } from '../core/operation.js';\n\n";
-    code += '/** Every operation of both APIs, keyed by its SDK method (`messages.send`). */\n';
-    code += 'export const OPERATIONS: Record<string, OperationSpec> = {\n';
+    // Compact JSON, parsed once at load: half the size of an object literal in the published files. `operation` is left out
+    // where it equals the key, which is every operation but the multipart variant of `imports.create`.
+    const table: Record<string, unknown> = {};
     for (const operation of operations) {
       const constraints: Record<string, unknown> = {};
       for (const [name, field] of Object.entries({ ...operation.fields, ...operation.query })) {
         const entry = { ...(field.required ? { required: true } : {}), ...field.constraints };
         if (Object.keys(entry).length > 0) constraints[name] = entry;
       }
-      const spec: Record<string, unknown> = {
-        operation: operation.id,
-        method: operation.http,
-        path: operation.path,
-      };
+      const spec: Record<string, unknown> = {};
+      if (operation.id !== methodPath(operation)) spec.operation = operation.id;
+      spec.method = operation.http;
+      spec.path = operation.path;
       if (operation.pathParams.length > 0) spec.pathParams = operation.pathParams;
       if (Object.keys(operation.query).length > 0) spec.query = Object.keys(operation.query);
       if (operation.format !== 'none') spec.format = operation.format;
@@ -139,9 +137,18 @@ export class Emitter {
       if (paginated(operation)) spec.paginated = true;
       if (Object.keys(constraints).length > 0) spec.constraints = constraints;
       if (operation.rules.length > 0) spec.rules = operation.rules;
-      code += `  ${JSON.stringify(methodPath(operation))}: ${JSON.stringify(spec)},\n`;
+      table[methodPath(operation)] = spec;
     }
-    return code + '};\n';
+    return (
+      HEADER +
+      "import type { OperationSpec } from '../core/operation.js';\n\n" +
+      '/** Every operation of both APIs, keyed by its SDK method (`messages.send`). */\n' +
+      'export const OPERATIONS: Record<string, OperationSpec> = Object.fromEntries(\n' +
+      `  Object.entries(JSON.parse(${JSON.stringify(JSON.stringify(table))}) as Record<string, Omit<OperationSpec, 'operation'> & { operation?: string }>).map(\n` +
+      '    ([key, spec]) => [key, { ...spec, operation: spec.operation ?? key }],\n' +
+      '  ),\n' +
+      ');\n'
+    );
   }
 
   /** One file per top-level resource, holding it and its nested resources. */
@@ -202,16 +209,12 @@ export class Emitter {
     if (operation.summary !== null) {
       doc.push(`${operation.summary.replace(/\.$/, '')}.`, '');
     }
-    doc.push(...docLines(operation.description));
+    // The first paragraph says what the call does; the rest (errors, edge cases) is in the API reference, which the @see names.
+    // Keeping all of it would double the size of the package.
+    doc.push(...docLines(lead(operation.description)));
     const tags: string[] = [];
     if (operation.deprecated) tags.push('@deprecated');
-    if (Object.keys(operation.fields).length + Object.keys(operation.query).length > 0 || operation.pathParams.length > 0) {
-      tags.push(
-        '@throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)',
-      );
-    }
-    tags.push('@throws {APIError} when the API answers with an error');
-    tags.push('@throws {ConnectionError} when the API cannot be reached');
+    tags.push(`@see ${REFERENCE}/${operation.spec} \`${operation.documentId}\``);
 
     const pathArgs = `[${operation.pathParams.join(', ')}]`;
     const paramsArg = params === null ? 'undefined' : 'params';
@@ -220,13 +223,13 @@ export class Emitter {
     let code = '';
     const dryRun = params === null ? null : this.dryRun(operation);
     if (dryRun !== null) {
-      // A dry run answers with a preview, a real call with the record: the overloads tell them apart by `dry_run`. Each
-      // carries the docs, since an editor shows those of the overload it picked.
+      // A dry run answers with a preview, a real call with the record: the overloads tell them apart by `dry_run`. The two an
+      // editor picks carry the docs.
       const head = (narrowed: string): string =>
         [...signature.slice(0, -2), `params: ${params} & ${narrowed}`, 'options?: RequestOptions'].join(', ');
       code += docs + `  ${operation.name}(${head('{ dry_run?: false }')}): Promise<${dryRun.real}>;\n`;
       code += docs + `  ${operation.name}(${head('{ dry_run: true }')}): Promise<${dryRun.preview}>;\n`;
-      code += docs + `  ${operation.name}(${signature.join(', ')}): Promise<${result}>;\n`;
+      code += `  ${operation.name}(${signature.join(', ')}): Promise<${result}>;\n`;
     } else {
       code += docs;
     }
@@ -250,7 +253,7 @@ export class Emitter {
           '',
           '`limit` is the page size, not a cap on the items.',
         ],
-        ['@throws {APIError} when the API answers with an error', '@throws {ConnectionError} when the API cannot be reached'],
+        [],
         '  ',
       );
       code += `  all(${allSignature.join(', ')}): AsyncGenerator<${item}> {\n`;
@@ -366,15 +369,74 @@ export class Emitter {
     return code + '  }\n}\n';
   }
 
+  /**
+   * The examples, packed: the same message or contact recurs in many answers, so each repeated object is kept once and
+   * referred to (`unpack()` in src/testing/unpack.ts restores them). A third of the size of the plain JSON.
+   */
   examples(responses: Record<string, { status: number; body: unknown }>, events: Record<string, unknown>): string {
+    const packed = pack({ responses, events });
     return (
       HEADER +
+      "import { unpack } from './unpack.js';\n\n" +
       '/**\n * A realistic answer for every operation and a payload for every webhook event, built from the API reference.\n' +
       ' * The testing fake answers with these.\n *\n * @internal\n */\n' +
-      `export const RESPONSES: Record<string, { status: number; body: unknown }> = ${JSON.stringify(responses, null, 2)};\n\n` +
-      `export const EVENTS: Record<string, Record<string, unknown>> = ${JSON.stringify(events, null, 2)};\n`
+      `export const { responses: RESPONSES, events: EVENTS } = unpack(${JSON.stringify(JSON.stringify(packed))}) as {\n` +
+      '  responses: Record<string, { status: number; body: unknown }>;\n' +
+      '  events: Record<string, Record<string, unknown>>;\n' +
+      '};\n'
     );
   }
+}
+
+const REFERENCE = 'https://mycomm.cogneer.tech/docs/api';
+
+/** The opening of a description: its first paragraph, cut after the sentence that passes 280 characters. */
+function lead(text: string | null): string {
+  const paragraph = (
+    (text ?? '')
+      .replaceAll('\r', '')
+      .trim()
+      .split(/\n\s*\n/)[0] ?? ''
+  ).replace(/\s+/g, ' ');
+  const sentences = paragraph.match(/[^.!?]+(?:[.!?]+(?=\s|$)|$)/g) ?? [paragraph];
+  let out = '';
+  for (const sentence of sentences) {
+    out += sentence;
+    if (out.length > 280) break;
+  }
+  return out.trim();
+}
+
+/**
+ * `{ table, root }`: every object or list whose JSON is longer than 80 characters and that occurs more than once is put in
+ * `table` once and replaced by `{ "$ref#": index }` wherever it occurs. The marker key cannot clash with a field of the API.
+ */
+export function pack(value: unknown): { table: unknown[]; root: unknown } {
+  const counts = new Map<string, number>();
+  const count = (node: unknown): void => {
+    if (node === null || typeof node !== 'object') return;
+    const json = JSON.stringify(node);
+    if (json.length > 80) counts.set(json, (counts.get(json) ?? 0) + 1);
+    Object.values(node).forEach(count);
+  };
+  count(value);
+
+  const table: unknown[] = [];
+  const index = new Map<string, number>();
+  const walk = (node: unknown): unknown => {
+    if (node === null || typeof node !== 'object') return node;
+    const json = JSON.stringify(node);
+    const shared = json.length > 80 && (counts.get(json) ?? 0) > 1;
+    if (shared && index.has(json)) return { '$ref#': index.get(json) };
+    const copy = Array.isArray(node)
+      ? node.map(walk)
+      : Object.fromEntries(Object.entries(node).map(([key, item]) => [key, walk(item)]));
+    if (!shared) return copy;
+    index.set(json, table.length);
+    table.push(copy);
+    return { '$ref#': table.length - 1 };
+  };
+  return { root: walk(value), table };
 }
 
 export function returns(operation: Operation): Returns {

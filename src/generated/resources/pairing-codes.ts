@@ -18,9 +18,7 @@ export class PairingCodesResource {
    * most 20 codes are pending and 60 are created per account per hour (`429 PAIRING_CODE_LIMIT_REACHED` with
    * `retry_after_seconds` and a `Retry-After` header). Render `qr_payload` as-is as a QR code.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `createPairingCode`
    */
   create(params?: PairingCodesCreateParams, options?: RequestOptions): Promise<WithMeta<PairingCode>> {
     return this._connection.call('pairingCodes.create', [], params, options) as Promise<WithMeta<PairingCode>>;
@@ -29,12 +27,9 @@ export class PairingCodesResource {
   /**
    * Get a pairing code.
    *
-   * Requires `channels:read`. Poll every 3 to 5 seconds while the QR is displayed, or wait for `device.paired`.
-   * `code` and `qr_payload` are `null` here because the code is stored hashed.
+   * Requires `channels:read`.paired`. `code` and `qr_payload` are `null` here because the code is stored hashed.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getPairingCode`
    */
   get(id: string, options?: RequestOptions): Promise<WithMeta<PairingCode>> {
     return this._connection.call('pairingCodes.get', [id], undefined, options) as Promise<WithMeta<PairingCode>>;
@@ -45,9 +40,7 @@ export class PairingCodesResource {
    *
    * Requires `channels:write`. Only a `pending` code can be invalidated; any other status is `409 INVALID_STATE`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `deletePairingCode`
    */
   delete(id: string, options?: RequestOptions): Promise<void> {
     return this._connection.call('pairingCodes.delete', [id], undefined, options) as Promise<void>;

@@ -31,9 +31,7 @@ export class SmartListsResource {
    * Requires `contacts:read`. Smart lists of the account sorted by `name` (default) with cursor pagination. `q`
    * matches the name, case-insensitively.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listSmartLists`
    */
   list(params?: SmartListsListParams, options?: RequestOptions): Promise<Page<SmartList>> {
     return this._connection.call('smartLists.list', [], params, options) as Promise<Page<SmartList>>;
@@ -45,9 +43,6 @@ export class SmartListsResource {
    * `for await (const item of client.smartLists.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(params?: Omit<SmartListsListParams, 'cursor'>, options?: RequestOptions): AsyncGenerator<SmartList> {
     return this._connection.all('smartLists.list', [], params, options) as AsyncGenerator<SmartList>;
@@ -56,13 +51,10 @@ export class SmartListsResource {
   /**
    * Create a smart list.
    *
-   * Requires `groups:write`. `filter` is the smart list filter language; a filter that breaks it answers `422
-   * FILTER_INVALID` with `details.pointer`, a JSON pointer to the bad node. The name is unique per account,
-   * ignoring case (`409 NAME_TAKEN`).
+   * Requires `groups:write`.pointer`, a JSON pointer to the bad node. The name is unique per account, ignoring
+   * case (`409 NAME_TAKEN`).
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `createSmartList`
    */
   create(params: SmartListsCreateParams, options?: RequestOptions): Promise<WithMeta<SmartList>> {
     return this._connection.call('smartLists.create', [], params, options) as Promise<WithMeta<SmartList>>;
@@ -75,9 +67,7 @@ export class SmartListsResource {
    * without saving anything; for filter-builder UIs. Contacts are evaluated on their primary phone identity. A
    * count that runs past its 5-second limit answers `503 SERVICE_UNAVAILABLE`; retry after `Retry-After` seconds.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `previewSmartList`
    */
   preview(params: SmartListsPreviewParams, options?: RequestOptions): Promise<WithMeta<SmartListPreview>> {
     return this._connection.call('smartLists.preview', [], params, options) as Promise<WithMeta<SmartListPreview>>;
@@ -88,9 +78,7 @@ export class SmartListsResource {
    *
    * Requires `contacts:read`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getSmartList`
    */
   show(id: string, options?: RequestOptions): Promise<WithMeta<SmartList>> {
     return this._connection.call('smartLists.show', [id], undefined, options) as Promise<WithMeta<SmartList>>;
@@ -102,9 +90,7 @@ export class SmartListsResource {
    * Requires `groups:write`. Changes `name` and `filter`; an invalid filter answers `422 FILTER_INVALID` and a
    * duplicate name `409 NAME_TAKEN`. Any change starts a fresh count.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `updateSmartList`
    */
   update(id: string, params?: SmartListsUpdateParams, options?: RequestOptions): Promise<WithMeta<SmartList>> {
     return this._connection.call('smartLists.update', [id], params, options) as Promise<WithMeta<SmartList>>;
@@ -113,12 +99,10 @@ export class SmartListsResource {
   /**
    * Delete a smart list.
    *
-   * Requires `groups:write`. Refused with `409 INVALID_STATE` and `details.used_by` (each `{type, id, name}`)
-   * while an unfinished campaign (draft, scheduled, running or paused) targets the list.
+   * Requires `groups:write`.used_by` (each `{type, id, name}`) while an unfinished campaign (draft, scheduled,
+   * running or paused) targets the list.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `deleteSmartList`
    */
   delete(id: string, options?: RequestOptions): Promise<void> {
     return this._connection.call('smartLists.delete', [id], undefined, options) as Promise<void>;
@@ -131,9 +115,7 @@ export class SmartListsResource {
    * start or stop matching show within 10 minutes, while a change to the list is counted at once. A count that
    * runs past its 5-second limit answers `503 SERVICE_UNAVAILABLE`; retry after `Retry-After` seconds.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `countSmartListMembers`
    */
   count(id: string, options?: RequestOptions): Promise<WithMeta<SmartListsCountResponse>> {
     return this._connection.call('smartLists.count', [id], undefined, options) as Promise<WithMeta<SmartListsCountResponse>>;
@@ -152,9 +134,7 @@ export class SmartListsMembersResource {
    * sorts and resource of `GET /v1/contacts`. A saved filter that no longer validates (for example a group it
    * names was deleted) answers `422 FILTER_INVALID` until the list is edited.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listSmartListMembers`
    */
   list(id: string, params?: SmartListsMembersListParams, options?: RequestOptions): Promise<Page<Contact>> {
     return this._connection.call('smartLists.members.list', [id], params, options) as Promise<Page<Contact>>;
@@ -166,9 +146,6 @@ export class SmartListsMembersResource {
    * `for await (const item of client.smartLists.members.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(id: string, params?: Omit<SmartListsMembersListParams, 'cursor'>, options?: RequestOptions): AsyncGenerator<Contact> {
     return this._connection.all('smartLists.members.list', [id], params, options) as AsyncGenerator<Contact>;

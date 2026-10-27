@@ -19,9 +19,7 @@ export class ExportsResource {
    * even for a `completed` export. Fetch the export with `GET /v1/exports/{id}` to get a `url` signed for 15
    * minutes.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `listExports`
    */
   list(params?: ExportsListParams, options?: RequestOptions): Promise<Page<Export>> {
     return this._connection.call('exports.list', [], params, options) as Promise<Page<Export>>;
@@ -33,9 +31,6 @@ export class ExportsResource {
    * `for await (const item of client.exports.all()) { ... }`
    *
    * `limit` is the page size, not a cap on the items.
-   *
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
    */
   all(params?: Omit<ExportsListParams, 'cursor'>, options?: RequestOptions): AsyncGenerator<Export> {
     return this._connection.all('exports.list', [], params, options) as AsyncGenerator<Export>;
@@ -47,14 +42,9 @@ export class ExportsResource {
    * The required ability depends on `type`: `messages_csv` needs `reports:read`, `contacts_csv` and `contact_json`
    * need `contacts:read`, `campaign_report` needs `campaigns:read`, `account_zip` needs `account:write`.
    * `messages_csv` takes the `GET /v1/messages` filters as `params`; `created_after` and `created_before` are
-   * required and at most 366 days apart. A key restricted to inboxes exports only its inboxes. The export is built
-   * asynchronously: poll `GET /v1/exports/{id}` or wait for the `export.completed` webhook.
+   * required and at most 366 days apart.
    *
-   * Errors: `422 VALIDATION_FAILED` (unknown `type` or invalid `params`), `403 ABILITY_MISSING`.
-   *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `createExport`
    */
   create(params: ExportsCreateParams, options?: RequestOptions): Promise<WithMeta<Export>> {
     return this._connection.call('exports.create', [], params, options) as Promise<WithMeta<Export>>;
@@ -66,9 +56,7 @@ export class ExportsResource {
    * Requires the ability of the export's type. A `completed` export carries a `url` signed for 15 minutes,
    * refreshed on every call; the URL is a secret. An export of another account answers `404 NOT_FOUND`.
    *
-   * @throws {InvalidArgumentError} when an argument breaks a rule the API documents; nothing is sent (client option `validate`)
-   * @throws {APIError} when the API answers with an error
-   * @throws {ConnectionError} when the API cannot be reached
+   * @see https://mycomm.cogneer.tech/docs/api/public `getExport`
    */
   get(id: string, options?: RequestOptions): Promise<WithMeta<Export>> {
     return this._connection.call('exports.get', [id], undefined, options) as Promise<WithMeta<Export>>;

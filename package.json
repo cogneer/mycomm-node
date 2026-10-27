@@ -22,31 +22,18 @@
   ],
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.19"
   },
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      }
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./testing": {
-      "import": {
-        "types": "./dist/esm/testing/index.d.ts",
-        "default": "./dist/esm/testing/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/testing/index.d.ts",
-        "default": "./dist/cjs/testing/index.js"
-      }
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -70,6 +57,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
+    "esbuild": "^0.28.2",
     "prettier": "^3.9.10",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
