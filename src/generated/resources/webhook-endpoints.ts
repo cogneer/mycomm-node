@@ -24,7 +24,7 @@ export class WebhookEndpointsResource {
    * List webhook endpoints.
    *
    * Requires `webhooks:write`. Secrets are never returned here. A restricted key sees only endpoints whose
-   * `inbox_ids` is set and inside its scope.
+   * `line_ids` is set and inside its scope.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listWebhookEndpoints`
    */
@@ -47,9 +47,9 @@ export class WebhookEndpointsResource {
    * Create a webhook endpoint.
    *
    * Requires `webhooks:write`. The `url` must be `https`, carry no credentials and resolve only to public
-   * addresses. `events` empty or omitted means every event except the opt-in ones. `inbox_ids` and `channel_types`
+   * addresses. `events` empty or omitted means every event except the opt-in ones. `line_ids` and `channel_types`
    * `null` mean all. At most 20 endpoints per account. A restricted key's endpoint defaults to (and must stay
-   * inside) its inboxes, takes the key's channel types and cannot include managed accounts.
+   * inside) its lines, takes the key's channel types and cannot include managed accounts.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createWebhookEndpoint`
    */
@@ -72,7 +72,7 @@ export class WebhookEndpointsResource {
    * Update a webhook endpoint.
    *
    * Requires `webhooks:write`. Only the fields sent change. `active: true` re-enables a disabled endpoint and
-   * resets its failure counters. An endpoint with `include_managed_accounts` keeps `inbox_ids` `null`.
+   * resets its failure counters. An endpoint with `include_managed_accounts` keeps `line_ids` `null`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `updateWebhookEndpoint`
    */

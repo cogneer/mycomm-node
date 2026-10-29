@@ -43,7 +43,7 @@ export class CampaignsResource {
    *
    * Requires `campaigns:read`. Campaigns of the account, newest first (`sort=-created_at`, the only sort), with
    * cursor pagination. An item carries no `audience.addresses`; read the campaign for them. A key limited to some
-   * inboxes never holds `campaigns:read` and answers `403 ABILITY_MISSING`.
+   * lines never holds `campaigns:read` and answers `403 ABILITY_MISSING`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listCampaigns`
    */
@@ -201,7 +201,7 @@ export class CampaignsRecipientsResource {
    *
    * Requires `campaigns:read`. The per-recipient results of a campaign, oldest first (`sort=created_at`), with
    * cursor pagination. Each filter takes one value. A campaign of another account answers `404`. A key limited to
-   * some inboxes never holds `campaigns:read` and answers `403 ABILITY_MISSING`.
+   * some lines never holds `campaigns:read` and answers `403 ABILITY_MISSING`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listCampaignRecipients`
    */

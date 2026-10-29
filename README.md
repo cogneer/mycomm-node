@@ -18,6 +18,9 @@ messages, manage contacts and conversations, receive webhooks, and (for partners
 npm install @mycomm/node
 ```
 
+Release status: `1.0.x` is published on npm. `2.0.0` (lines replace inboxes, a breaking release) is not published yet;
+until it is, `npm install @mycomm/node` installs `1.0.x`.
+
 ## Quick start
 
 ```ts
@@ -37,6 +40,10 @@ message.status; // "queued"
 Create the key in the MyComm portal under **Developers → API keys**. Keep it on your server: the SDK refuses to run in a
 browser, where anyone could read the key. To let your users pair their own phone from your page, create a connect session
 on your server and show it with [`@mycomm/connect`](https://www.npmjs.com/package/@mycomm/connect).
+
+The example uses a key limited to one **line** (a sending identity whose senders are your connected channels), so the call
+names no sender: MyComm picks the line's healthy sender. A key that reaches several lines adds `line_id`; `channel_id` or
+`from` pin one channel.
 
 `new MyComm()` without `apiKey` reads `MYCOMM_API_KEY` (and `MYCOMM_BASE_URL`) from the environment.
 
@@ -153,7 +160,7 @@ Values the API may add later (the enum of a response, an unknown error code) are
 accepted. It sends nothing: the second check is a dry run.
 
 ```ts
-const result = await mycomm.verify({ to: '+923001234567' }); // add inboxId when the key can use several
+const result = await mycomm.verify({ to: '+923001234567' }); // add lineId when the key can use several lines
 
 if (!result.ok) {
   for (const problem of result.problems) {

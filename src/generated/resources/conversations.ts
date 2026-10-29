@@ -7,6 +7,7 @@ import type { RequestOptions } from '../../core/request-options.js';
 import type {
   Conversation,
   ConversationsDeleteResponse,
+  ConversationsHandoverParams,
   ConversationsListParams,
   ConversationsMessagesParams,
   ConversationsReplyParams,
@@ -24,7 +25,7 @@ export class ConversationsResource {
    * Mark a conversation read.
    *
    * Sets `unread_count` to 0 and stamps `read_at` on its unread inbound messages. Emits `conversation.read`.
-   * Requires `conversations:write`. A conversation outside the key's inbox scope answers 404.
+   * Requires `conversations:write`. A conversation outside the key's line scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `markConversationRead`
    */
@@ -36,7 +37,7 @@ export class ConversationsResource {
    * Mark a conversation unread.
    *
    * Sets `unread_count` to 1. Emits `conversation.unread`. Requires `conversations:write`. A conversation outside
-   * the key's inbox scope answers 404.
+   * the key's line scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `markConversationUnread`
    */
@@ -48,7 +49,7 @@ export class ConversationsResource {
    * Archive a conversation.
    *
    * Sets `status` to `archived`; the next inbound message reopens it. Emits `conversation.archived`. Requires
-   * `conversations:write`. A conversation outside the key's inbox scope answers 404.
+   * `conversations:write`. A conversation outside the key's line scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `archiveConversation`
    */
@@ -60,7 +61,7 @@ export class ConversationsResource {
    * Unarchive a conversation.
    *
    * Sets `status` back to `open`. Emits `conversation.unarchived`. Requires `conversations:write`. A conversation
-   * outside the key's inbox scope answers 404.
+   * outside the key's line scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unarchiveConversation`
    */
@@ -71,9 +72,9 @@ export class ConversationsResource {
   /**
    * Block the conversation's contact identity.
    *
-   * Convenience route: blocks the conversation's contact identity account-wide (every inbox and channel), exactly
+   * Convenience route: blocks the conversation's contact identity account-wide (every line and channel), exactly
    * like `POST /v1/contacts/{id}/identities/{identity_id}/block`. Idempotent. Every conversation of that identity
-   * shows the same `blocked_at`. Requires `conversations:write`. A conversation outside the key's inbox scope
+   * shows the same `blocked_at`. Requires `conversations:write`. A conversation outside the key's line scope
    * answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `blockConversation`
@@ -86,7 +87,7 @@ export class ConversationsResource {
    * Unblock the conversation's contact identity.
    *
    * Clears `blocked_at` of the conversation's contact identity, account-wide. Nothing is replayed. Requires
-   * `conversations:write`. A conversation outside the key's inbox scope answers 404.
+   * `conversations:write`. A conversation outside the key's line scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unblockConversation`
    */
@@ -95,9 +96,22 @@ export class ConversationsResource {
   }
 
   /**
+   * Hand a conversation over to another line.
+   *
+   * Moves the conversation and its messages to another line of the account; the contact's next replies land on
+   * that line, also when it does not send through the conversation's channel. When the target line already has a
+   * conversation with the same contact, the two merge into it and the answer is that conversation.
+   *
+   * @see https://mycomm.cogneer.tech/docs/api/public `handOverConversation`
+   */
+  handover(id: string, params: ConversationsHandoverParams, options?: RequestOptions): Promise<WithMeta<Conversation>> {
+    return this._connection.call('conversations.handover', [id], params, options) as Promise<WithMeta<Conversation>>;
+  }
+
+  /**
    * Retrieve a conversation.
    *
-   * Returns the conversation resource. Requires `conversations:read`. A conversation outside the key's inbox scope
+   * Returns the conversation resource. Requires `conversations:read`. A conversation outside the key's line scope
    * answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getConversation`
@@ -126,7 +140,7 @@ export class ConversationsResource {
    * List conversations.
    *
    * Conversations of the account, newest `last_message_at` first, with cursor pagination. Requires
-   * `conversations:read`. A restricted key lists only the conversations of its inboxes. A conversation without
+   * `conversations:read`. A restricted key lists only the conversations of its lines. A conversation without
    * messages is not listed. Comma lists match any of the values. `q` matches the contact name, address and last
    * message preview (case-insensitive, at least 2 characters).
    *
@@ -164,9 +178,9 @@ export class ConversationsResource {
    * Reply in a conversation.
    *
    * Sends a message in the thread. Requires `conversations:write` and `messages:send`. The body is the body of
-   * `POST /v1/messages` without `to`, `contact_id`, `inbox_id`, `channel_id`, `from` and `channel_type`; the inbox
-   * and contact identity of the conversation are used. Sending one of those fields answers `422 VALIDATION_FAILED`
-   * with the field in `details.fields`.
+   * `POST /v1/messages` without `to`, `contact_id`, `line_id`, `channel_id`, `from` and `channel_type`; the line
+   * and contact identity of the conversation are used, and the reply goes out through the conversation's channel
+   * while it is a healthy sender of the line (else the line's next healthy sender).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `replyToConversation`
    */
@@ -179,9 +193,9 @@ export class ConversationsResource {
    * Reply in a conversation.
    *
    * Sends a message in the thread. Requires `conversations:write` and `messages:send`. The body is the body of
-   * `POST /v1/messages` without `to`, `contact_id`, `inbox_id`, `channel_id`, `from` and `channel_type`; the inbox
-   * and contact identity of the conversation are used. Sending one of those fields answers `422 VALIDATION_FAILED`
-   * with the field in `details.fields`.
+   * `POST /v1/messages` without `to`, `contact_id`, `line_id`, `channel_id`, `from` and `channel_type`; the line
+   * and contact identity of the conversation are used, and the reply goes out through the conversation's channel
+   * while it is a healthy sender of the line (else the line's next healthy sender).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `replyToConversation`
    */

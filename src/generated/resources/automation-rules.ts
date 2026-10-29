@@ -20,12 +20,12 @@ export class AutomationRulesResource {
   constructor(private readonly _connection: Connection) {}
 
   /**
-   * List the automation rules of an inbox.
+   * List the automation rules of a line.
    *
-   * Requires `automation:read`. All rules of the inbox ordered by `position`, not paginated: the away message
-   * first (position 0), then the keyword rules from 1; rules are evaluated by ascending position and the first
-   * matching keyword rule wins. A key restricted to inboxes reads only its own inboxes; another inbox, or one of
-   * another account, is `404`.
+   * Requires `automation:read`. All rules of the line ordered by `position`, not paginated: the away message first
+   * (position 0), then the keyword rules from 1; rules are evaluated by ascending position and the first matching
+   * keyword rule wins. A key restricted to lines reads only its own lines; another line, or one of another
+   * account, is `404`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listAutomationRules`
    */
@@ -36,10 +36,9 @@ export class AutomationRulesResource {
   /**
    * Create an automation rule.
    *
-   * Requires `automation:write`, which a key restricted to inboxes never holds (`403 ABILITY_MISSING`). A keyword
-   * rule goes to the end of the inbox's keyword rules unless `position` (1 to the number of keyword rules plus
-   * one) says otherwise; an `away` rule has no `match`, sits at position 0 and fires outside the inbox's business
-   * hours.
+   * Requires `automation:write`, which a key restricted to lines never holds (`403 ABILITY_MISSING`). A keyword
+   * rule goes to the end of the line's keyword rules unless `position` (1 to the number of keyword rules plus one)
+   * says otherwise; an `away` rule has no `match`, sits at position 0 and fires outside the line's business hours.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createAutomationRule`
    */
@@ -48,11 +47,11 @@ export class AutomationRulesResource {
   }
 
   /**
-   * Reorder the keyword rules of an inbox.
+   * Reorder the keyword rules of a line.
    *
-   * Requires `automation:write`. `rule_ids` names every keyword rule of the inbox exactly once, in the new order
+   * Requires `automation:write`. `rule_ids` names every keyword rule of the line exactly once, in the new order
    * (the away rule is not part of it); positions become 1 to n. A missing, repeated, unknown or foreign id is `422
-   * VALIDATION_FAILED` and nothing changes. Answers with all rules of the inbox ordered by position.
+   * VALIDATION_FAILED` and nothing changes. Answers with all rules of the line ordered by position.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `reorderAutomationRules`
    */
@@ -63,7 +62,7 @@ export class AutomationRulesResource {
   /**
    * Get an automation rule.
    *
-   * Requires `automation:read`. `404` for a rule of another inbox or account and for an inbox outside the key's
+   * Requires `automation:read`. `404` for a rule of another line or account and for a line outside the key's
    * scope.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getAutomationRule`
@@ -75,9 +74,9 @@ export class AutomationRulesResource {
   /**
    * Update an automation rule.
    *
-   * Requires `automation:write`. Only the fields sent change; any field except `type` and `inbox_id`, which are
+   * Requires `automation:write`. Only the fields sent change; any field except `type` and `line_id`, which are
    * `422 VALIDATION_FAILED` when sent, even with their current value. A `position` moves a keyword rule among the
-   * keyword rules of its inbox. The errors of the create call apply to the fields sent.
+   * keyword rules of its line. The errors of the create call apply to the fields sent.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `updateAutomationRule`
    */
@@ -103,12 +102,12 @@ export class AutomationRulesResource {
   }
 
   /**
-   * Test a message against the automation of an inbox.
+   * Test a message against the automation of a line.
    *
-   * Requires `automation:read`. A dry run: the inbox's rules and guards decide what an inbound message with this
+   * Requires `automation:read`. A dry run: the line's rules and guards decide what an inbound message with this
    * `body` would do, and nothing is sent, written or logged. `at` (default now) is the instant used for business
    * hours and the guard windows. With `contact_id` the per-conversation guards (loop guard, cooldown) read that
-   * contact's conversation in the inbox; without it only the channel cap applies.
+   * contact's conversation in the line; without it only the channel cap applies.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `testAutomationRule`
    */

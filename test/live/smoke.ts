@@ -73,13 +73,13 @@ const account = await step('account.get and verify()', async () => {
 });
 void account;
 
-const inboxes = await step('inboxes.list and channels.list', async () => {
-  const page = await mycomm.inboxes.list({ limit: 10 });
+const lines = await step('lines.list and channels.list', async () => {
+  const page = await mycomm.lines.list({ limit: 10 });
   await mycomm.channels.list();
   await mycomm.channels.types();
   return page.data;
 });
-const inbox = inboxes?.[0];
+const line = lines?.[0];
 
 const contacts: Contact[] = [];
 await step('contacts.create, show, update (clear with null)', async () => {
@@ -135,7 +135,7 @@ await step('groups.create, members.add, members.list, delete', async () => {
 
 await step('messages.send dry run and messages.list', async () => {
   const preview = await mycomm.messages.send({
-    inbox_id: inbox?.id,
+    line_id: line?.id,
     to: phone(4),
     body: 'Node SDK live check',
     category: 'transactional',
@@ -149,7 +149,7 @@ await step('messages.send dry run and messages.list', async () => {
 await step('messages.sendBatch dry run', async () => {
   const batch = await mycomm.messages.sendBatch({
     dry_run: true,
-    defaults: { category: 'transactional', inbox_id: inbox?.id },
+    defaults: { category: 'transactional', line_id: line?.id },
     messages: [
       { to: phone(5), body: 'One' },
       { to: 'not a number', body: 'Two' },

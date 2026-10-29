@@ -18,11 +18,15 @@ import type {
   WebhookContactUpdatedData,
   WebhookConversationData,
   WebhookConversationDeletedData,
+  WebhookConversationHandedOverData,
   WebhookDevicePairedData,
   WebhookDeviceRevokedData,
   WebhookDeviceStateData,
   WebhookExportData,
   WebhookImportData,
+  WebhookLineFailoverData,
+  WebhookLineNoSenderData,
+  WebhookLineSenderChangedData,
   WebhookLinkClickedData,
   WebhookMessageCancelledData,
   WebhookMessageData,
@@ -48,7 +52,7 @@ export interface WebhookEventBase {
   account_id: string;
   /** The managed account's `external_ref`; `null` for direct accounts. */
   account_external_ref: string | null;
-  inbox_id: string | null;
+  line_id: string | null;
   channel: WebhookChannelRef | null;
 }
 
@@ -169,7 +173,50 @@ export interface ExportCompletedEvent extends WebhookEventBase {
 }
 
 /**
- * `link.clicked`: A person clicked a short link; bot and link-preview clicks emit nothing. `inbox_id` and
+ * `line.sender_changed`: The sender list of a line changed: senders were set or reordered, a newly verified
+ * number joined the Direct line, or a disconnected number left every line. `data.senders` is the whole list
+ * after the change, in position order (0 first).
+ */
+export interface LineSenderChangedEvent extends WebhookEventBase {
+  type: 'line.sender_changed';
+  data: WebhookLineSenderChangedData;
+}
+
+/**
+ * `line.failover`: Queued messages of a line moved from one sender to another because the first could not send:
+ * it left the line, was disconnected, stayed unhealthy longer than the lane allows (high 2 min, normal 15 min,
+ * bulk 60 min), reported a sender fault, or the messages were waiting for any sender. One event per line, sender
+ * pair and sweep; `message_ids` lists at most 100 of the `message_count` messages. Messages sent with a named
+ * `channel_id` or `from` never move.
+ */
+export interface LineFailoverEvent extends WebhookEventBase {
+  type: 'line.failover';
+  data: WebhookLineFailoverData;
+}
+
+/**
+ * `line.no_sender`: No sender of the line can send: messages wait with `hold_reason` `no_sender_available` and
+ * move to the first sender that can again. Sent once when the line loses its last healthy sender, not again
+ * until one came back.
+ */
+export interface LineNoSenderEvent extends WebhookEventBase {
+  type: 'line.no_sender';
+  data: WebhookLineNoSenderData;
+}
+
+/**
+ * `conversation.handed_over`: The conversation moved to another line (`POST /v1/conversations/{id}/handover`)
+ * with its messages; the contact's next replies land on `to_line_id`. The envelope `line_id` is the target line.
+ * When the target already had a conversation with the contact the two merged, and `conversation_id` is that
+ * conversation.
+ */
+export interface ConversationHandedOverEvent extends WebhookEventBase {
+  type: 'conversation.handed_over';
+  data: WebhookConversationHandedOverData;
+}
+
+/**
+ * `link.clicked`: A person clicked a short link; bot and link-preview clicks emit nothing. `line_id` and
  * `channel` are those of the message that carried the link. The data carries no IP address or user agent.
  * `slug`, `target_url`, `contact_id` and `click_count` are `null` when the link no longer exists (its message
  * was deleted or its contact erased).
@@ -425,6 +472,10 @@ export type WebhookEvent =
   | ImportCompletedEvent
   | ImportFailedEvent
   | ExportCompletedEvent
+  | LineSenderChangedEvent
+  | LineFailoverEvent
+  | LineNoSenderEvent
+  | ConversationHandedOverEvent
   | LinkClickedEvent
   | ChannelConnectedEvent
   | ChannelVerificationFailedEvent
@@ -476,6 +527,10 @@ export const EVENT_TYPES: readonly WebhookEventType[] = [
   'import.completed',
   'import.failed',
   'export.completed',
+  'line.sender_changed',
+  'line.failover',
+  'line.no_sender',
+  'conversation.handed_over',
   'link.clicked',
   'channel.connected',
   'channel.verification_failed',

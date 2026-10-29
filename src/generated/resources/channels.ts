@@ -36,7 +36,7 @@ export class ChannelsResource {
   /**
    * Update the settings of a channel.
    *
-   * Requires `channels:write`; a key restricted to inboxes never holds it. Changes only the keys sent.
+   * Requires `channels:write`; a key restricted to lines never holds it. Changes only the keys sent.
    * `allowed_destination_countries` is `null` (the channel's own country only, the default) or a list of ISO
    * 3166-1 alpha-2 codes that must contain the channel's own country, else `422 VALIDATION_FAILED`; codes are
    * stored upper case.
@@ -80,7 +80,7 @@ export class ChannelsResource {
    * Disconnect a channel.
    *
    * Requires `channels:write`. → `disconnected` with `disconnect_reason: owner`; the number is released for use
-   * elsewhere, queued outbound messages fail with `CHANNEL_DISCONNECTED`, inboxes and history stay readable and
+   * elsewhere, queued outbound messages fail with `CHANNEL_DISCONNECTED`, lines and history stay readable and
    * sends get `CHANNEL_INACTIVE`. Emits `channel.disconnected`. A `pending_verification` channel that never
    * connected is deleted instead (`204`).
    *
@@ -128,7 +128,7 @@ export class ChannelsResource {
    *
    * Requires `channels:read`. Every channel of the account whatever its status, oldest first, unless a filter
    * narrows the list. `health_band` filters on the stored SIM safety band, so a number that was never evaluated
-   * matches no band. A key restricted to inboxes sees only the channels of those inboxes.
+   * matches no band. A key restricted to lines sees only the channels of those lines.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listChannels`
    */
@@ -175,7 +175,7 @@ export class ChannelsResource {
   /**
    * Update the rate policy of a channel.
    *
-   * Requires `channels:write`; a key restricted to inboxes never holds it. Sent keys are merged into the current
+   * Requires `channels:write`; a key restricted to lines never holds it. Sent keys are merged into the current
    * policy (nested objects key by key; a key sent as `null` clears it where the field allows `null`) and
    * `rate_policy_source` becomes `custom`. `{"reset_to_suggested": true}` restores the suggestion
    * (`rate_policy_source: suggested`) and clears the acknowledgement; it cannot be combined with policy fields.

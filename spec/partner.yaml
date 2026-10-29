@@ -2,7 +2,7 @@
 openapi: 3.1.0
 info:
   title: 'MyComm Partner API'
-  version: 1.0.0
+  version: 2.0.0
   description: "For platforms that run MyComm for their own customers. Authenticate with a partner key (`mc_partner_...`) sent as\n`Authorization: Bearer <key>`.\n\n`/partner/v1` only creates, lists, changes, suspends and deletes managed accounts, mints their keys\nand reports usage across them. Everything a managed customer does goes through `/v1`\nwith the partner key plus the `MyComm-Account` header, or with a key minted for that account.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
 servers:
   -
@@ -163,7 +163,6 @@ components:
         - INVALID_ADDRESS
         - NOT_MOBILE
         - DESTINATION_NOT_ALLOWED
-        - RECIPIENT_IS_CHANNEL
         - BODY_TOO_LONG
         - BODY_TOO_LONG_FOR_BULK
         - BODY_EMPTY
@@ -179,9 +178,11 @@ components:
         - TOO_MANY_LINKS
         - CONTACT_BLOCKED
         - CHANNEL_INACTIVE
-        - INBOX_ARCHIVED
-        - CHANNEL_REQUIRED
-        - CHANNEL_INBOX_MISMATCH
+        - LINE_ARCHIVED
+        - LINE_REQUIRED
+        - LINE_HAS_NO_SENDERS
+        - LINE_IS_DIRECT
+        - CHANNEL_LINE_MISMATCH
         - FROM_AMBIGUOUS
         - CONTENT_CONFLICT
         - CHANNEL_CAPABILITY_UNSUPPORTED
@@ -660,7 +661,7 @@ components:
           type: string
           minLength: 1
           maxLength: 100
-        inbox_ids:
+        line_ids:
           oneOf:
             -
               type: array
@@ -670,7 +671,7 @@ components:
                 $ref: '#/components/schemas/Uuid'
             -
               type: 'null'
-          description: '`null` or omitted for all inboxes.'
+          description: '`null` or omitted for all lines. A key limited to one line sends from it without naming a sender (`line_id`, `channel_id` and `from` can be left out).'
         channel_types:
           oneOf:
             -
@@ -737,10 +738,10 @@ components:
         scope:
           type: object
           required:
-            - inbox_ids
+            - line_ids
             - channel_types
           properties:
-            inbox_ids:
+            line_ids:
               oneOf:
                 -
                   type: array
@@ -2345,58 +2346,6 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrRecipientIsChannel:
-      type: object
-      description: 'The recipient :to is the number this message would be sent from (channel :channel_id). Send to a different number or choose another inbox.'
-      x-http-status: 422
-      examples:
-        -
-          error:
-            code: RECIPIENT_IS_CHANNEL
-            message: 'The recipient +923001234567 is the number this message would be sent from (channel 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10). Send to a different number or choose another inbox.'
-            details:
-              to: '+923001234567'
-              channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-              channel_address: '+923001234567'
-            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#recipient-is-channel'
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          required:
-            - code
-            - message
-            - details
-            - request_id
-            - doc_url
-          properties:
-            code:
-              type: string
-              const: RECIPIENT_IS_CHANNEL
-            message:
-              type: string
-            details:
-              type: object
-              description: 'Specific to this code.'
-              properties:
-                to:
-                  type: string
-                channel_id:
-                  type: string
-                channel_address:
-                  type: string
-              required:
-                - to
-                - channel_id
-                - channel_address
-            request_id:
-              type: string
-              format: uuid
-            doc_url:
-              type: string
-              format: uri
     ErrBodyTooLong:
       type: object
       description: 'The message text is too long to send. Shorten it.'
@@ -3029,13 +2978,13 @@ components:
               format: uri
     ErrChannelInactive:
       type: object
-      description: 'Channel :channel_id is :status and cannot send. Reconnect it in the portal or send from another inbox.'
+      description: 'Channel :channel_id is :status and cannot send. Reconnect it in the portal or send from another line.'
       x-http-status: 422
       examples:
         -
           error:
             code: CHANNEL_INACTIVE
-            message: 'Channel 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is queued and cannot send. Reconnect it in the portal or send from another inbox.'
+            message: 'Channel 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is queued and cannot send. Reconnect it in the portal or send from another line.'
             details:
               channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
               status: queued
@@ -3075,19 +3024,19 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrInboxArchived:
+    ErrLineArchived:
       type: object
-      description: 'Inbox :inbox_id is archived and cannot send. Unarchive it or send from another inbox.'
+      description: 'Line :line_id is archived and cannot send. Unarchive it or send from another line.'
       x-http-status: 422
       examples:
         -
           error:
-            code: INBOX_ARCHIVED
-            message: 'Inbox 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is archived and cannot send. Unarchive it or send from another inbox.'
+            code: LINE_ARCHIVED
+            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is archived and cannot send. Unarchive it or send from another line.'
             details:
-              inbox_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+              line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#inbox-archived'
+            doc_url: 'https://api.mycomm.example/docs/errors#line-archived'
       required:
         - error
       properties:
@@ -3102,35 +3051,35 @@ components:
           properties:
             code:
               type: string
-              const: INBOX_ARCHIVED
+              const: LINE_ARCHIVED
             message:
               type: string
             details:
               type: object
               description: 'Specific to this code.'
               properties:
-                inbox_id:
+                line_id:
                   type: string
               required:
-                - inbox_id
+                - line_id
             request_id:
               type: string
               format: uuid
             doc_url:
               type: string
               format: uri
-    ErrChannelRequired:
+    ErrLineRequired:
       type: object
-      description: 'Say which inbox sends this message: send inbox_id, channel_id or from, or use a key restricted to one inbox.'
+      description: 'Say which line sends this message: send line_id, channel_id or from, or use a key restricted to one line.'
       x-http-status: 422
       examples:
         -
           error:
-            code: CHANNEL_REQUIRED
-            message: 'Say which inbox sends this message: send inbox_id, channel_id or from, or use a key restricted to one inbox.'
+            code: LINE_REQUIRED
+            message: 'Say which line sends this message: send line_id, channel_id or from, or use a key restricted to one line.'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#channel-required'
+            doc_url: 'https://api.mycomm.example/docs/errors#line-required'
       required:
         - error
       properties:
@@ -3145,7 +3094,7 @@ components:
           properties:
             code:
               type: string
-              const: CHANNEL_REQUIRED
+              const: LINE_REQUIRED
             message:
               type: string
             details:
@@ -3157,22 +3106,110 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrChannelInboxMismatch:
+    ErrLineHasNoSenders:
       type: object
-      description: 'The sender fields point at different inboxes or channels. Send just one of inbox_id, channel_id or from.'
+      description: 'Line :line_id has no channel to send through. Add a sender to the line, or name a channel with channel_id.'
       x-http-status: 422
       examples:
         -
           error:
-            code: CHANNEL_INBOX_MISMATCH
-            message: 'The sender fields point at different inboxes or channels. Send just one of inbox_id, channel_id or from.'
+            code: LINE_HAS_NO_SENDERS
+            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 has no channel to send through. Add a sender to the line, or name a channel with channel_id.'
             details:
-              inbox_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+              line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#line-has-no-senders'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: LINE_HAS_NO_SENDERS
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                line_id:
+                  type: string
+              required:
+                - line_id
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrLineIsDirect:
+      type: object
+      description: 'Line :line_id is the Direct line of the account. It holds every conversation no other line claims, so it cannot be archived.'
+      x-http-status: 422
+      examples:
+        -
+          error:
+            code: LINE_IS_DIRECT
+            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is the Direct line of the account. It holds every conversation no other line claims, so it cannot be archived.'
+            details:
+              line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#line-is-direct'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: LINE_IS_DIRECT
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                line_id:
+                  type: string
+              required:
+                - line_id
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelLineMismatch:
+      type: object
+      description: 'The sender fields point at different lines or channels. Send just one of line_id, channel_id or from.'
+      x-http-status: 422
+      examples:
+        -
+          error:
+            code: CHANNEL_LINE_MISMATCH
+            message: 'The sender fields point at different lines or channels. Send just one of line_id, channel_id or from.'
+            details:
+              line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
               channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
               from: '+923001234567'
               channel_type: example
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#channel-inbox-mismatch'
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-line-mismatch'
       required:
         - error
       properties:
@@ -3187,14 +3224,14 @@ components:
           properties:
             code:
               type: string
-              const: CHANNEL_INBOX_MISMATCH
+              const: CHANNEL_LINE_MISMATCH
             message:
               type: string
             details:
               type: object
               description: 'Specific to this code.'
               properties:
-                inbox_id:
+                line_id:
                   type: string
                 channel_id:
                   type: string
@@ -3298,13 +3335,13 @@ components:
               format: uri
     ErrChannelCapabilityUnsupported:
       type: object
-      description: "This inbox's channel cannot carry that content or option. See details for what it supports."
+      description: "This line's channel cannot carry that content or option. See details for what it supports."
       x-http-status: 422
       examples:
         -
           error:
             code: CHANNEL_CAPABILITY_UNSUPPORTED
-            message: "This inbox's channel cannot carry that content or option. See details for what it supports."
+            message: "This line's channel cannot carry that content or option. See details for what it supports."
             details:
               channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
               channel_type: example
@@ -5710,7 +5747,7 @@ paths:
       tags:
         - 'Account keys'
       summary: 'Mint an account key for a managed account'
-      description: "Same body and `201` response as `POST /v1/api-keys`, unrestricted or restricted to inboxes or channel\ntypes, with any abilities. The `token` is shown once, in this response.\n"
+      description: "Same body and `201` response as `POST /v1/api-keys`, unrestricted or restricted to lines or channel\ntypes, with any abilities. The `token` is shown once, in this response.\n"
       requestBody:
         required: true
         content:

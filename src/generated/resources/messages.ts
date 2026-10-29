@@ -65,9 +65,9 @@ export class MessagesResource {
    * List and search messages.
    *
    * Messages of the account, newest first, with cursor pagination. Requires `messages:read`. A restricted key
-   * lists only the messages of its inboxes. Comma lists match any of the values. `q` is a full-text search on
-   * `body` (at least 2 characters, Postgres `simple` configuration, so Urdu and Roman Urdu match word by word) and
-   * always sorts newest first.
+   * lists only the messages of its lines. Comma lists match any of the values. `q` is a full-text search on `body`
+   * (at least 2 characters, Postgres `simple` configuration, so Urdu and Roman Urdu match word by word) and always
+   * sorts newest first.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listMessages`
    */
@@ -89,8 +89,8 @@ export class MessagesResource {
   /**
    * Send one message.
    *
-   * Queues one message. Requires `messages:send`. The inbox decides the channel: give `inbox_id`, `channel_id` or
-   * `from` (the key's single inbox is used when it is restricted to exactly one). The recipient is `to` or
+   * Queues one message. Requires `messages:send`. The line decides the channel: give `line_id`, `channel_id` or
+   * `from` (the key's single line is used when it is restricted to exactly one). The recipient is `to` or
    * `contact_id`. The content is the `content` union or one of the shorthand fields (`body`, `media_ids`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `sendMessage`
@@ -99,8 +99,8 @@ export class MessagesResource {
   /**
    * Send one message.
    *
-   * Queues one message. Requires `messages:send`. The inbox decides the channel: give `inbox_id`, `channel_id` or
-   * `from` (the key's single inbox is used when it is restricted to exactly one). The recipient is `to` or
+   * Queues one message. Requires `messages:send`. The line decides the channel: give `line_id`, `channel_id` or
+   * `from` (the key's single line is used when it is restricted to exactly one). The recipient is `to` or
    * `contact_id`. The content is the `content` union or one of the shorthand fields (`body`, `media_ids`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `sendMessage`
@@ -122,7 +122,7 @@ export class MessagesResource {
   /**
    * Retrieve a message.
    *
-   * Returns the message resource, inbound or outbound. Requires `messages:read`. A message outside the key's inbox
+   * Returns the message resource, inbound or outbound. Requires `messages:read`. A message outside the key's line
    * scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getMessage`
@@ -135,7 +135,7 @@ export class MessagesResource {
    * Message timeline.
    *
    * The message's events from `message_events`, oldest first, not paginated. Requires `messages:read`. A message
-   * outside the key's inbox scope answers 404.
+   * outside the key's line scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listMessageEvents`
    */

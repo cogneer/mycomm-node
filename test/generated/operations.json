@@ -76,7 +76,7 @@
     "method": "list",
     "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
     "http": "GET",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules",
     "format": "none",
     "returns": "model"
   },
@@ -105,7 +105,7 @@
       }
     ],
     "http": "POST",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules",
     "format": "json",
     "returns": "model"
   },
@@ -121,7 +121,7 @@
       }
     ],
     "http": "POST",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/reorder",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/reorder",
     "format": "json",
     "returns": "model"
   },
@@ -132,7 +132,7 @@
     "method": "get",
     "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
     "http": "GET",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
     "format": "none",
     "returns": "model"
   },
@@ -143,7 +143,7 @@
     "method": "update",
     "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", {}],
     "http": "PATCH",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
     "format": "json",
     "returns": "model"
   },
@@ -154,7 +154,7 @@
     "method": "delete",
     "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
     "http": "DELETE",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
     "format": "none",
     "returns": "void"
   },
@@ -170,7 +170,7 @@
       }
     ],
     "http": "POST",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/test",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/automation-rules/test",
     "format": "json",
     "returns": "model"
   },
@@ -226,7 +226,7 @@
     "args": [
       {
         "name": "Example name",
-        "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"
       }
     ],
     "http": "POST",
@@ -816,6 +816,22 @@
     "returns": "model"
   },
   {
+    "operation": "conversations.handover",
+    "key": "conversations.handover",
+    "resource": ["conversations"],
+    "method": "handover",
+    "args": [
+      "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      {
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"
+      }
+    ],
+    "http": "POST",
+    "path": "/v1/conversations/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/handover",
+    "format": "json",
+    "returns": "model"
+  },
+  {
     "operation": "conversations.show",
     "key": "conversations.show",
     "resource": ["conversations"],
@@ -1161,73 +1177,105 @@
     "returns": "model"
   },
   {
-    "operation": "inboxes.list",
-    "key": "inboxes.list",
-    "resource": ["inboxes"],
+    "operation": "lines.list",
+    "key": "lines.list",
+    "resource": ["lines"],
     "method": "list",
     "args": [{}],
     "http": "GET",
-    "path": "/v1/inboxes",
+    "path": "/v1/lines",
     "format": "none",
     "returns": "page"
   },
   {
-    "operation": "inboxes.create",
-    "key": "inboxes.create",
-    "resource": ["inboxes"],
+    "operation": "lines.create",
+    "key": "lines.create",
+    "resource": ["lines"],
     "method": "create",
     "args": [
       {
-        "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
         "name": "Example name"
       }
     ],
     "http": "POST",
-    "path": "/v1/inboxes",
+    "path": "/v1/lines",
     "format": "json",
     "returns": "model"
   },
   {
-    "operation": "inboxes.archive",
-    "key": "inboxes.archive",
-    "resource": ["inboxes"],
-    "method": "archive",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
-    "http": "POST",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/archive",
-    "format": "none",
-    "returns": "model"
-  },
-  {
-    "operation": "inboxes.unarchive",
-    "key": "inboxes.unarchive",
-    "resource": ["inboxes"],
-    "method": "unarchive",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
-    "http": "POST",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/unarchive",
-    "format": "none",
-    "returns": "model"
-  },
-  {
-    "operation": "inboxes.get",
-    "key": "inboxes.get",
-    "resource": ["inboxes"],
+    "operation": "lines.get",
+    "key": "lines.get",
+    "resource": ["lines"],
     "method": "get",
     "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
     "http": "GET",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
     "format": "none",
     "returns": "model"
   },
   {
-    "operation": "inboxes.update",
-    "key": "inboxes.update",
-    "resource": ["inboxes"],
+    "operation": "lines.update",
+    "key": "lines.update",
+    "resource": ["lines"],
     "method": "update",
     "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", {}],
     "http": "PATCH",
-    "path": "/v1/inboxes/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "json",
+    "returns": "model"
+  },
+  {
+    "operation": "lines.archive",
+    "key": "lines.archive",
+    "resource": ["lines"],
+    "method": "archive",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "DELETE",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "lines.unarchive",
+    "key": "lines.unarchive",
+    "resource": ["lines"],
+    "method": "unarchive",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "POST",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/unarchive",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "lines.listSenders",
+    "key": "lines.listSenders",
+    "resource": ["lines"],
+    "method": "listSenders",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "GET",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/senders",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "lines.setSenders",
+    "key": "lines.setSenders",
+    "resource": ["lines"],
+    "method": "setSenders",
+    "args": [
+      "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      {
+        "senders": [
+          {
+            "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+            "role": "primary",
+            "enabled": true
+          }
+        ]
+      }
+    ],
+    "http": "PUT",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/senders",
     "format": "json",
     "returns": "model"
   },
@@ -1288,7 +1336,7 @@
       {
         "messages": [
           {
-            "inbox_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+            "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
             "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
             "from": "+923001234567",
             "channel_type": "Example channel type",
