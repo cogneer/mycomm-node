@@ -4,7 +4,33 @@ All notable changes to this package are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the package follows
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - Unreleased
+
+Built from the MyComm public API and partner API `2.0.0`, where lines replace inboxes. The same names and behaviour as
+`mycomm/mycomm-php` 2.0.0. Nothing from 1.x is kept as an alias.
+
+### Changed (breaking)
+
+- `inboxes` is now `lines`: `mycomm.lines.list()`, `all()`, `create()`, `get()`, `update()`, `archive()` (now
+  `DELETE /v1/lines/{id}`) and `unarchive()`. The `Inbox`, `InboxChannel`, `InboxSettings` and `InboxKind` types are gone;
+  use `Line`, `LineSender`, `LineSettings` and `LineKind`.
+- `inbox_id` is now `line_id` everywhere: `messages.send()`, `sendBatch()` items, conversations, messages and webhook
+  events.
+- `client.verify({ to, lineId })`: the option was `inboxId`.
+
+### Added
+
+- `lines.listSenders(id)` and `lines.setSenders(id, { senders })`: the channels a line sends from, with role (`primary`,
+  `backup`, `pool`) and health.
+- `conversations.handover(id, { line_id })`: hand a conversation over to another line.
+- Webhook events `line.sender_changed`, `line.failover`, `line.no_sender` and `conversation.handed_over` (50 in all).
+- `Message.sender_pinned` and `sender_attempts`; `Channel.line_ids`.
+
+### Fixed
+
+- `VERSION` (and the `User-Agent`) said `1.0.0` while `package.json` said `1.0.2`; both are `2.0.0` now.
+
+## [1.0.2] - 2026-10-28
 
 ### Fixed
 
@@ -12,7 +38,14 @@ All notable changes to this package are listed here. The format follows
   from that dot to the end of a later sentence, so `connectSessions.delete()` read "…also for a page already open.status`."
 (15 resources were affected). A sentence now ends only at `.`, `!`or`?` followed by a space.
 
-## [1.0.0] - Unreleased
+## [1.0.1] - 2026-10-27
+
+### Changed
+
+- One ES module build with type declarations instead of separate ES module and CommonJS builds; CommonJS code loads it
+  with `require()`. It needs Node.js 20.19+ (was 20+) and is 105 kB to download, under 500 kB installed (was about 1.9 MB).
+
+## [1.0.0] - 2026-10-27
 
 The first release, built from the MyComm public API and partner API `1.0.0` (backend commit in `spec/SOURCE`), the frozen
 contract. The same names and behaviour as `mycomm/mycomm-php` 1.0.1.
@@ -36,5 +69,5 @@ contract. The same names and behaviour as `mycomm/mycomm-php` 1.0.1.
 - `client.verify()`: checks a key and, with a number, dry-runs a send. Sends nothing.
 - `toFile()` and `fileFromPath()` for uploads.
 - `@mycomm/node/testing`: `MyCommFake`, `FakeResponse` and `FakeWebhook`.
-- An ES module with type declarations, which CommonJS code loads with `require()`; no runtime dependencies; Node.js 20.19+,
-  Bun, Deno and edge runtimes. 105 kB to download, under 500 kB installed.
+- ES module and CommonJS builds with type declarations; no runtime dependencies; Node.js 20+, Bun, Deno and edge
+  runtimes.

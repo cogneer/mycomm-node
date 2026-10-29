@@ -14,6 +14,15 @@ describe('verify()', () => {
     fake.assertCalled('messages.send', (request) => request.json?.dry_run === true && request.json?.to === '+923001234567');
   });
 
+  it('dry-runs the send from the line it is given', async () => {
+    const fake = new MyCommFake();
+    fake.respond('messages.send', FakeResponse.json({ id: null, status: null, hold_reason: null }, 200));
+
+    await fake.client.verify({ to: '+923001234567', lineId: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e12' });
+
+    fake.assertCalled('messages.send', (request) => request.json?.line_id === '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e12');
+  });
+
   it('reports a refused key as a failed check instead of throwing', async () => {
     const fake = new MyCommFake();
     fake.respond('account.get', FakeResponse.error(401, 'UNAUTHENTICATED', 'The API key is not valid.'));

@@ -18,7 +18,7 @@ export class DevicesResource {
   /**
    * List devices.
    *
-   * Requires `channels:read`. Returns `active` devices unless `status` says otherwise. A key restricted to inboxes
+   * Requires `channels:read`. Returns `active` devices unless `status` says otherwise. A key restricted to lines
    * sees only the devices of its channels.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listDevices`
@@ -52,7 +52,7 @@ export class DevicesResource {
   /**
    * Rename a device or record its OS-limit raise.
    *
-   * Requires `channels:write`; a key restricted to inboxes never holds it. Changes only the keys sent. `name` is 1
+   * Requires `channels:write`; a key restricted to lines never holds it. Changes only the keys sent. `name` is 1
    * to 60 characters. `os_limit_raised: true` records the owner's confirmation that the Android SMS limit was
    * raised with ADB on this phone and needs `os_limit_value` (31 to 100,000); `false` clears the value.
    *

@@ -500,7 +500,8 @@ export type HoldReason =
   | 'account_limit'
   | 'bulk_hours'
   | 'carrier_cooldown'
-  | 'device_hot';
+  | 'device_hot'
+  | 'no_sender_available';
 export const HoldReason = {
   Scheduled: 'scheduled',
   QuietHours: 'quiet_hours',
@@ -519,6 +520,22 @@ export const HoldReason = {
   BulkHours: 'bulk_hours',
   CarrierCooldown: 'carrier_cooldown',
   DeviceHot: 'device_hot',
+  NoSenderAvailable: 'no_sender_available',
+} as const;
+
+/**
+ * `queued` and `leased` while open; `sent`, `failed`, `expired`, `cancelled` or `reassigned` (moved to the next
+ * sender) once ended. May gain values.
+ */
+export type MessageSenderAttemptOutcome = 'queued' | 'leased' | 'sent' | 'failed' | 'expired' | 'cancelled' | 'reassigned';
+export const MessageSenderAttemptOutcome = {
+  Queued: 'queued',
+  Leased: 'leased',
+  Sent: 'sent',
+  Failed: 'failed',
+  Expired: 'expired',
+  Cancelled: 'cancelled',
+  Reassigned: 'reassigned',
 } as const;
 
 /**
@@ -626,10 +643,42 @@ export const ImportStatus = {
   Cancelled: 'cancelled',
 } as const;
 
-export type InboxKind = 'main' | 'integration';
-export const InboxKind = {
-  Main: 'main',
-  Integration: 'integration',
+/**
+ * `direct`: the account's own line, where unclaimed replies land (one per account). `app`: a line an app or
+ * integration sends through. `partner`: a line a partner created for a client.
+ */
+export type LineKind = 'direct' | 'app' | 'partner';
+export const LineKind = {
+  Direct: 'direct',
+  App: 'app',
+  Partner: 'partner',
+} as const;
+
+/**
+ * `ordered`: the first healthy sender by position sends. `pool` is reserved for spreading sends over several
+ * senders.
+ */
+export type LineSendMode = 'ordered' | 'pool';
+export const LineSendMode = {
+  Ordered: 'ordered',
+  Pool: 'pool',
+} as const;
+
+/**
+ * What happens to a message a revoked phone may or may not have sent: `fail` (default) or `resend` through the
+ * next sender, accepting a possible duplicate.
+ */
+export type LineOnUnconfirmed = 'fail' | 'resend';
+export const LineOnUnconfirmed = {
+  Fail: 'fail',
+  Resend: 'resend',
+} as const;
+
+export type LineSenderRole = 'primary' | 'backup' | 'pool';
+export const LineSenderRole = {
+  Primary: 'primary',
+  Backup: 'backup',
+  Pool: 'pool',
 } as const;
 
 export type SendBatchResultStatus = 'accepted' | 'rejected';
@@ -661,7 +710,8 @@ export type MessageEventName =
   | 'provider_ack'
   | 'provider_call_started'
   | 'edited'
-  | 'deleted_remote';
+  | 'deleted_remote'
+  | 'reassigned';
 export const MessageEventName = {
   Accepted: 'accepted',
   Held: 'held',
@@ -685,6 +735,7 @@ export const MessageEventName = {
   ProviderCallStarted: 'provider_call_started',
   Edited: 'edited',
   DeletedRemote: 'deleted_remote',
+  Reassigned: 'reassigned',
 } as const;
 
 export type PairingCodeStatus = 'pending' | 'awaiting_confirmation' | 'consumed' | 'declined' | 'expired';
@@ -702,11 +753,11 @@ export const SmartListFilterMatch = {
   Any: 'any',
 } as const;
 
-export type StatsGroupBy = 'none' | 'channel' | 'inbox' | 'channel_type';
+export type StatsGroupBy = 'none' | 'channel' | 'line' | 'channel_type';
 export const StatsGroupBy = {
   None: 'none',
   Channel: 'channel',
-  Inbox: 'inbox',
+  Line: 'line',
   ChannelType: 'channel_type',
 } as const;
 
@@ -808,7 +859,6 @@ export type ErrorCode =
   | 'INVALID_ADDRESS'
   | 'NOT_MOBILE'
   | 'DESTINATION_NOT_ALLOWED'
-  | 'RECIPIENT_IS_CHANNEL'
   | 'BODY_TOO_LONG'
   | 'BODY_TOO_LONG_FOR_BULK'
   | 'BODY_EMPTY'
@@ -824,9 +874,11 @@ export type ErrorCode =
   | 'TOO_MANY_LINKS'
   | 'CONTACT_BLOCKED'
   | 'CHANNEL_INACTIVE'
-  | 'INBOX_ARCHIVED'
-  | 'CHANNEL_REQUIRED'
-  | 'CHANNEL_INBOX_MISMATCH'
+  | 'LINE_ARCHIVED'
+  | 'LINE_REQUIRED'
+  | 'LINE_HAS_NO_SENDERS'
+  | 'LINE_IS_DIRECT'
+  | 'CHANNEL_LINE_MISMATCH'
   | 'FROM_AMBIGUOUS'
   | 'CONTENT_CONFLICT'
   | 'CHANNEL_CAPABILITY_UNSUPPORTED'
@@ -901,7 +953,6 @@ export const ErrorCode = {
   InvalidAddress: 'INVALID_ADDRESS',
   NotMobile: 'NOT_MOBILE',
   DestinationNotAllowed: 'DESTINATION_NOT_ALLOWED',
-  RecipientIsChannel: 'RECIPIENT_IS_CHANNEL',
   BodyTooLong: 'BODY_TOO_LONG',
   BodyTooLongForBulk: 'BODY_TOO_LONG_FOR_BULK',
   BodyEmpty: 'BODY_EMPTY',
@@ -917,9 +968,11 @@ export const ErrorCode = {
   TooManyLinks: 'TOO_MANY_LINKS',
   ContactBlocked: 'CONTACT_BLOCKED',
   ChannelInactive: 'CHANNEL_INACTIVE',
-  InboxArchived: 'INBOX_ARCHIVED',
-  ChannelRequired: 'CHANNEL_REQUIRED',
-  ChannelInboxMismatch: 'CHANNEL_INBOX_MISMATCH',
+  LineArchived: 'LINE_ARCHIVED',
+  LineRequired: 'LINE_REQUIRED',
+  LineHasNoSenders: 'LINE_HAS_NO_SENDERS',
+  LineIsDirect: 'LINE_IS_DIRECT',
+  ChannelLineMismatch: 'CHANNEL_LINE_MISMATCH',
   FromAmbiguous: 'FROM_AMBIGUOUS',
   ContentConflict: 'CONTENT_CONFLICT',
   ChannelCapabilityUnsupported: 'CHANNEL_CAPABILITY_UNSUPPORTED',
@@ -1027,7 +1080,7 @@ export interface ApiKey {
 }
 
 export interface ApiKeyScope {
-  inbox_ids: string[] | null;
+  line_ids: string[] | null;
   channel_types: string[] | null;
 }
 
@@ -1083,7 +1136,7 @@ export interface ApiKeysRotateResponseReplaces {
   revoked_at: string | null;
 }
 
-/** All rules of an inbox ordered by position. Not paginated. */
+/** All rules of a line ordered by position. Not paginated. */
 export interface AutomationRuleList {
   data: AutomationRule[];
 }
@@ -1091,7 +1144,7 @@ export interface AutomationRuleList {
 /** The automation rule resource. Optional values are `null`, never omitted. */
 export interface AutomationRule {
   id: string;
-  inbox_id: string;
+  line_id: string;
   type: Open<AutomationRuleType>;
   name: string;
   /** 1 to n among the keyword rules; 0 for the away message. */
@@ -1099,7 +1152,7 @@ export interface AutomationRule {
   active: boolean;
   match: AutomationRuleMatch;
   actions: Array<AutomationReplyAction | AutomationGroupAction | AutomationTagAction | AutomationFlagAction>;
-  /** Always `null`; the away message follows the inbox's business hours. */
+  /** Always `null`; the away message follows the line's business hours. */
   schedule: Record<string, unknown> | null;
   cooldown_minutes: number;
   /** Who created the rule; `null` for a rule saved before the actor was kept. */
@@ -1179,7 +1232,7 @@ export interface AutomationRun {
   /** Increasing run id. */
   id: number;
   rule_id: string;
-  inbox_id: string;
+  line_id: string;
   conversation_id: string;
   trigger_message_id: string;
   outcome: Open<AutomationRunOutcome>;
@@ -1281,11 +1334,11 @@ export interface CampaignReportLink {
   unique_clicks: number;
 }
 
-/** The campaign resource. `channel_id` is read-only, derived from `inbox_id`. */
+/** The campaign resource. `channel_id` is read-only, derived from `line_id`. */
 export interface Campaign {
   id: string;
   name: string;
-  inbox_id: string;
+  line_id: string;
   channel_id: string | null;
   status: Open<CampaignStatus>;
   body: string | null;
@@ -1411,8 +1464,16 @@ export interface Channel {
   disconnect_reason: Open<ChannelDisconnectReason> | null;
   device_id: string | null;
   device_sim_id: string | null;
-  /** The channel's main inbox; `null` until the number is connected. */
-  main_inbox_id: string | null;
+  /**
+   * The line unknown replies to this number land on (the account's Direct line unless the owner chose another);
+   * `null` until the number is connected.
+   */
+  default_line_id: string | null;
+  /**
+   * The lines that have this channel in their sender list (any role, archived lines left out), oldest first. A key
+   * restricted to lines sees only its own.
+   */
+  line_ids: string[];
   capabilities: ChannelCapabilities;
   /** ISO 3166-1 alpha-2 codes; `null` means the channel's own country only. */
   allowed_destination_countries: string[] | null;
@@ -1427,7 +1488,6 @@ export interface Channel {
   health: ChannelHealth;
   queue: ChannelQueue;
   usage: ChannelUsage;
-  reply_window_days: number;
   /** Set when a push provider asked to slow down; always `null` for SMS. */
   throttled_until: string | null;
   /** The latest verification of the number, or `null` before one exists. */
@@ -1748,12 +1808,14 @@ export interface ContactsDeleteResponse {
 }
 
 /**
- * The conversation resource: one per inbox and contact identity. `address`, `contact_display_name`, `suppressed`
+ * The conversation resource: one per line and contact identity. `address`, `contact_display_name`, `suppressed`
  * and `blocked_at` are denormalised from the identity; blocking is account-wide.
  */
 export interface Conversation {
   id: string;
-  inbox_id: string;
+  /** The line that holds the thread. It changes only when the conversation is handed over or its line is archived. */
+  line_id: string;
+  /** The channel the thread last talked through. A reply prefers it while it is a healthy sender of the line. */
   channel_id: string;
   /** The channel's type, `android_sim` in v1. */
   channel_type: string | null;
@@ -1791,7 +1853,7 @@ export interface Message {
   channel_id: string;
   /** The channel's type, `android_sim` in v1. */
   channel_type: string | null;
-  inbox_id: string;
+  line_id: string;
   conversation_id: string | null;
   contact_id: string | null;
   identity: MessageIdentity | null;
@@ -1817,7 +1879,18 @@ export interface Message {
   hold_reason: Open<HoldReason> | null;
   send_after: string | null;
   expires_at: string | null;
+  /** How many times a phone tried to send it (each device try counts). */
   attempts: number;
+  /**
+   * `true` when the send named its channel (`channel_id` or `from`): the message never moves to another sender.
+   * `false` for inbound messages.
+   */
+  sender_pinned: boolean;
+  /**
+   * The senders the message has been on, oldest first (outbound only, else empty). A new entry opens on a retry
+   * and when the message fails over to another sender of its line.
+   */
+  sender_attempts: MessageSenderAttempt[];
   failure: MessageFailure | null;
   cancel_requested_at: string | null;
   reference_id: string | null;
@@ -1852,6 +1925,23 @@ export interface MessageMedia {
   width: number | null;
   height: number | null;
   filename: string | null;
+}
+
+/** One stretch of a message on one sender. `ended_at` is `null` while it is still on that sender. */
+export interface MessageSenderAttempt {
+  channel_id: string;
+  /**
+   * `queued` and `leased` while open; `sent`, `failed`, `expired`, `cancelled` or `reassigned` (moved to the next
+   * sender) once ended. May gain values.
+   */
+  outcome: Open<MessageSenderAttemptOutcome>;
+  /**
+   * The failure code (`failed`, or `queued` after a failure that will be retried), or why it moved (`reassigned`):
+   * `sender_removed`, `sender_unhealthy`, `no_sender_available`, `send_failed:<code>`.
+   */
+  reason: string | null;
+  started_at: string;
+  ended_at: string | null;
 }
 
 /** Failure code and its wording; see the status and failures guide. */
@@ -1895,7 +1985,7 @@ export interface SendMessageResponse {
   channel_id: string;
   /** The channel's type, `android_sim` in v1. */
   channel_type: string | null;
-  inbox_id: string;
+  line_id: string;
   conversation_id: string | null;
   contact_id: string | null;
   identity: MessageIdentity | null;
@@ -1921,7 +2011,18 @@ export interface SendMessageResponse {
   hold_reason: Open<HoldReason> | null;
   send_after: string | null;
   expires_at: string | null;
+  /** How many times a phone tried to send it (each device try counts). */
   attempts: number;
+  /**
+   * `true` when the send named its channel (`channel_id` or `from`): the message never moves to another sender.
+   * `false` for inbound messages.
+   */
+  sender_pinned: boolean;
+  /**
+   * The senders the message has been on, oldest first (outbound only, else empty). A new entry opens on a retry
+   * and when the message fails over to another sender of its line.
+   */
+  sender_attempts: MessageSenderAttempt[];
   failure: MessageFailure | null;
   cancel_requested_at: string | null;
   reference_id: string | null;
@@ -2083,35 +2184,58 @@ export interface ImportTotals {
   errors: number;
 }
 
-export interface Inbox {
+/** What an app, a partner or the owner sends from and receives into, through its ordered sender list. */
+export interface Line {
   id: string;
-  channel_id: string;
-  kind: Open<InboxKind>;
+  kind: Open<LineKind>;
   name: string;
-  channel: InboxChannel;
-  settings: InboxSettings;
-  archived_at: string | null;
+  /**
+   * `ordered`: the first healthy sender by position sends. `pool` is reserved for spreading sends over several
+   * senders.
+   */
+  send_mode: Open<LineSendMode>;
+  /** How long a reply on a channel this line wrote from comes back to this line. */
+  reply_window_days: number;
+  /**
+   * What happens to a message a revoked phone may or may not have sent: `fail` (default) or `resend` through the
+   * next sender, accepting a possible duplicate.
+   */
+  on_unconfirmed: Open<LineOnUnconfirmed>;
+  /** Whether the line's conversations show in the portal's conversation view. */
+  show_in_portal: boolean;
+  senders: LineSender[];
+  settings: LineSettings;
   open_conversations: number;
   /** Open conversations with unread messages. */
   unread_conversations: number;
+  archived_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
-/** Denormalised summary of the inbox's channel. */
-export interface InboxChannel {
-  id: string;
-  type: Open<ChannelType>;
-  name: string;
-  address: string | null;
-  display_address: string | null;
-  status: string;
+/** One entry of a line's sender list. */
+export interface LineSender {
+  channel_id: string;
+  channel_type: Open<ChannelType>;
+  /** The channel's address (for SMS, the number). */
+  address: string;
+  role: Open<LineSenderRole>;
+  /** 0 is tried first. */
+  position: number;
+  /** A disabled sender stays in the list but never sends. */
+  enabled: boolean;
+  /** Active, its phone online, not throttled, and with hourly and daily budget left. Changes from moment to moment. */
+  healthy: boolean;
 }
 
 /** `business_hours`, an optional `signature` and notification preferences. Missing keys read as `null`. */
-export interface InboxSettings {
+export interface LineSettings {
   business_hours: Record<string, unknown> | null;
   signature: string | null;
+}
+
+export interface LineSenderList {
+  data: LineSender[];
 }
 
 export interface Media {
@@ -2249,13 +2373,12 @@ export interface StatsDailyResponse {
 
 /**
  * One day. With `group_by=none` only `date` and the counters are present. Grouped rows add the group keys:
- * `channel_id` (channel, inbox), `inbox_id` (inbox) and `channel_type`; keys not part of the grouping are
- * `null`.
+ * `channel_id` (channel, line), `line_id` (line) and `channel_type`; keys not part of the grouping are `null`.
  */
 export interface DailyStatsRow {
   date: string;
   channel_id?: string | null;
-  inbox_id?: string | null;
+  line_id?: string | null;
   channel_type?: Open<ChannelType> | null;
   sent_messages: number;
   sent_segments: number;
@@ -2480,7 +2603,7 @@ export interface WebhookEndpoint {
   description: string | null;
   /** Empty = every event except the opt-in ones. */
   events: string[];
-  inbox_ids: string[] | null;
+  line_ids: string[] | null;
   channel_types: string[] | null;
   include_managed_accounts: boolean;
   active: boolean;
@@ -2499,7 +2622,7 @@ export interface CreatedWebhookEndpoint {
   description: string | null;
   /** Empty = every event except the opt-in ones. */
   events: string[];
-  inbox_ids: string[] | null;
+  line_ids: string[] | null;
   channel_types: string[] | null;
   include_managed_accounts: boolean;
   active: boolean;
@@ -2683,6 +2806,55 @@ export interface WebhookExportDataExport {
   completed_at: string | null;
 }
 
+/** Sender list payload of line.sender_changed. */
+export interface WebhookLineSenderChangedData {
+  line_id: string;
+  senders: WebhookLineSender[];
+}
+
+/** One entry of a line's sender list. */
+export interface WebhookLineSender {
+  channel_id: string;
+  /**
+   * `primary` is the line's main number; `backup` numbers take over in list order; `pool` numbers share the
+   * sending.
+   */
+  role: Open<LineSenderRole>;
+  /** Place in the list, 0 first. */
+  position: number;
+  /** A disabled entry stays on the list but is never used to send. */
+  enabled: boolean;
+}
+
+/** Payload of line.failover. */
+export interface WebhookLineFailoverData {
+  line_id: string;
+  from_channel_id: string;
+  to_channel_id: string;
+  /**
+   * `sender_removed` (the sender left the line or was disconnected), `sender_unhealthy` (it stayed unhealthy past
+   * the lane limit), `no_sender_available` (the messages waited for any sender) or `send_failed:<failure_code>`
+   * (the phone reported a sender fault such as `NO_SERVICE`).
+   */
+  reason: string;
+  message_count: number;
+  message_ids: string[];
+}
+
+/** Payload of line.no_sender. */
+export interface WebhookLineNoSenderData {
+  line_id: string;
+  /** Messages of the line waiting for a sender when the event was written. */
+  held_count: number;
+}
+
+/** Payload of conversation.handed_over. */
+export interface WebhookConversationHandedOverData {
+  conversation_id: string;
+  from_line_id: string;
+  to_line_id: string;
+}
+
 /** Click payload of link.clicked. */
 export interface WebhookLinkClickedData {
   short_link_id: string;
@@ -2811,6 +2983,11 @@ export interface WebhookActor {
 export interface WebhookMessageData {
   message: Message;
   conversation: WebhookConversationRef;
+  /**
+   * The length of `message.sender_attempts`: 1 for a message that stayed on its first sender, more after a retry
+   * or a failover, 0 for inbound.
+   */
+  sender_attempt_count: number;
 }
 
 /** `created` is true for the message that created the conversation. */
@@ -2822,6 +2999,11 @@ export interface WebhookConversationRef {
 export interface WebhookMessageCancelledData {
   message: Message;
   conversation: WebhookConversationRef;
+  /**
+   * The length of `message.sender_attempts`: 1 for a message that stayed on its first sender, more after a retry
+   * or a failover, 0 for inbound.
+   */
+  sender_attempt_count: number;
   /** `api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `account_deleted` (may gain values). */
   reason: string | null;
 }
@@ -2829,6 +3011,11 @@ export interface WebhookMessageCancelledData {
 export interface WebhookMessageReceivedData {
   message: Message;
   conversation: WebhookConversationRef;
+  /**
+   * The length of `message.sender_attempts`: 1 for a message that stayed on its first sender, more after a retry
+   * or a failover, 0 for inbound.
+   */
+  sender_attempt_count: number;
   contact_created: boolean;
 }
 
@@ -2839,7 +3026,7 @@ export interface WebhookConversationData {
 
 export interface WebhookConversationDeletedData {
   conversation_id: string;
-  inbox_id: string;
+  line_id: string;
   contact_id: string;
   actor: WebhookActor;
 }
@@ -2922,6 +3109,13 @@ export interface ContactUpsert {
   add_to_group_ids?: string[];
 }
 
+export interface LineSenderInput {
+  channel_id: string;
+  role?: LineSenderRole;
+  /** Default `true`. */
+  enabled?: boolean;
+}
+
 /**
  * An item of a batch: the sender, recipient, content and option fields of `SendMessageRequest`, without
  * `dry_run` (the batch has its own). Fields the item omits come from `defaults`; the rules of
@@ -2929,11 +3123,11 @@ export interface ContactUpsert {
  * defaults are merged in. A batch item always needs a `category`, in the item or in `defaults`.
  */
 export interface SendBatchItem {
-  /** The inbox to send from. A key limited to one inbox may leave all sender fields out. */
-  inbox_id?: string;
-  /** Send from this channel's main inbox. */
+  /** The line to send from. A key limited to one line may leave all sender fields out. */
+  line_id?: string;
+  /** Send from this channel, on the line it is the primary sender of, else on its default line. */
   channel_id?: string;
-  /** A channel address (for SMS, the number); resolves to that channel's main inbox. */
+  /** A channel address (for SMS, the number); resolves like `channel_id`. */
   from?: string;
   /** Only to choose between channels of different types that share the `from` address. */
   channel_type?: string;
@@ -3005,9 +3199,9 @@ export interface AccountUpdateParams {
 
 /** The parameters of `apiKeys.list()`. */
 export interface ApiKeysListParams {
-  /** Keys whose scope lists this inbox. */
-  inbox_id?: string;
-  /** `true` for keys limited to inboxes or channel types, `false` for unrestricted keys. */
+  /** Keys whose scope lists this line. */
+  line_id?: string;
+  /** `true` for keys limited to lines or channel types, `false` for unrestricted keys. */
   restricted?: boolean;
   /** Default `false`. */
   revoked?: boolean;
@@ -3020,8 +3214,11 @@ export interface ApiKeysListParams {
 /** The parameters of `apiKeys.create()`. */
 export interface ApiKeysCreateParams {
   name: string;
-  /** `null` or omitted for all inboxes. */
-  inbox_ids?: string[] | null;
+  /**
+   * `null` or omitted for all lines. A key limited to one line sends from it without naming a sender (`line_id`,
+   * `channel_id` and `from` can be left out).
+   */
+  line_ids?: string[] | null;
   /** `null` or omitted for all channel types, for example `["android_sim"]`. */
   channel_types?: string[] | null;
   abilities?: string[] | null;
@@ -3049,7 +3246,7 @@ export interface AutomationRulesCreateParams {
 
 /** The parameters of `automationRules.reorder()`. */
 export interface AutomationRulesReorderParams {
-  /** Every keyword rule of the inbox exactly once, in the new order. */
+  /** Every keyword rule of the line exactly once, in the new order. */
   rule_ids: string[];
 }
 
@@ -3060,7 +3257,7 @@ export interface AutomationRulesUpdateParams {
   match?: AutomationRuleMatchInput;
   actions?: Array<AutomationReplyActionInput | AutomationGroupActionInput | AutomationTagActionInput | AutomationFlagActionInput>;
   cooldown_minutes?: number;
-  /** Moves a keyword rule to this place among the keyword rules of its inbox. */
+  /** Moves a keyword rule to this place among the keyword rules of its line. */
   position?: number;
 }
 
@@ -3076,8 +3273,8 @@ export interface AutomationRulesTestParams {
 
 /** The parameters of `automationRuns.list()`. */
 export interface AutomationRunsListParams {
-  /** Runs of rules of this inbox. */
-  inbox_id?: string;
+  /** Runs of rules of this line. */
+  line_id?: string;
   /** Runs of this rule. */
   rule_id?: string;
   /** Runs triggered in this conversation. */
@@ -3121,9 +3318,9 @@ export interface CampaignsRecipientsListParams {
 export interface CampaignsListParams {
   /** Campaign status. */
   status?: CampaignStatus;
-  /** Campaigns sent from this inbox. */
-  inbox_id?: string;
-  /** Campaigns whose inbox belongs to this channel. */
+  /** Campaigns sent from this line. */
+  line_id?: string;
+  /** Campaigns whose line belongs to this channel. */
   channel_id?: string;
   /** Created at or after this time. */
   created_after?: Date | string;
@@ -3140,7 +3337,7 @@ export interface CampaignsListParams {
 /** The parameters of `campaigns.create()`. */
 export interface CampaignsCreateParams {
   name: string;
-  inbox_id: string;
+  line_id: string;
   /** The message text; exclusive with `template_id`. */
   body?: string | null;
   /** A template whose body and picture are copied into the campaign; exclusive with `body`. */
@@ -3160,7 +3357,7 @@ export interface CampaignsCreateParams {
 /** The parameters of `campaigns.update()`. */
 export interface CampaignsUpdateParams {
   name?: string;
-  inbox_id?: string;
+  line_id?: string;
   /** The message text; exclusive with `template_id`. */
   body?: string | null;
   /** A template whose body and picture are copied into the campaign; exclusive with `body`. */
@@ -3186,7 +3383,6 @@ export interface CampaignsStartParams {
 /** The parameters of `channels.update()`. */
 export interface ChannelsUpdateParams {
   name?: string;
-  reply_window_days?: number;
   /** `null` is the channel's own country only; a list must contain the channel's own country. */
   allowed_destination_countries?: string[] | null;
   skip_business_senders?: boolean;
@@ -3395,9 +3591,14 @@ export interface ContactsConversationsParams {
   cursor?: string;
 }
 
+/** The parameters of `conversations.handover()`. */
+export interface ConversationsHandoverParams {
+  line_id: string;
+}
+
 /** The parameters of `conversations.list()`. */
 export interface ConversationsListParams {
-  inbox_id?: string;
+  line_id?: string;
   channel_id?: string;
   /** Comma list. */
   channel_type?: string[] | string;
@@ -3611,32 +3812,39 @@ export interface ImportsCreateFromFileParams {
   options?: string;
 }
 
-/** The parameters of `inboxes.list()`. */
-export interface InboxesListParams {
-  channel_id?: string;
-  /** One of: `android_sim`, `whatsapp_evolution`, `telegram_bot`. */
-  channel_type?: string;
-  /** One of: `main`, `integration`. */
-  kind?: string;
+/** The parameters of `lines.list()`. */
+export interface LinesListParams {
+  kind?: LineKind;
   /** Default `false`. */
   archived?: boolean;
+  /** Only lines that have this channel in their sender list. */
+  channel_id?: string;
+  /** Only lines with a sender of this type. One of: `android_sim`, `whatsapp_evolution`, `telegram_bot`. */
+  channel_type?: string;
   /** Page size, 1 to 200. */
   limit?: number;
   /** Opaque cursor from a previous page's `next_cursor`; valid for 24 hours. */
   cursor?: string;
 }
 
-/** The parameters of `inboxes.create()`. */
-export interface InboxesCreateParams {
-  channel_id: string;
+/** The parameters of `lines.create()`. */
+export interface LinesCreateParams {
   name: string;
+  senders?: LineSenderInput[];
 }
 
-/** The parameters of `inboxes.update()`. */
-export interface InboxesUpdateParams {
+/** The parameters of `lines.update()`. */
+export interface LinesUpdateParams {
   name?: string;
-  /** Merged key by key into the inbox settings; `null` removes a key. */
+  reply_window_days?: number;
+  show_in_portal?: boolean;
+  /** Merged key by key into the line settings; `null` removes a key. */
   settings?: Record<string, unknown>;
+}
+
+/** The parameters of `lines.setSenders()`. */
+export interface LinesSetSendersParams {
+  senders: LineSenderInput[];
 }
 
 /** The parameters of `media.upload()`. */
@@ -3661,7 +3869,7 @@ export interface MessagesSendBatchParams {
 
 /** The parameters of `messages.list()`. */
 export interface MessagesListParams {
-  inbox_id?: string;
+  line_id?: string;
   channel_id?: string;
   conversation_id?: string;
   contact_id?: string;
@@ -3698,7 +3906,7 @@ export interface MessagesListParams {
    * One value or a comma list. Values: `scheduled`, `quiet_hours`, `frequency_cap`, `channel_paused`,
    * `device_offline`, `device_paused`, `campaign_paused`, `media_processing`, `content_cap`, `recipient_cap`,
    * `new_recipient_cap`, `link_restricted`, `platform_hold`, `account_limit`, `bulk_hours`, `carrier_cooldown`,
-   * `device_hot`.
+   * `device_hot`, `no_sender_available`.
    */
   hold_reason?: string[] | string;
   /** Recipient address; phone numbers in any accepted format are normalised. */
@@ -3721,11 +3929,11 @@ export interface MessagesListParams {
 
 /** The parameters of `messages.send()`. */
 export interface MessagesSendParams {
-  /** The inbox to send from. A key limited to one inbox may leave all sender fields out. */
-  inbox_id?: string;
-  /** Send from this channel's main inbox. */
+  /** The line to send from. A key limited to one line may leave all sender fields out. */
+  line_id?: string;
+  /** Send from this channel, on the line it is the primary sender of, else on its default line. */
   channel_id?: string;
-  /** A channel address (for SMS, the number); resolves to that channel's main inbox. */
+  /** A channel address (for SMS, the number); resolves like `channel_id`. */
   from?: string;
   /** Only to choose between channels of different types that share the `from` address. */
   channel_type?: string;
@@ -3844,10 +4052,10 @@ export interface StatsDailyParams {
   from: string;
   to: string;
   channel_id?: string;
-  inbox_id?: string;
+  line_id?: string;
   /** One of: `android_sim`, `whatsapp_evolution`, `telegram_bot`. */
   channel_type?: string;
-  /** Default `none`. One of: `none`, `channel`, `inbox`, `channel_type`. */
+  /** Default `none`. One of: `none`, `channel`, `line`, `channel_type`. */
   group_by?: string;
   /** Grouped results only. 1 to 1,000 rows, default 200. */
   limit?: number;
@@ -4013,10 +4221,10 @@ export interface WebhookEndpointsCreateParams {
   url: string;
   description?: string | null;
   events?: string[] | null;
-  inbox_ids?: string[] | null;
+  line_ids?: string[] | null;
   channel_types?: string[] | null;
   /**
-   * Also receive the events of every managed account. Only on an approved partner's own account, with `inbox_ids`
+   * Also receive the events of every managed account. Only on an approved partner's own account, with `line_ids`
    * `null`, and never with a restricted key.
    */
   include_managed_accounts?: boolean;
@@ -4027,9 +4235,9 @@ export interface WebhookEndpointsUpdateParams {
   url?: string;
   description?: string | null;
   events?: string[] | null;
-  inbox_ids?: string[] | null;
+  line_ids?: string[] | null;
   channel_types?: string[] | null;
-  /** Only on an approved partner's own account, with `inbox_ids` `null`, and never with a restricted key. */
+  /** Only on an approved partner's own account, with `line_ids` `null`, and never with a restricted key. */
   include_managed_accounts?: boolean;
   active?: boolean;
 }
@@ -4115,8 +4323,11 @@ export interface PartnerAccountKeysListParams {
 /** The parameters of `partner.accountKeys.create()`. */
 export interface PartnerAccountKeysCreateParams {
   name: string;
-  /** `null` or omitted for all inboxes. */
-  inbox_ids?: string[] | null;
+  /**
+   * `null` or omitted for all lines. A key limited to one line sends from it without naming a sender (`line_id`,
+   * `channel_id` and `from` can be left out).
+   */
+  line_ids?: string[] | null;
   /** `null` or omitted for all channel types, for example `["android_sim"]`. */
   channel_types?: string[] | null;
   abilities?: string[] | null;

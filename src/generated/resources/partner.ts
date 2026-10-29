@@ -179,7 +179,7 @@ export class PartnerAccountKeysResource {
   /**
    * Mint an account key for a managed account.
    *
-   * Same body and `201` response as `POST /v1/api-keys`, unrestricted or restricted to inboxes or channel types,
+   * Same body and `201` response as `POST /v1/api-keys`, unrestricted or restricted to lines or channel types,
    * with any abilities. The `token` is shown once, in this response.
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `createManagedAccountKey`

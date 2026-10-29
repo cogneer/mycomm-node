@@ -22,8 +22,8 @@ export class SuppressionsResource {
    * List suppressions.
    *
    * Requires `suppressions:read`. The account's suppressed identities, newest first, with cursor pagination.
-   * Suppressions belong to the account, not to an inbox: a restricted key sees the whole list. Comma lists match
-   * any of the values. A phone number in `address` written without country code is read in the account country.
+   * Suppressions belong to the account, not to a line: a restricted key sees the whole list. Comma lists match any
+   * of the values. A phone number in `address` written without country code is read in the account country.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listSuppressions`
    */

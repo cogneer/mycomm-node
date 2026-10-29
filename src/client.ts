@@ -119,9 +119,10 @@ export class MyComm extends Resources {
    * carrier delivers; see the guide "Verify your integration".
    *
    * Never throws for a problem with the key or the request: each problem is a failed check in the result, with the API's
-   * own message. It does not retry, so a failure is reported at once.
+   * own message. It does not retry, so a failure is reported at once. `lineId` names the line to send from; leave it out
+   * when the key has only one.
    */
-  async verify(options: { to?: string; inboxId?: string } = {}): Promise<VerifyResult> {
+  async verify(options: { to?: string; lineId?: string } = {}): Promise<VerifyResult> {
     const once: RequestOptions = { maxRetries: 0 };
     const checks: VerifyCheck[] = [];
     let account: Account | null = null;
@@ -139,7 +140,7 @@ export class MyComm extends Resources {
     if (options.to !== undefined) {
       try {
         const preview = await this.messages.send(
-          { inbox_id: options.inboxId, to: options.to, body: 'MyComm verify', category: 'transactional', dry_run: true },
+          { line_id: options.lineId, to: options.to, body: 'MyComm verify', category: 'transactional', dry_run: true },
           once,
         );
         holdReason = preview.hold_reason ?? null;

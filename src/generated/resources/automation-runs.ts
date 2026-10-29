@@ -15,8 +15,8 @@ export class AutomationRunsResource {
    * List automation runs.
    *
    * Requires `automation:read`. The automation log: one run per evaluation that chose a rule, newest first
-   * (`sort=-created_at`, ties by `id`), with cursor pagination. `inbox_id` is the rule's inbox. `inbox_id`,
-   * `rule_id` and `conversation_id` take one value each; `outcome` takes a comma list.
+   * (`sort=-created_at`, ties by `id`), with cursor pagination. `line_id` is the rule's line. `line_id`, `rule_id`
+   * and `conversation_id` take one value each; `outcome` takes a comma list.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listAutomationRuns`
    */

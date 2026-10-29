@@ -156,8 +156,8 @@ export class ContactsResource {
   /**
    * List the conversations of a contact.
    *
-   * Requires `conversations:read`. The contact's conversations across inboxes, newest `last_message_at` first
-   * (restricted keys: the conversations of their inboxes only). A conversation without messages is not listed.
+   * Requires `conversations:read`. The contact's conversations across lines, newest `last_message_at` first
+   * (restricted keys: the conversations of their lines only). A conversation without messages is not listed.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listContactConversations`
    */
@@ -222,7 +222,7 @@ export class ContactsIdentitiesResource {
   /**
    * Block an identity account-wide.
    *
-   * Requires `contacts:write`. Sets `blocked_at` for every inbox and channel of the account. New outbound to the
+   * Requires `contacts:write`. Sets `blocked_at` for every line and channel of the account. New outbound to the
    * identity is refused (`CONTACT_BLOCKED`) and its `queued` outbound is cancelled (`message.cancelled`, reason
    * `contact_blocked`). Inbound is still stored but is not counted as unread, runs no automation, sends no
    * notification and emits no `message.received` webhook; opt-out and opt-in keywords still apply.
