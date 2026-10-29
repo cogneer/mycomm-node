@@ -35,8 +35,9 @@ npm run format         # Prettier over everything
 5. Add a line to `CHANGELOG.md` and release: a **minor** version for additions, a **major** one when a method, parameter or
    field was removed or changed type.
 
-The API only makes additive changes within `/v1`, so regenerating is normally a minor release. Keep the PHP SDK in step:
-both are generated from the same `spec/` commit.
+Regenerating is a minor release only when the API only adds (new endpoints, fields, enum values or events). A breaking
+API change, such as API `2.0.0` where lines replaced inboxes, means a major release. Keep the PHP SDK in step: both are
+generated from the same `spec/` commit.
 
 ## What the generator decides and what you decide
 
