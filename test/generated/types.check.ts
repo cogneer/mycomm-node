@@ -126,13 +126,11 @@ import type {
 // account.get 200 (full)
 export const answer0 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'Example type',
   name: 'Example name',
   status: 'Example status',
   country_iso: 'PK',
   timezone: 'Asia/Karachi',
   default_locale: 'en',
-  external_ref: 'Example external ref',
   settings: {
     opt_out: {},
     compliance: {},
@@ -154,26 +152,22 @@ export const answer0 = {
 // account.get 200 (minimal)
 export const answer1 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'Example type',
   name: 'Example name',
   status: 'Example status',
   country_iso: 'PK',
   timezone: 'Asia/Karachi',
   default_locale: 'en',
-  external_ref: null,
   settings: {},
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Account;
 // account.update 200 (full)
 export const answer2 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'Example type',
   name: 'Example name',
   status: 'Example status',
   country_iso: 'PK',
   timezone: 'Asia/Karachi',
   default_locale: 'en',
-  external_ref: 'Example external ref',
   settings: {
     opt_out: {},
     compliance: {},
@@ -195,13 +189,11 @@ export const answer2 = {
 // account.update 200 (minimal)
 export const answer3 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'Example type',
   name: 'Example name',
   status: 'Example status',
   country_iso: 'PK',
   timezone: 'Asia/Karachi',
   default_locale: 'en',
-  external_ref: null,
   settings: {},
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Account;
@@ -6845,7 +6837,6 @@ export const event304 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -6896,7 +6887,6 @@ export const event305 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -6938,7 +6928,6 @@ export const event306 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -6989,7 +6978,6 @@ export const event307 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7031,7 +7019,6 @@ export const event308 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7081,7 +7068,6 @@ export const event309 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7122,7 +7108,6 @@ export const event310 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7173,7 +7158,6 @@ export const event311 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7215,7 +7199,6 @@ export const event312 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7266,7 +7249,6 @@ export const event313 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7308,7 +7290,6 @@ export const event314 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7358,7 +7339,6 @@ export const event315 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7399,7 +7379,6 @@ export const event316 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7450,7 +7429,6 @@ export const event317 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7492,7 +7470,6 @@ export const event318 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7534,7 +7511,6 @@ export const event319 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7576,7 +7552,6 @@ export const event320 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7619,7 +7594,6 @@ export const event321 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7662,7 +7636,6 @@ export const event322 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { contact_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', erased: true, merged_into: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c' },
@@ -7674,7 +7647,6 @@ export const event323 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: { contact_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', erased: true, merged_into: null },
@@ -7686,7 +7658,6 @@ export const event324 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7714,7 +7685,6 @@ export const event325 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7742,7 +7712,6 @@ export const event326 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7770,7 +7739,6 @@ export const event327 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7798,7 +7766,6 @@ export const event328 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7822,7 +7789,6 @@ export const event329 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7846,7 +7812,6 @@ export const event330 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7861,7 +7826,6 @@ export const event331 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', senders: [] },
@@ -7873,7 +7837,6 @@ export const event332 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7892,7 +7855,6 @@ export const event333 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7911,7 +7873,6 @@ export const event334 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', held_count: 1 },
@@ -7923,7 +7884,6 @@ export const event335 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', held_count: 1 },
@@ -7935,7 +7895,6 @@ export const event336 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7953,7 +7912,6 @@ export const event337 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -7971,7 +7929,6 @@ export const event338 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7989,7 +7946,6 @@ export const event339 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8007,7 +7963,6 @@ export const event340 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8025,7 +7980,6 @@ export const event341 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8043,7 +7997,6 @@ export const event342 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', external_ref: 'Example external ref', by: 'partner' },
@@ -8055,7 +8008,6 @@ export const event343 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', external_ref: null, by: 'partner' },
@@ -8067,7 +8019,6 @@ export const event344 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8086,7 +8037,6 @@ export const event345 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8105,7 +8055,6 @@ export const event346 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8124,7 +8073,6 @@ export const event347 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8143,7 +8091,6 @@ export const event348 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8159,7 +8106,6 @@ export const event349 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8175,7 +8121,6 @@ export const event350 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8197,7 +8142,6 @@ export const event351 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8219,7 +8163,6 @@ export const event352 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8317,7 +8260,6 @@ export const event353 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8394,7 +8336,6 @@ export const event354 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8493,7 +8434,6 @@ export const event355 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8571,7 +8511,6 @@ export const event356 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8670,7 +8609,6 @@ export const event357 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8748,7 +8686,6 @@ export const event358 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8849,7 +8786,6 @@ export const event359 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -8929,7 +8865,6 @@ export const event360 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9027,7 +8962,6 @@ export const event361 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -9104,7 +9038,6 @@ export const event362 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9126,7 +9059,6 @@ export const event363 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -9142,7 +9074,6 @@ export const event364 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', window: '24h', used_segments: 1, cap: 1, date: 'Example date' },
@@ -9154,7 +9085,6 @@ export const event365 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', window: '24h', used_segments: 1, cap: 1, date: 'Example date' },
@@ -9166,7 +9096,6 @@ export const event366 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9182,7 +9111,6 @@ export const event367 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', qr_png_base64: null, expires_at: null },
@@ -9194,7 +9122,6 @@ export const event368 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9258,7 +9185,6 @@ export const event369 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -9306,7 +9232,6 @@ export const event370 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9370,7 +9295,6 @@ export const event371 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -9418,7 +9342,6 @@ export const event372 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9482,7 +9405,6 @@ export const event373 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -9530,7 +9452,6 @@ export const event374 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9594,7 +9515,6 @@ export const event375 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -9642,7 +9562,6 @@ export const event376 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9706,7 +9625,6 @@ export const event377 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -9754,14 +9672,11 @@ export const event378 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     account: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      type: 'direct',
-      external_ref: 'Example external ref',
       name: 'Example name',
       status: 'active',
       suspended_reason: 'Example suspended reason',
@@ -9807,14 +9722,11 @@ export const event379 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
     account: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      type: 'direct',
-      external_ref: null,
       name: 'Example name',
       status: 'active',
       suspended_reason: null,
@@ -9839,14 +9751,11 @@ export const event380 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     account: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      type: 'direct',
-      external_ref: 'Example external ref',
       name: 'Example name',
       status: 'active',
       suspended_reason: 'Example suspended reason',
@@ -9892,14 +9801,11 @@ export const event381 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
     account: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      type: 'direct',
-      external_ref: null,
       name: 'Example name',
       status: 'active',
       suspended_reason: null,
@@ -9924,14 +9830,11 @@ export const event382 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     account: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      type: 'direct',
-      external_ref: 'Example external ref',
       name: 'Example name',
       status: 'active',
       suspended_reason: 'Example suspended reason',
@@ -9977,14 +9880,11 @@ export const event383 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
     account: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      type: 'direct',
-      external_ref: null,
       name: 'Example name',
       status: 'active',
       suspended_reason: null,
@@ -10009,7 +9909,6 @@ export const event384 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -10085,7 +9984,6 @@ export const event385 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -10161,7 +10059,6 @@ export const event386 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -10237,7 +10134,6 @@ export const event387 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -10313,7 +10209,6 @@ export const event388 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -10389,7 +10284,6 @@ export const event389 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -10465,7 +10359,6 @@ export const event390 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -10541,7 +10434,6 @@ export const event391 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -10617,7 +10509,6 @@ export const event392 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -10693,7 +10584,6 @@ export const event393 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -10769,7 +10659,6 @@ export const event394 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -10845,7 +10734,6 @@ export const event395 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -10921,7 +10809,6 @@ export const event396 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -10998,7 +10885,6 @@ export const event397 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11075,7 +10961,6 @@ export const event398 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11152,7 +11037,6 @@ export const event399 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11229,7 +11113,6 @@ export const event400 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11265,7 +11148,6 @@ export const event401 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11301,7 +11183,6 @@ export const event402 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11337,7 +11218,6 @@ export const event403 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11373,7 +11253,6 @@ export const event404 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11409,7 +11288,6 @@ export const event405 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11445,7 +11323,6 @@ export const event406 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11481,7 +11358,6 @@ export const event407 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11517,7 +11393,6 @@ export const event408 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11534,7 +11409,6 @@ export const event409 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11551,7 +11425,6 @@ export const event410 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11573,7 +11446,6 @@ export const event411 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11595,7 +11467,6 @@ export const event412 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11617,7 +11488,6 @@ export const event413 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: {
@@ -11639,7 +11509,6 @@ export const event414 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: 'Example account external ref',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { endpoint_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', message: 'Example message' },
@@ -11651,7 +11520,6 @@ export const event415 = {
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
   account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_external_ref: null,
   line_id: null,
   channel: null,
   data: { endpoint_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', message: 'Example message' },

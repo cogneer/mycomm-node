@@ -133,7 +133,6 @@ components:
         - RETRY_LIMIT_REACHED
         - NAME_TAKEN
         - IDENTITY_TAKEN
-        - PARTNER_HAS_CLIENTS
         - EXTERNAL_REF_TAKEN
         - SUSPENDED_BY_SUPPORT
         - CHANNEL_ADDRESS_IN_USE
@@ -1866,48 +1865,6 @@ components:
               properties:
                 contact_id:
                   type: string
-            request_id:
-              type: string
-              format: uuid
-            doc_url:
-              type: string
-              format: uri
-    ErrPartnerHasClients:
-      type: object
-      description: 'This partner account still manages client accounts. Remove or transfer them first.'
-      x-http-status: 409
-      examples:
-        -
-          error:
-            code: PARTNER_HAS_CLIENTS
-            message: 'This partner account still manages client accounts. Remove or transfer them first.'
-            details:
-              managed_accounts: 1
-            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#partner-has-clients'
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          required:
-            - code
-            - message
-            - details
-            - request_id
-            - doc_url
-          properties:
-            code:
-              type: string
-              const: PARTNER_HAS_CLIENTS
-            message:
-              type: string
-            details:
-              type: object
-              description: 'Specific to this code.'
-              properties:
-                managed_accounts:
-                  type: integer
             request_id:
               type: string
               format: uuid

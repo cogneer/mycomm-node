@@ -438,21 +438,16 @@ components:
       type: object
       required:
         - id
-        - type
         - name
         - status
         - country_iso
         - timezone
         - default_locale
-        - external_ref
         - settings
         - created_at
       properties:
         id:
           $ref: '#/components/schemas/Uuid'
-        type:
-          type: string
-          description: '`direct`, `managed` or `partner`.'
         name:
           type: string
         status:
@@ -465,11 +460,6 @@ components:
         default_locale:
           type: string
           description: 'BCP 47, default `en-GB`.'
-        external_ref:
-          type:
-            - string
-            - 'null'
-          description: '`null` for direct accounts.'
         settings:
           $ref: '#/components/schemas/AccountSettings'
         created_at:
@@ -7281,8 +7271,6 @@ components:
       description: 'The account resource, with its `counts`.'
       required:
         - id
-        - type
-        - external_ref
         - name
         - status
         - suspended_reason
@@ -7298,16 +7286,6 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/Uuid'
-        type:
-          type: string
-          enum:
-            - direct
-            - managed
-            - partner
-        external_ref:
-          type:
-            - string
-            - 'null'
         name:
           type: string
         status:
@@ -7380,7 +7358,6 @@ components:
         - api_version
         - created_at
         - account_id
-        - account_external_ref
         - line_id
         - channel
         - data
@@ -7399,11 +7376,6 @@ components:
           $ref: '#/components/schemas/Timestamp'
         account_id:
           $ref: '#/components/schemas/Uuid'
-        account_external_ref:
-          type:
-            - string
-            - 'null'
-          description: "The managed account's `external_ref`; `null` for direct accounts."
         line_id:
           oneOf:
             -
@@ -23051,7 +23023,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23135,7 +23106,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23219,7 +23189,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23300,7 +23269,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23384,7 +23352,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23468,7 +23435,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23549,7 +23515,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23633,7 +23598,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23694,7 +23658,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23757,7 +23720,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23791,7 +23753,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23841,7 +23802,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23891,7 +23851,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23932,7 +23891,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23970,7 +23928,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24008,7 +23965,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24041,7 +23997,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24078,7 +24033,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24115,7 +24069,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24152,7 +24105,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24186,7 +24138,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24223,7 +24174,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24260,7 +24210,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24294,7 +24243,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24334,7 +24282,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24487,7 +24434,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24641,7 +24587,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24795,7 +24740,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24951,7 +24895,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25104,7 +25047,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25143,7 +25085,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25179,7 +25120,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25213,7 +25153,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25300,7 +25239,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25387,7 +25325,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25474,7 +25411,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25561,7 +25497,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25648,7 +25583,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25656,8 +25590,6 @@ webhooks:
                   data:
                     account:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      type: direct
-                      external_ref: example
                       name: Example
                       status: active
                       suspended_reason: example
@@ -25718,7 +25650,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25726,8 +25657,6 @@ webhooks:
                   data:
                     account:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      type: direct
-                      external_ref: example
                       name: Example
                       status: active
                       suspended_reason: example
@@ -25788,7 +25717,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25796,8 +25724,6 @@ webhooks:
                   data:
                     account:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      type: direct
-                      external_ref: example
                       name: Example
                       status: active
                       suspended_reason: example
@@ -25858,7 +25784,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25955,7 +25880,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26052,7 +25976,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26149,7 +26072,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26246,7 +26168,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26343,7 +26264,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26440,7 +26360,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26538,7 +26457,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26636,7 +26554,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26691,7 +26608,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26746,7 +26662,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26801,7 +26716,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26856,7 +26770,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26893,7 +26806,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26935,7 +26847,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26977,7 +26888,6 @@ webhooks:
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
                   account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  account_external_ref: example
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10

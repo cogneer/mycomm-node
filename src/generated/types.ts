@@ -1066,13 +1066,6 @@ export const LineDetachedBy = {
   System: 'system',
 } as const;
 
-export type AccountType = 'direct' | 'managed' | 'partner';
-export const AccountType = {
-  Direct: 'direct',
-  Managed: 'managed',
-  Partner: 'partner',
-} as const;
-
 export type AccountStatus = 'active' | 'suspended' | 'pending_deletion';
 export const AccountStatus = {
   Active: 'active',
@@ -1082,8 +1075,6 @@ export const AccountStatus = {
 
 export interface Account {
   id: string;
-  /** `direct`, `managed` or `partner`. */
-  type: string;
   name: string;
   /** `active`, `suspended` or `pending_deletion`. */
   status: string;
@@ -1091,8 +1082,6 @@ export interface Account {
   timezone: string;
   /** BCP 47, default `en-GB`. */
   default_locale: string;
-  /** `null` for direct accounts. */
-  external_ref: string | null;
   settings: AccountSettings;
   created_at: string;
 }
@@ -3082,8 +3071,6 @@ export interface WebhookAccountData {
 /** The account resource, with its `counts`. */
 export interface WebhookAccount {
   id: string;
-  type: Open<AccountType>;
-  external_ref: string | null;
   name: string;
   status: Open<AccountStatus>;
   suspended_reason: string | null;

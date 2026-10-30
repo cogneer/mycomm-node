@@ -204,7 +204,6 @@ export const config = {
     'WebhookDeviceRevokedData.reason': 'DeviceRevokedReason',
     'WebhookDeviceStateData.previous_state': 'DeviceConnectionState',
     'StatsDailyResponse.group_by': 'StatsGroupBy',
-    'WebhookAccount.type': 'AccountType',
     'WebhookAccount.status': 'AccountStatus',
     'CreateHostedLinkRequest.purpose': 'HostedLinkPurpose',
     'PartnerLine.state': 'LineState',

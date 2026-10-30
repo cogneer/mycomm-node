@@ -28,6 +28,8 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
   user a line instead.
 - Connect sessions: `connectSessions` (`create`, `get`, `delete`) and the `ConnectSession` types. Hosted links replace
   them.
+- `Account.type` and `external_ref`, `WebhookAccount.type` and `external_ref`, the `AccountType` type, and the webhook
+  envelope's `account_external_ref`: the API no longer sends them.
 
 ### Added
 

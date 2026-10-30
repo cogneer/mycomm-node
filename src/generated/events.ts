@@ -53,8 +53,6 @@ export interface WebhookEventBase {
   api_version: string;
   created_at: string;
   account_id: string;
-  /** The managed account's `external_ref`; `null` for direct accounts. */
-  account_external_ref: string | null;
   line_id: string | null;
   channel: WebhookChannelRef | null;
 }
