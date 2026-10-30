@@ -115,6 +115,11 @@ export class MyComm extends Resources {
     return new MyComm({ ...this.settings, lineId } as ClientOptions);
   }
 
+  /** Whether the client holds a partner key (`mc_partner_...`), which uses the partner API and reaches `/v1` only through `forLine()`. */
+  isPartnerKey(): boolean {
+    return (this.settings.apiKey ?? '').startsWith('mc_partner_');
+  }
+
   /**
    * Checks that the key works and, when you give a number to test with, that a message to it would be accepted. Nothing
    * is sent: the second check is a dry run (`dry_run: true`), which runs the same authentication, validation, recipient,
@@ -124,26 +129,52 @@ export class MyComm extends Resources {
    * Never throws for a problem with the key or the request: each problem is a failed check in the result, with the API's
    * own message. It does not retry, so a failure is reported at once. `lineId` names the line to send from; leave it out
    * when the key has only one.
+   *
+   * A partner key is checked on the partner API (it reaches no account of its own on `/v1`, so `account` stays null) and
+   * its send is dry-run through a line: the one of `forLine()`, else `lineId`.
    */
   async verify(options: { to?: string; lineId?: string } = {}): Promise<VerifyResult> {
     const once: RequestOptions = { maxRetries: 0 };
     const checks: VerifyCheck[] = [];
     let account: Account | null = null;
     let holdReason: string | null = null;
+    const partner = this.isPartnerKey();
 
     try {
-      account = await this.account.get(once);
-      checks.push({ name: 'key', ok: true, message: `The key works for account ${account.id}.` });
+      if (partner) {
+        await this.partner.lines.list({ limit: 1 }, once);
+        checks.push({ name: 'key', ok: true, message: 'The partner key works.' });
+      } else {
+        account = await this.account.get(once);
+        checks.push({ name: 'key', ok: true, message: `The key works for account ${account.id}.` });
+      }
     } catch (error) {
       if (!(error instanceof MyCommError)) throw error;
       checks.push({ name: 'key', ok: false, message: error.message });
       return result(checks, null, null);
     }
 
+    let sender: MyComm = this;
+    let lineId = options.lineId;
+    if (partner && options.to !== undefined) {
+      const line = this.settings.lineId ?? options.lineId;
+      if (line === undefined) {
+        checks.push({
+          name: 'send',
+          ok: false,
+          message: 'A partner key sends through one of its lines: pass lineId (or use forLine()).',
+        });
+        return result(checks, null, null);
+      }
+      // The line goes in the MyComm-Line header; the body names no line.
+      sender = this.settings.lineId === line ? this : this.forLine(line);
+      lineId = undefined;
+    }
+
     if (options.to !== undefined) {
       try {
-        const preview = await this.messages.send(
-          { line_id: options.lineId, to: options.to, body: 'MyComm verify', category: 'transactional', dry_run: true },
+        const preview = await sender.messages.send(
+          { line_id: lineId, to: options.to, body: 'MyComm verify', category: 'transactional', dry_run: true },
           once,
         );
         holdReason = preview.hold_reason ?? null;

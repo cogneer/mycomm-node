@@ -59,4 +59,44 @@ describe('verify()', () => {
     expect(result.checks).toHaveLength(1);
     fake.assertNotCalled('messages.send');
   });
+
+  it('verifies_a_partner_key_on_a_partner_route_and_dry_runs_through_its_line', async () => {
+    const fake = new MyCommFake({ apiKey: 'mc_partner_fake' });
+    fake.respond('messages.send', FakeResponse.json({ id: null, status: null, hold_reason: null }, 200));
+    fake.respond('account.get', FakeResponse.error(403, 'PARTNER_ROUTE_NOT_ALLOWED', 'A partner key cannot use this route.'));
+
+    const viaOption = await fake.client.verify({ to: '+923001234567', lineId: 'line-1' });
+    const viaForLine = await fake.client.forLine('line-2').verify({ to: '+923001234567' });
+
+    expect(viaOption.ok).toBe(true);
+    expect(viaOption.checks.map((check) => check.name)).toEqual(['key', 'send']);
+    expect(viaOption.account).toBeNull();
+    expect(viaForLine.ok).toBe(true);
+    fake.assertNotCalled('account.get').assertCalledTimes('partner.lines.list', 2);
+    const sends = fake.calls('messages.send');
+    expect(sends[0]!.header('MyComm-Line')).toBe('line-1');
+    expect(sends[0]!.json?.line_id).toBeUndefined();
+    expect(sends[1]!.header('MyComm-Line')).toBe('line-2');
+  });
+
+  it('says a partner key needs a line to dry-run a send', async () => {
+    const fake = new MyCommFake({ apiKey: 'mc_partner_fake' });
+
+    const result = await fake.client.verify({ to: '+923001234567' });
+
+    expect(result.ok).toBe(false);
+    expect(result.checks[0]!.ok).toBe(true);
+    expect(result.problems[0]).toContain('line');
+    fake.assertNotCalled('messages.send');
+  });
+
+  it('reports a refused partner key', async () => {
+    const fake = new MyCommFake({ apiKey: 'mc_partner_fake' });
+    fake.respond('partner.lines.list', FakeResponse.error(401, 'UNAUTHENTICATED', 'The API key is not valid.'));
+
+    const result = await fake.client.verify({ to: '+923001234567', lineId: 'line-1' });
+
+    expect(result.problems).toEqual(['The API key is not valid.']);
+    fake.assertNotCalled('messages.send');
+  });
 });

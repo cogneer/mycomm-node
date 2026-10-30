@@ -39,6 +39,8 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
 - `partner.sponsorshipDefaults.get()` and `put()`, and `sponsorship` on partner lines (`SponsorshipTerms`).
 - `partner.usage.get()` reports one row per partner line (`line_id`, `external_ref`); its filter is `line_id`.
 - `webhookEndpoints.create()` / `update()`: `partner_lines`.
+- `client.verify()` with a partner key checks the key on the partner API and dry-runs the send through the line of
+  `forLine()` (or its `lineId`); `client.isPartnerKey()`.
 - Webhook events `line.connected`, `line.needs_attention`, `line.recovered`, `line.detached`, `line.quota_low` and
   `line.quota_exhausted` (56 in all); types `LineState`, `LineNeedsAttentionReason`, `LineDetachedBy`,
   `HostedLinkPurpose`, `HostedLinkStatus` and `SponsorshipOnExhausted`.

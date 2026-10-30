@@ -127,7 +127,7 @@ class FakeTransport implements Transport {
  *     fake.assertCalled('messages.send', (request) => request.json?.to === '+923001234567');
  *
  * Every operation answers with the realistic example of the API reference until you say otherwise with `respond()` or
- * `respondOnce()`. Operations are named by their SDK id: `messages.send`, `contacts.list`, `partner.accounts.provision`.
+ * `respondOnce()`. Operations are named by their SDK id: `messages.send`, `contacts.list`, `partner.lines.create`.
  */
 export class MyCommFake {
   readonly client: MyComm;
