@@ -2715,7 +2715,10 @@ export interface PartnerLineStatus {
    * `session_logged_out` and `quarantined` are reserved.
    */
   needs_attention_reasons: Open<LineNeedsAttentionReason>[];
-  /** The line's enabled senders by channel type, for every type the line may use. */
+  /**
+   * The line's enabled senders by channel type, for every type the line may use. A detached line answers
+   * `not_connected` with `{}` here, no sponsorship and no times.
+   */
   channels: Record<string, PartnerLineStatusChannel>;
   sponsorship: PartnerLineStatusSponsorship | null;
   last_sent_at: string | null;

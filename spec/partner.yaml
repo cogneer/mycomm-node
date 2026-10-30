@@ -380,7 +380,7 @@ components:
               - quarantined
         channels:
           type: object
-          description: "The line's enabled senders by channel type, for every type the line may use."
+          description: "The line's enabled senders by channel type, for every type the line may use. A detached line answers `not_connected` with `{}` here, no sponsorship and no times."
           additionalProperties:
             type: object
             additionalProperties: false
