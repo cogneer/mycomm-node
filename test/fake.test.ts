@@ -79,14 +79,14 @@ describe('the fake', () => {
   });
 
   it('records what was sent', async () => {
-    const fake = new MyCommFake({ accountId: 'acc-1' });
+    const fake = new MyCommFake({ lineId: 'line-1' });
 
     await fake.client.messages.send({ to: '+923001234567', body: 'Hi', metadata: { order: 7 } }, { idempotencyKey: 'order-7' });
 
     const [request] = fake.calls('messages.send');
     expect(request!.json).toEqual({ to: '+923001234567', body: 'Hi', metadata: { order: 7 } });
     expect(request!.header('Idempotency-Key')).toBe('order-7');
-    expect(request!.header('MyComm-Account')).toBe('acc-1');
+    expect(request!.header('MyComm-Line')).toBe('line-1');
     fake
       .assertCalled('messages.send', (call) => call.json?.to === '+923001234567')
       .assertCalledTimes('messages.send', 1)
@@ -118,5 +118,41 @@ describe('the fake', () => {
     const event = await Webhook.constructEvent(webhook.payload, webhook.signature, 'whsec_test');
     expect(event.type).toBe('message.delivered');
     await expect(FakeWebhook.make('no.such.event')).rejects.toThrow('No webhook event is named no.such.event.');
+  });
+
+  it('creates_a_partner_line_and_a_connect_link', async () => {
+    const fake = new MyCommFake({ apiKey: 'mc_partner_fake' });
+    const partner = fake.client;
+
+    const line = await partner.partner.lines.create({
+      external_ref: 'erp-tenant-20418',
+      name: 'Acme Traders',
+      user_number: '+923001234567',
+    });
+    const link = await partner.partner.lines.links.create(line.id, {
+      purpose: 'connect',
+      return_url: 'https://erp.example.com/settings/messaging',
+      allowed_origins: ['https://erp.example.com'],
+    });
+    const status = await partner.partner.lines.status(line.id);
+    await partner.forLine(line.id).messages.send({ to: '+923009876543', body: 'Hi' });
+
+    const [create] = fake.calls('partner.lines.create');
+    const [mint] = fake.calls('partner.lines.links.create');
+    expect(create!.method).toBe('POST');
+    expect(create!.path).toBe('/partner/v1/lines');
+    expect(create!.json).toEqual({ external_ref: 'erp-tenant-20418', name: 'Acme Traders', user_number: '+923001234567' });
+    expect(mint!.path).toBe(`/partner/v1/lines/${line.id}/links`);
+    expect(mint!.json).toEqual({
+      purpose: 'connect',
+      return_url: 'https://erp.example.com/settings/messaging',
+      allowed_origins: ['https://erp.example.com'],
+    });
+    expect(mint!.header('MyComm-Line')).toBeUndefined();
+    expect(link.url).toBe((examples.responses['partner.lines.links.create']!.body as { url: string }).url);
+    expect(link.purpose).toBe('connect');
+    expect(status.state).toBe((examples.responses['partner.lines.status']!.body as { state: string }).state);
+    expect(fake.calls('partner.lines.status')[0]!.path).toBe(`/partner/v1/lines/${line.id}/status`);
+    expect(fake.calls('messages.send')[0]!.header('MyComm-Line')).toBe(line.id);
   });
 });

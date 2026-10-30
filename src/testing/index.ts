@@ -127,7 +127,7 @@ class FakeTransport implements Transport {
  *     fake.assertCalled('messages.send', (request) => request.json?.to === '+923001234567');
  *
  * Every operation answers with the realistic example of the API reference until you say otherwise with `respond()` or
- * `respondOnce()`. Operations are named by their SDK id: `messages.send`, `contacts.list`, `partner.accounts.provision`.
+ * `respondOnce()`. Operations are named by their SDK id: `messages.send`, `contacts.list`, `partner.lines.create`.
  */
 export class MyCommFake {
   readonly client: MyComm;
@@ -137,10 +137,10 @@ export class MyCommFake {
    * `validate`: whether the client checks arguments before sending, as a real client does. Turn it off to test how your
    * code handles what the server answers to a request the SDK would have refused.
    */
-  constructor(options: Pick<ClientOptions, 'apiKey' | 'accountId' | 'validate'> = {}) {
+  constructor(options: Pick<ClientOptions, 'apiKey' | 'lineId' | 'validate'> = {}) {
     const internal: InternalOptions = {
       apiKey: options.apiKey ?? 'mc_live_fake',
-      accountId: options.accountId,
+      lineId: options.lineId,
       validate: options.validate,
       // No retries: an error you stub must surface at once, without the client waiting in between.
       maxRetries: 0,

@@ -3,7 +3,7 @@ openapi: 3.1.0
 info:
   title: 'MyComm Partner API'
   version: 2.0.0
-  description: "For platforms that run MyComm for their own customers. Authenticate with a partner key (`mc_partner_...`) sent as\n`Authorization: Bearer <key>`.\n\n`/partner/v1` only creates, lists, changes, suspends and deletes managed accounts, mints their keys\nand reports usage across them. Everything a managed customer does goes through `/v1`\nwith the partner key plus the `MyComm-Account` header, or with a key minted for that account.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
+  description: "For platforms that give their own users messaging through MyComm. Authenticate with a partner key (`mc_partner_...`)\nsent as `Authorization: Bearer <key>`.\n\nA partner owns **lines**, not accounts. `POST /lines` makes a line for one of your users, known to you by your\n`external_ref`; it lives in the user's MyComm account (an empty one until the user connects a phone), and the user\nowns that account. Send and read through a line on `/v1` with the partner key plus the `MyComm-Line: <line id>`\nheader; a partner key reaches only the message and conversation endpoints of that line and `GET /v1/lines/{id}`.\n`DELETE /lines/{id}` detaches the line: it is archived, the user keeps the account, its channels and its history.\n`/usage` reports usage.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
 servers:
   -
     url: 'https://mycomm.cogneer.tech/partner/v1'
@@ -13,9 +13,7 @@ security:
     partnerKey: []
 tags:
   -
-    name: 'Managed accounts'
-  -
-    name: 'Account keys'
+    name: Lines
   -
     name: Usage
 components:
@@ -96,21 +94,6 @@ components:
         minLength: 1
         maxLength: 255
         pattern: '^[ -~]+$'
-    AccountId:
-      name: id
-      in: path
-      required: true
-      description: "The managed account's id."
-      schema:
-        $ref: '#/components/schemas/Uuid'
-    MyCommAccount:
-      name: MyComm-Account
-      in: header
-      required: false
-      description: "The account a partner key acts on. Required with a partner key, optional with an account key (it must then name the key's own account). A value that is not a UUID answers `400 INVALID_HEADER`."
-      schema:
-        type: string
-        format: uuid
   schemas:
     Uuid:
       type: string
@@ -128,17 +111,17 @@ components:
       enum:
         - MALFORMED_REQUEST
         - INVALID_HEADER
-        - ACCOUNT_CONTEXT_REQUIRED
+        - LINE_CONTEXT_REQUIRED
         - INVALID_CURSOR
         - UNAUTHENTICATED
         - WRONG_KEY_KIND
         - ABILITY_MISSING
         - IP_NOT_ALLOWED
-        - ACCOUNT_CONTEXT_INVALID
+        - LINE_CONTEXT_INVALID
+        - PARTNER_ROUTE_NOT_ALLOWED
         - ACCOUNT_SUSPENDED
         - ACCOUNT_PENDING_DELETION
         - PARTNER_ACCESS_REVOKED
-        - PARTNER_KEY_RESTRICTED
         - NOT_FOUND
         - METHOD_NOT_ALLOWED
         - IDEMPOTENCY_KEY_REUSED
@@ -150,7 +133,6 @@ components:
         - RETRY_LIMIT_REACHED
         - NAME_TAKEN
         - IDENTITY_TAKEN
-        - PARTNER_HAS_CLIENTS
         - EXTERNAL_REF_TAKEN
         - SUSPENDED_BY_SUPPORT
         - CHANNEL_ADDRESS_IN_USE
@@ -216,6 +198,7 @@ components:
         - PAIRING_CODE_LIMIT_REACHED
         - CONNECT_SESSION_LIMIT_REACHED
         - PAIRING_CODE_EXPIRED
+        - SECOND_FACTOR_REQUIRED
         - BATCH_TOO_LARGE
         - AUDIENCE_EMPTY
         - RANGE_TOO_LARGE
@@ -362,6 +345,391 @@ components:
             - string
             - 'null'
           description: 'Field path the warning is about, when there is one.'
+    PartnerLineStatus:
+      type: object
+      additionalProperties: false
+      required:
+        - line_id
+        - state
+        - needs_attention_reasons
+        - channels
+        - sponsorship
+        - last_sent_at
+        - last_received_at
+      properties:
+        line_id:
+          $ref: '#/components/schemas/Uuid'
+        state:
+          type: string
+          enum:
+            - connected
+            - needs_attention
+            - not_connected
+        needs_attention_reasons:
+          type: array
+          description: "Empty unless `needs_attention`. `device_offline`: every sender's phone is offline. `sim_missing`: a sender's SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `session_logged_out` and `quarantined` are reserved."
+          items:
+            type: string
+            enum:
+              - device_offline
+              - sim_missing
+              - session_logged_out
+              - no_sender
+              - quota_exhausted
+              - number_disputed
+              - quarantined
+        channels:
+          type: object
+          description: "The line's enabled senders by channel type, for every type the line may use. A detached line answers `not_connected` with `{}` here, no sponsorship and no times."
+          additionalProperties:
+            type: object
+            additionalProperties: false
+            required:
+              - total
+              - healthy
+            properties:
+              total:
+                type: integer
+                minimum: 0
+              healthy:
+                type: integer
+                minimum: 0
+                description: 'Senders that can send now.'
+        sponsorship:
+          oneOf:
+            -
+              type: 'null'
+            -
+              type: object
+              description: "The messages you pay for on the line this cycle: `allowance` and `used` add up the channel types of `message_allowance`, `by_type` has them per type. `used` may pass `allowance` when the user's own messages took over (`allow_user_overage`)."
+              required:
+                - allowance
+                - used
+                - cycle_ends_at
+                - on_exhausted
+                - by_type
+              properties:
+                allowance:
+                  type: integer
+                  minimum: 0
+                used:
+                  type: integer
+                  minimum: 0
+                cycle_ends_at:
+                  oneOf:
+                    -
+                      $ref: '#/components/schemas/Timestamp'
+                    -
+                      type: 'null'
+                on_exhausted:
+                  type: string
+                  enum:
+                    - hold
+                    - allow_user_overage
+                by_type:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    required:
+                      - allowance
+                      - used
+                    properties:
+                      allowance:
+                        type: integer
+                        minimum: 0
+                      used:
+                        type: integer
+                        minimum: 0
+        last_sent_at:
+          oneOf:
+            -
+              $ref: '#/components/schemas/Timestamp'
+            -
+              type: 'null'
+        last_received_at:
+          oneOf:
+            -
+              $ref: '#/components/schemas/Timestamp'
+            -
+              type: 'null'
+    PartnerLine:
+      type: object
+      description: "A line you made, in your user's account."
+      additionalProperties: false
+      required:
+        - id
+        - external_ref
+        - name
+        - account_id
+        - allowed_channel_types
+        - state
+        - created_at
+        - archived_at
+      properties:
+        id:
+          $ref: '#/components/schemas/Uuid'
+        external_ref:
+          type: string
+          description: 'Your own reference for the line, unique among your live lines; a detached line frees it.'
+        name:
+          type: string
+        account_id:
+          $ref: '#/components/schemas/Uuid'
+        allowed_channel_types:
+          type:
+            - array
+            - 'null'
+          description: 'The channel types the user may connect for this line; `null` for every available type.'
+          items:
+            type: string
+        state:
+          type: string
+          enum:
+            - connected
+            - needs_attention
+            - not_connected
+          description: 'Whether the line can send.'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        archived_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: 'When the line was detached; `null` while it is live.'
+    CreatePartnerLineRequest:
+      type: object
+      required:
+        - external_ref
+        - name
+      properties:
+        external_ref:
+          type: string
+          minLength: 1
+          maxLength: 191
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        user_number:
+          type:
+            - string
+            - 'null'
+          description: "The user's number in E.164, if you know it; only a hint for the connect page."
+          pattern: '^\+[1-9]\d{6,14}$'
+        allowed_channel_types:
+          type:
+            - array
+            - 'null'
+          minItems: 1
+          items:
+            type: string
+        sponsorship:
+          description: 'What you pay for on the line. Left out: your default terms (`PUT /sponsorship-defaults`), if any. `null`: none.'
+          oneOf:
+            -
+              $ref: '#/components/schemas/SponsorshipTerms'
+            -
+              type: 'null'
+    UpdatePartnerLineRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        allowed_channel_types:
+          type:
+            - array
+            - 'null'
+          minItems: 1
+          items:
+            type: string
+        sponsorship:
+          description: 'New terms, which apply at once within the current cycle (what it used so far stays). `null` ends the sponsorship: the numbers it paid for get 14 days of grace. Left out: unchanged.'
+          oneOf:
+            -
+              $ref: '#/components/schemas/SponsorshipTerms'
+            -
+              type: 'null'
+    CreateHostedLinkRequest:
+      type: object
+      required:
+        - purpose
+      properties:
+        purpose:
+          type: string
+          enum:
+            - connect
+            - add_channel
+            - replace_device
+            - manage
+            - claim
+        return_url:
+          type:
+            - string
+            - 'null'
+          maxLength: 2048
+          description: '`https` URL the page returns to when done; no credentials.'
+        allowed_origins:
+          description: 'Origins that may frame the page and receive its outcome. `null` = no framing and no messages.'
+          oneOf:
+            -
+              type: array
+              minItems: 1
+              maxItems: 5
+              items:
+                type: string
+                maxLength: 255
+                description: '`https://host[:port]`, no path.'
+            -
+              type: 'null'
+        ttl:
+          type:
+            - integer
+            - 'null'
+          minimum: 300
+          maximum: 3600
+          default: 1800
+          description: 'Seconds until the link stops working.'
+        locale:
+          type:
+            - string
+            - 'null'
+          maxLength: 35
+          description: "BCP 47 tag of the page's language; defaults to the account's default locale."
+        replaces_device_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: "Required for `replace_device`, refused for any other purpose. An active phone of the line's account."
+    HostedLink:
+      type: object
+      required:
+        - id
+        - purpose
+        - line_id
+        - status
+        - expires_at
+        - return_url
+        - allowed_origins
+        - locale
+        - replaces_device_id
+        - device_id
+        - channel_id
+        - completed_at
+        - revoked_at
+        - created_at
+      properties:
+        id:
+          $ref: '#/components/schemas/Uuid'
+        purpose:
+          type: string
+          enum:
+            - connect
+            - add_channel
+            - replace_device
+            - manage
+            - claim
+        line_id:
+          $ref: '#/components/schemas/Uuid'
+        status:
+          type: string
+          enum:
+            - open
+            - completed
+            - revoked
+            - expired
+        expires_at:
+          $ref: '#/components/schemas/Timestamp'
+        return_url:
+          type:
+            - string
+            - 'null'
+        allowed_origins:
+          oneOf:
+            -
+              type: array
+              items:
+                type: string
+            -
+              type: 'null'
+        locale:
+          type:
+            - string
+            - 'null'
+        replaces_device_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        device_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: 'Set when the link paired a phone.'
+        channel_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: 'Set when the link connected a channel.'
+        completed_at:
+          oneOf:
+            -
+              $ref: '#/components/schemas/Timestamp'
+            -
+              type: 'null'
+        revoked_at:
+          oneOf:
+            -
+              $ref: '#/components/schemas/Timestamp'
+            -
+              type: 'null'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+    SponsorshipTerms:
+      type: object
+      description: "What you pay for on a line. Every field is optional. `channel_fee_cover` `{type: n}` pays the monthly fee of the\nfirst n numbers of that type on the line's sender list. `message_allowance` `{type: n}` pays n messages (SMS:\nsegments) of that type per cycle; a type it does not name is the user's own. At the limit, `hold` (the default)\nmakes further messages of that type wait with `hold_reason` `sponsor_quota_exhausted` until the next cycle, and\n`allow_user_overage` lets the user's own bought messages take over. You get `line.quota_low` at 80% and\n`line.quota_exhausted` at 100%, once per cycle and type. A cycle is `cycle_days` long from when the sponsorship\nstarted.\n"
+      additionalProperties: false
+      properties:
+        cycle_days:
+          type: integer
+          minimum: 1
+          maximum: 365
+          default: 30
+        channel_fee_cover:
+          type: object
+          default: {}
+          additionalProperties:
+            type: integer
+            minimum: 0
+        message_allowance:
+          type: object
+          default: {}
+          description: 'At least 1 message per named type; leave a type out to sponsor none of it.'
+          additionalProperties:
+            type: integer
+            minimum: 1
+        on_exhausted:
+          type: string
+          enum:
+            - hold
+            - allow_user_overage
+          default: hold
+    SponsorshipDefaults:
+      type: object
+      required:
+        - default_sponsorship
+      properties:
+        default_sponsorship:
+          oneOf:
+            -
+              $ref: '#/components/schemas/SponsorshipTerms'
+            -
+              type: 'null'
     UsageCounters:
       type: object
       required:
@@ -417,11 +785,12 @@ components:
         -
           type: object
           required:
-            - accounts
+            - lines
             - by_channel_type
           properties:
-            accounts:
+            lines:
               type: integer
+              description: 'How many lines the report covers.'
             by_channel_type:
               $ref: '#/components/schemas/UsageByChannelType'
     UsageRow:
@@ -431,27 +800,27 @@ components:
         -
           type: object
           required:
+            - line_id
             - account_id
             - external_ref
             - name
             - by_channel_type
             - channels_active
-            - max_daily_segments
           properties:
+            line_id:
+              $ref: '#/components/schemas/Uuid'
             account_id:
               $ref: '#/components/schemas/Uuid'
             external_ref:
               type: string
+              description: 'Your own reference for the line.'
             name:
               type: string
             by_channel_type:
               $ref: '#/components/schemas/UsageByChannelType'
             channels_active:
               type: integer
-            max_daily_segments:
-              type:
-                - integer
-                - 'null'
+              description: "The line's senders that are switched on and active now."
     UsageResponse:
       type: object
       required:
@@ -477,336 +846,6 @@ components:
           type:
             - string
             - 'null'
-    ManagedAccount:
-      type: object
-      description: 'A managed account.'
-      required:
-        - id
-        - type
-        - external_ref
-        - name
-        - status
-        - suspended_reason
-        - country_iso
-        - timezone
-        - default_locale
-        - settings
-        - counts
-        - deletion_requested_at
-        - purge_at
-        - created_at
-        - updated_at
-      properties:
-        id:
-          $ref: '#/components/schemas/Uuid'
-        type:
-          type: string
-          enum:
-            - managed
-        external_ref:
-          type: string
-        name:
-          type: string
-        status:
-          type: string
-          enum:
-            - active
-            - suspended
-            - pending_deletion
-        suspended_reason:
-          type:
-            - string
-            - 'null'
-        country_iso:
-          type: string
-        timezone:
-          type: string
-        default_locale:
-          type: string
-        settings:
-          $ref: '#/components/schemas/ManagedAccountSettings'
-        counts:
-          type: object
-          required:
-            - devices_active
-            - devices_online
-            - channels_active
-            - channels_needing_attention
-            - channels_by_type
-          properties:
-            devices_active:
-              type: integer
-              minimum: 0
-            devices_online:
-              type: integer
-              minimum: 0
-            channels_active:
-              type: integer
-              minimum: 0
-            channels_needing_attention:
-              type: integer
-              minimum: 0
-              description: 'Channels `paused` or `disconnected`, with a SIM safety band `poor` or `critical`, or whose device is `offline`.'
-            channels_by_type:
-              type: object
-              additionalProperties:
-                type: integer
-                minimum: 0
-        deletion_requested_at:
-          oneOf:
-            -
-              $ref: '#/components/schemas/Timestamp'
-            -
-              type: 'null'
-        purge_at:
-          oneOf:
-            -
-              $ref: '#/components/schemas/Timestamp'
-            -
-              type: 'null'
-        created_at:
-          $ref: '#/components/schemas/Timestamp'
-        updated_at:
-          $ref: '#/components/schemas/Timestamp'
-    ManagedAccountSettings:
-      type: object
-      description: "The same subset as `GET /v1/account`, including `alerts` and `limits`.\nUnknown keys must be ignored.\n"
-      properties:
-        opt_out:
-          type: object
-        compliance:
-          type: object
-        quiet_hours:
-          type: object
-        frequency_cap:
-          type: object
-        links:
-          type: object
-        default_expiry_minutes:
-          type: object
-        sms:
-          type: object
-        channels:
-          type: object
-        whatsapp:
-          type: object
-        retention:
-          type: object
-        automation:
-          type: object
-        alerts:
-          type: object
-        limits:
-          type: object
-        support:
-          type: object
-    ProvisionAccountRequest:
-      type: object
-      required:
-        - external_ref
-        - name
-        - country_iso
-        - timezone
-      properties:
-        external_ref:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: "The partner's id for its customer; unique per partner."
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: 'Shown in the Android app after pairing.'
-        country_iso:
-          type: string
-          pattern: '^[A-Z]{2}$'
-          description: 'ISO 3166-1 alpha-2.'
-        timezone:
-          type: string
-          description: 'IANA zone, for example `Asia/Karachi`.'
-        default_locale:
-          type: string
-          description: 'BCP 47, default `en-GB`.'
-        settings:
-          type: object
-          description: 'Initial settings (the account settings a partner may set); `channels.auto_connect_sims` defaults to `true`.'
-    ManagedAccountUpdate:
-      type: object
-      properties:
-        external_ref:
-          type: string
-          minLength: 1
-          maxLength: 100
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-        country_iso:
-          type: string
-          pattern: '^[A-Z]{2}$'
-        timezone:
-          type: string
-        default_locale:
-          type: string
-        settings:
-          type: object
-          description: 'Deep-merged; the partner may also set `limits.max_daily_segments` and `channels.allowed_types`.'
-    ApiKeyCreate:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-        line_ids:
-          oneOf:
-            -
-              type: array
-              minItems: 1
-              maxItems: 100
-              items:
-                $ref: '#/components/schemas/Uuid'
-            -
-              type: 'null'
-          description: '`null` or omitted for all lines. A key limited to one line sends from it without naming a sender (`line_id`, `channel_id` and `from` can be left out).'
-        channel_types:
-          oneOf:
-            -
-              type: array
-              minItems: 1
-              items:
-                type: string
-            -
-              type: 'null'
-          description: '`null` or omitted for all channel types, for example `["android_sim"]`.'
-        abilities:
-          oneOf:
-            -
-              type: array
-              minItems: 1
-              items:
-                type: string
-            -
-              type: 'null'
-        allowed_ips:
-          oneOf:
-            -
-              type: array
-              minItems: 1
-              maxItems: 20
-              items:
-                type: string
-            -
-              type: 'null'
-          description: 'IPv4/IPv6 addresses or CIDR ranges.'
-        expires_at:
-          type:
-            - string
-            - 'null'
-          format: date-time
-    ApiKey:
-      type: object
-      required:
-        - id
-        - kind
-        - name
-        - prefix
-        - scope
-        - abilities
-        - allowed_ips
-        - last_used_at
-        - last_used_ip
-        - expires_at
-        - revoked_at
-        - actor
-        - created_at
-      properties:
-        id:
-          $ref: '#/components/schemas/Uuid'
-        kind:
-          type: string
-          enum:
-            - account
-        name:
-          type: string
-        prefix:
-          type: string
-          description: 'The first 12 characters of the token, for recognising a key.'
-        scope:
-          type: object
-          required:
-            - line_ids
-            - channel_types
-          properties:
-            line_ids:
-              oneOf:
-                -
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Uuid'
-                -
-                  type: 'null'
-            channel_types:
-              oneOf:
-                -
-                  type: array
-                  items:
-                    type: string
-                -
-                  type: 'null'
-        abilities:
-          type: array
-          items:
-            type: string
-        allowed_ips:
-          oneOf:
-            -
-              type: array
-              items:
-                type: string
-            -
-              type: 'null'
-        last_used_at:
-          oneOf:
-            -
-              $ref: '#/components/schemas/Timestamp'
-            -
-              type: 'null'
-        last_used_ip:
-          type:
-            - string
-            - 'null'
-        expires_at:
-          oneOf:
-            -
-              $ref: '#/components/schemas/Timestamp'
-            -
-              type: 'null'
-        revoked_at:
-          oneOf:
-            -
-              $ref: '#/components/schemas/Timestamp'
-            -
-              type: 'null'
-        actor:
-          type:
-            - object
-            - 'null'
-          required:
-            - type
-            - id
-          properties:
-            type:
-              type: string
-            id:
-              type:
-                - string
-                - 'null'
-        created_at:
-          $ref: '#/components/schemas/Timestamp'
     ErrMalformedRequest:
       type: object
       description: 'The request could not be read. Send a JSON object with the header Content-Type: application/json.'
@@ -904,18 +943,18 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountContextRequired:
+    ErrLineContextRequired:
       type: object
-      description: 'A partner key must name the account it acts on with the MyComm-Account header.'
+      description: 'A partner key must name the partner line it acts on with the MyComm-Line header (the line id).'
       x-http-status: 400
       examples:
         -
           error:
-            code: ACCOUNT_CONTEXT_REQUIRED
-            message: 'A partner key must name the account it acts on with the MyComm-Account header.'
+            code: LINE_CONTEXT_REQUIRED
+            message: 'A partner key must name the partner line it acts on with the MyComm-Line header (the line id).'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-context-required'
+            doc_url: 'https://api.mycomm.example/docs/errors#line-context-required'
       required:
         - error
       properties:
@@ -930,7 +969,7 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_CONTEXT_REQUIRED
+              const: LINE_CONTEXT_REQUIRED
             message:
               type: string
             details:
@@ -1154,18 +1193,18 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountContextInvalid:
+    ErrLineContextInvalid:
       type: object
-      description: "The MyComm-Account header does not name an account this key can act on. Check the account id and the key's allowed accounts."
+      description: 'The MyComm-Line header does not name a line this partner key can act on: the line belongs to another partner, was detached or does not exist. Check the line id.'
       x-http-status: 403
       examples:
         -
           error:
-            code: ACCOUNT_CONTEXT_INVALID
-            message: "The MyComm-Account header does not name an account this key can act on. Check the account id and the key's allowed accounts."
+            code: LINE_CONTEXT_INVALID
+            message: 'The MyComm-Line header does not name a line this partner key can act on: the line belongs to another partner, was detached or does not exist. Check the line id.'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-context-invalid'
+            doc_url: 'https://api.mycomm.example/docs/errors#line-context-invalid'
       required:
         - error
       properties:
@@ -1180,7 +1219,45 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_CONTEXT_INVALID
+              const: LINE_CONTEXT_INVALID
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrPartnerRouteNotAllowed:
+      type: object
+      description: 'A partner key cannot call this endpoint. Partner keys send and read messages and conversations of their own line; the user manages channels, phones and settings.'
+      x-http-status: 403
+      examples:
+        -
+          error:
+            code: PARTNER_ROUTE_NOT_ALLOWED
+            message: 'A partner key cannot call this endpoint. Partner keys send and read messages and conversations of their own line; the user manages channels, phones and settings.'
+            details: {}
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#partner-route-not-allowed'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: PARTNER_ROUTE_NOT_ALLOWED
             message:
               type: string
             details:
@@ -1317,50 +1394,6 @@ components:
             details:
               type: object
               description: 'Specific to this code.'
-            request_id:
-              type: string
-              format: uuid
-            doc_url:
-              type: string
-              format: uri
-    ErrPartnerKeyRestricted:
-      type: object
-      description: 'This partner key is limited to a list of accounts and cannot create new ones. Use an unrestricted partner key.'
-      x-http-status: 403
-      examples:
-        -
-          error:
-            code: PARTNER_KEY_RESTRICTED
-            message: 'This partner key is limited to a list of accounts and cannot create new ones. Use an unrestricted partner key.'
-            details:
-              reason: 'Example text.'
-            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#partner-key-restricted'
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          required:
-            - code
-            - message
-            - details
-            - request_id
-            - doc_url
-          properties:
-            code:
-              type: string
-              const: PARTNER_KEY_RESTRICTED
-            message:
-              type: string
-            details:
-              type: object
-              description: 'Specific to this code.'
-              properties:
-                reason:
-                  type: string
-              required:
-                - reason
             request_id:
               type: string
               format: uuid
@@ -1838,58 +1871,17 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrPartnerHasClients:
-      type: object
-      description: 'This partner account still manages client accounts. Remove or transfer them first.'
-      x-http-status: 409
-      examples:
-        -
-          error:
-            code: PARTNER_HAS_CLIENTS
-            message: 'This partner account still manages client accounts. Remove or transfer them first.'
-            details:
-              managed_accounts: 1
-            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#partner-has-clients'
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          required:
-            - code
-            - message
-            - details
-            - request_id
-            - doc_url
-          properties:
-            code:
-              type: string
-              const: PARTNER_HAS_CLIENTS
-            message:
-              type: string
-            details:
-              type: object
-              description: 'Specific to this code.'
-              properties:
-                managed_accounts:
-                  type: integer
-            request_id:
-              type: string
-              format: uuid
-            doc_url:
-              type: string
-              format: uri
     ErrExternalRefTaken:
       type: object
-      description: 'Another managed account of this partner already uses that external_ref. Choose a different one.'
+      description: 'Another line of this partner already uses that external_ref. Use that line (details.line_id) or choose a different reference.'
       x-http-status: 409
       examples:
         -
           error:
             code: EXTERNAL_REF_TAKEN
-            message: 'Another managed account of this partner already uses that external_ref. Choose a different one.'
-            details: {}
+            message: 'Another line of this partner already uses that external_ref. Use that line (details.line_id) or choose a different reference.'
+            details:
+              line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
             doc_url: 'https://api.mycomm.example/docs/errors#external-ref-taken'
       required:
@@ -1912,6 +1904,11 @@ components:
             details:
               type: object
               description: 'Specific to this code.'
+              properties:
+                line_id:
+                  type: string
+              required:
+                - line_id
             request_id:
               type: string
               format: uuid
@@ -4668,6 +4665,50 @@ components:
             doc_url:
               type: string
               format: uri
+    ErrSecondFactorRequired:
+      type: object
+      description: 'This action needs the account owner to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
+      x-http-status: 403
+      examples:
+        -
+          error:
+            code: SECOND_FACTOR_REQUIRED
+            message: 'This action needs the account owner to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
+            details:
+              reason: 'Example text.'
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#second-factor-required'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: SECOND_FACTOR_REQUIRED
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                reason:
+                  type: string
+              required:
+                - reason
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
     ErrBatchTooLarge:
       type: object
       description: 'A request holds at most :max items. Split it into smaller requests.'
@@ -4972,7 +5013,7 @@ components:
               format: uri
   responses:
     BadRequest:
-      description: '400 MALFORMED_REQUEST (the body is not a JSON object; `details.reason` says why), INVALID_HEADER (`details.header`, `details.reason`, `details.expected`), ACCOUNT_CONTEXT_REQUIRED or INVALID_CURSOR.'
+      description: '400 MALFORMED_REQUEST (the body is not a JSON object; `details.reason` says why), INVALID_HEADER (`details.header`, `details.reason`, `details.expected`) or INVALID_CURSOR.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -5002,7 +5043,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
     Forbidden:
-      description: "403 WRONG_KEY_KIND (not a partner key), ABILITY_MISSING (for example a read-only key on a write), IP_NOT_ALLOWED, PARTNER_ACCESS_REVOKED or PARTNER_KEY_RESTRICTED (the key's `allowed_account_ids` excludes the account, or forbids provisioning)."
+      description: '403 WRONG_KEY_KIND (not a partner key), ABILITY_MISSING (for example a read-only key on a write), IP_NOT_ALLOWED or PARTNER_ACCESS_REVOKED.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -5017,7 +5058,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
     NotFound:
-      description: "404 NOT_FOUND: the account or key is absent, purged, managed by another partner, or outside the key's `allowed_account_ids`."
+      description: '404 NOT_FOUND: the line or account is absent, or belongs to another partner.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -5160,13 +5201,578 @@ components:
           schema:
             $ref: '#/components/schemas/ErrUnsupportedMediaType'
 paths:
+  '/lines/{id}/status':
+    parameters:
+      -
+        name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Uuid'
+    get:
+      operationId: getPartnerLineStatus
+      tags:
+        - Lines
+      summary: "Get a line's status"
+      description: "Requires `lines:read`. How the line is doing now, computed at the time of the call. `not_connected` until the\nuser's first number is verified on the line; then `connected`, or `needs_attention` with the reasons. You are\ntold of every change by webhook: `line.connected`, `line.needs_attention` and `line.recovered` reach your\nendpoints that have `partner_lines`. `channels` counts the line's enabled senders per channel type (`healthy`:\ncan send now). `sponsorship` is null when the line has none. A line of another partner is `404 NOT_FOUND`.\n"
+      responses:
+        200:
+          description: "The line's status."
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerLineStatus'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X GET \"$MYCOMM_URL/partner/v1/lines/<id>/status\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+  /lines:
+    post:
+      operationId: createPartnerLine
+      tags:
+        - Lines
+      summary: 'Create a line'
+      description: "Requires `lines:write`. Makes a line for one of your users in a new, empty MyComm account that becomes the\nuser's account when they connect a phone through a hosted link. `user_number` is only a hint for that page: it\nnever joins the line to an account that already has the number (that needs a code sent to the number), and the\nanswer is the same whether or not the number has an account. `external_ref` is unique among your live lines: a\ntaken one answers `409 EXTERNAL_REF_TAKEN` with the line in `details.line_id`. Detaching a line frees its\n`external_ref`. A `name` the account's Direct line has (\"Direct\") answers `409 NAME_TAKEN`.\n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePartnerLineRequest'
+      responses:
+        201:
+          description: 'The new line.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+            Idempotent-Replayed:
+              $ref: '#/components/headers/Idempotent-Replayed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerLine'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        409:
+          description: "409 EXTERNAL_REF_TAKEN: another live line of yours has this `external_ref` (`details.line_id`); or NAME_TAKEN: the name is the Direct line's."
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          $ref: '#/components/responses/Unprocessable'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      parameters:
+        -
+          $ref: '#/components/parameters/IdempotencyKey'
+    get:
+      operationId: listPartnerLines
+      tags:
+        - Lines
+      summary: 'List your lines'
+      description: 'Requires `lines:read`. Newest first. Archived (detached) lines are left out unless `include_archived=true`, so an `external_ref` filter may then return a detached line beside the live one.'
+      parameters:
+        -
+          name: external_ref
+          in: query
+          description: 'Exact match.'
+          schema:
+            type: string
+        -
+          name: include_archived
+          in: query
+          schema:
+            type: boolean
+            default: false
+        -
+          $ref: '#/components/parameters/limit'
+        -
+          $ref: '#/components/parameters/cursor'
+      responses:
+        200:
+          description: 'A page of lines.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  -
+                    $ref: '#/components/schemas/ListEnvelope'
+                  -
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PartnerLine'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        422:
+          $ref: '#/components/responses/Unprocessable'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X GET \"$MYCOMM_URL/partner/v1/lines\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+  '/lines/{id}':
+    parameters:
+      -
+        name: id
+        in: path
+        required: true
+        description: 'The line id.'
+        schema:
+          $ref: '#/components/schemas/Uuid'
+    get:
+      operationId: getPartnerLine
+      tags:
+        - Lines
+      summary: 'Get a line'
+      description: 'Requires `lines:read`. Archived lines are returned too. A line of another partner is `404`.'
+      responses:
+        200:
+          description: 'The line.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerLine'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X GET \"$MYCOMM_URL/partner/v1/lines/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+    patch:
+      operationId: updatePartnerLine
+      tags:
+        - Lines
+      summary: 'Change a line'
+      description: "Requires `lines:write`. Changes `name` and `allowed_channel_types`; a field left out or `null` stays as it is.\n`external_ref` never changes (`422`). A name another line of the account has answers `409 NAME_TAKEN`.\n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePartnerLineRequest'
+      responses:
+        200:
+          description: 'The changed line.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerLine'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          $ref: '#/components/responses/Unprocessable'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+    delete:
+      operationId: detachPartnerLine
+      tags:
+        - Lines
+      summary: 'Detach a line'
+      description: "Requires `lines:write`. Archives the line: its open conversations move to the account's Direct line, and the\nuser keeps the account, its channels, phones and history. `line.detached` is emitted once; detaching an archived\nline again changes nothing. The line header stops working for it (`403 LINE_CONTEXT_INVALID`).\n"
+      responses:
+        204:
+          description: Detached.
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X DELETE \"$MYCOMM_URL/partner/v1/lines/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+  '/lines/{id}/links':
+    parameters:
+      -
+        name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Uuid'
+    post:
+      operationId: createPartnerLineLink
+      tags:
+        - Lines
+      summary: 'Create a hosted link for a line'
+      description: "Requires `links:write`. A short-lived link to MyComm's hosted page for this line: send your user's browser to\n`url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and joins\nan account that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the\nline as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's account),\n`manage` and `claim`. `url` is returned only here and is a bearer credential: treat it like a password. At most\n20 links of a line are open at once (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are created\nper line per hour (`429 RATE_LIMITED`). A detached line takes no new link (`422`), and detaching a line ends its\nopen links. A line of another partner is `404 NOT_FOUND`.\n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHostedLinkRequest'
+      responses:
+        201:
+          description: 'The new link. `url` is returned only here.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+            Idempotent-Replayed:
+              $ref: '#/components/headers/Idempotent-Replayed'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  -
+                    $ref: '#/components/schemas/HostedLink'
+                  -
+                    type: object
+                    required:
+                      - url
+                    properties:
+                      url:
+                        type: string
+                        description: '`<base_url>/connect/<token>`, the token being 43 base64url characters.'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          $ref: '#/components/responses/Unprocessable'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      parameters:
+        -
+          $ref: '#/components/parameters/IdempotencyKey'
+  '/links/{id}':
+    parameters:
+      -
+        name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Uuid'
+    get:
+      operationId: getPartnerLink
+      tags:
+        - Lines
+      summary: 'Get a hosted link'
+      description: "Requires `lines:read`. The link without `url`; `status` reads `expired` once `expires_at` has passed. A link of\nanother partner's line is `404 NOT_FOUND`.\n"
+      responses:
+        200:
+          description: 'The hosted link.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostedLink'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X GET \"$MYCOMM_URL/partner/v1/links/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+    delete:
+      operationId: deletePartnerLink
+      tags:
+        - Lines
+      summary: 'Revoke a hosted link'
+      description: "Requires `links:write`. The link stops working at once, also for a page already open. Only an `open` link can be\nrevoked; any other status is `409 INVALID_STATE` with `details.status`.\n"
+      responses:
+        204:
+          description: 'The link is revoked.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X DELETE \"$MYCOMM_URL/partner/v1/links/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+  /sponsorship-defaults:
+    get:
+      operationId: getSponsorshipDefaults
+      tags:
+        - Lines
+      summary: 'Get your default sponsorship'
+      description: 'Requires `lines:read`. The terms a new line gets when `POST /lines` leaves `sponsorship` out; `null` for none.'
+      responses:
+        200:
+          description: 'Your default terms.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorshipDefaults'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X GET \"$MYCOMM_URL/partner/v1/sponsorship-defaults\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+    put:
+      operationId: setSponsorshipDefaults
+      tags:
+        - Lines
+      summary: 'Set your default sponsorship'
+      description: "Requires `lines:write`. Replaces the terms new lines get when `POST /lines` leaves `sponsorship` out; `null`\nremoves them. Lines that already exist keep their own terms. Wrong terms answer `422 VALIDATION_FAILED` naming\nthe field, for example `default_sponsorship.message_allowance.fax`.\n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SponsorshipDefaults'
+      responses:
+        200:
+          description: 'Your default terms as stored, with every field filled in.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorshipDefaults'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          $ref: '#/components/responses/Unprocessable'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
   /usage:
     get:
       operationId: getPartnerUsage
       tags:
         - Usage
-      summary: 'Usage across managed accounts'
-      description: "Dates are interpreted in each account's own time zone (as stored in `usage_daily`). Paginated over\naccounts, sorted by `sent_segments` descending. Counters match the usage reports in the portal; rows and\ntotals add `by_channel_type`. Per-day detail for one account: `GET /v1/stats/daily` acting as it.\n"
+      summary: 'Usage per line'
+      description: "One row per line of yours, detached lines included (their history stays), sorted by `sent_segments`\ndescending. Counters come from the line's own traffic only, never from the rest of the user's account. Dates\nare interpreted in each line's account time zone. Counters match the usage reports in the portal; rows and\ntotals add `by_channel_type`. `line_id` narrows the report to one of your lines (`404 NOT_FOUND` for any other\nid).\n"
       parameters:
         -
           name: from
@@ -5183,7 +5789,7 @@ paths:
             type: string
             format: date
         -
-          name: account_id
+          name: line_id
           in: query
           schema:
             $ref: '#/components/schemas/Uuid'
@@ -5193,7 +5799,7 @@ paths:
           $ref: '#/components/parameters/cursor'
       responses:
         200:
-          description: 'Totals and a page of per-account rows.'
+          description: 'Totals and a page of per-line rows.'
           headers:
             MyComm-Request-Id:
               $ref: '#/components/headers/MyComm-Request-Id'
@@ -5213,6 +5819,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
         422:
           $ref: '#/components/responses/Unprocessable'
         429:
@@ -5226,629 +5834,3 @@ paths:
           lang: Shell
           label: curl
           source: "curl -X GET \"$MYCOMM_URL/partner/v1/usage\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-  /accounts:
-    post:
-      operationId: provisionManagedAccount
-      tags:
-        - 'Managed accounts'
-      summary: 'Provision a managed account'
-      description: "Idempotent by `external_ref`. `201` creates a managed account with no users;\n`channels.auto_connect_sims` defaults to `true`. `200` returns the existing account with this\n`external_ref` **unchanged**, also when it is `pending_deletion` (the request's other fields are\nignored; use `PATCH`). Concurrent duplicates resolve to one account. Keys with\n`allowed_account_ids` get `403 PARTNER_KEY_RESTRICTED`; read-only keys `403 ABILITY_MISSING`.\n"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProvisionAccountRequest'
-      responses:
-        200:
-          description: 'The existing account with this `external_ref`, unchanged.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-            Idempotent-Replayed:
-              $ref: '#/components/headers/Idempotent-Replayed'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManagedAccount'
-        201:
-          description: 'A new managed account.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-            Idempotent-Replayed:
-              $ref: '#/components/headers/Idempotent-Replayed'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManagedAccount'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          description: '403 PARTNER_KEY_RESTRICTED (`details.reason: account_list`, the key has `allowed_account_ids`), ABILITY_MISSING (read-only key), WRONG_KEY_KIND, IP_NOT_ALLOWED or PARTNER_ACCESS_REVOKED.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        413:
-          $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          $ref: '#/components/responses/UnsupportedMediaType'
-        422:
-          $ref: '#/components/responses/Unprocessable'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/IdempotencyKey'
-    get:
-      operationId: listManagedAccounts
-      tags:
-        - 'Managed accounts'
-      summary: 'List managed accounts'
-      description: 'A key with `allowed_account_ids` lists only those accounts.'
-      parameters:
-        -
-          name: external_ref
-          in: query
-          description: 'Exact match.'
-          schema:
-            type: string
-        -
-          name: status
-          in: query
-          schema:
-            type: string
-            enum:
-              - active
-              - suspended
-              - pending_deletion
-        -
-          name: q
-          in: query
-          description: 'Matches the name.'
-          schema:
-            type: string
-        -
-          name: created_after
-          in: query
-          schema:
-            $ref: '#/components/schemas/Timestamp'
-        -
-          name: created_before
-          in: query
-          schema:
-            $ref: '#/components/schemas/Timestamp'
-        -
-          name: needs_attention
-          in: query
-          description: '`true` for accounts with `counts.channels_needing_attention` above zero.'
-          schema:
-            type: boolean
-        -
-          name: sort
-          in: query
-          schema:
-            type: string
-            enum:
-              - '-created_at'
-              - name
-            default: '-created_at'
-        -
-          $ref: '#/components/parameters/limit'
-        -
-          $ref: '#/components/parameters/cursor'
-      responses:
-        200:
-          description: 'A page of managed accounts.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                allOf:
-                  -
-                    $ref: '#/components/schemas/ListEnvelope'
-                  -
-                    type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ManagedAccount'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        422:
-          $ref: '#/components/responses/Unprocessable'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X GET \"$MYCOMM_URL/partner/v1/accounts\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-  '/accounts/{id}':
-    parameters:
-      -
-        $ref: '#/components/parameters/AccountId'
-    get:
-      operationId: getManagedAccount
-      tags:
-        - 'Managed accounts'
-      summary: 'Get a managed account'
-      responses:
-        200:
-          description: 'The account.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManagedAccount'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X GET \"$MYCOMM_URL/partner/v1/accounts/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-    patch:
-      operationId: updateManagedAccount
-      tags:
-        - 'Managed accounts'
-      summary: 'Update a managed account'
-      description: "`settings` is deep-merged with the rules of `PATCH /v1/account`, plus `limits.max_daily_segments`\nand `channels.allowed_types`, which only the partner may set. The new `name` appears in the\npaired app. A taken `external_ref` is `409 EXTERNAL_REF_TAKEN`.\n"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ManagedAccountUpdate'
-      responses:
-        200:
-          description: 'The updated account.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManagedAccount'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: '409 EXTERNAL_REF_TAKEN: another account of this partner has the `external_ref`.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        413:
-          $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          $ref: '#/components/responses/UnsupportedMediaType'
-        422:
-          $ref: '#/components/responses/Unprocessable'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-    delete:
-      operationId: deleteManagedAccount
-      tags:
-        - 'Managed accounts'
-      summary: 'Schedule deletion of a managed account'
-      description: "Cancels queued messages and unfinished campaigns first, then revokes devices and account keys and\ndisconnects channels. Emits `account.deletion_scheduled`. `reactivate` before\n`purge_at` (14 days) restores the data.\n"
-      responses:
-        202:
-          description: 'The account, `status: pending_deletion` with `purge_at`.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManagedAccount'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          $ref: '#/components/responses/Conflict'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X DELETE \"$MYCOMM_URL/partner/v1/accounts/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-  '/accounts/{id}/suspend':
-    parameters:
-      -
-        $ref: '#/components/parameters/AccountId'
-    post:
-      operationId: suspendManagedAccount
-      tags:
-        - 'Managed accounts'
-      summary: 'Suspend a managed account'
-      description: '`status: suspended`; `/v1` writes then get `403 ACCOUNT_SUSPENDED`. Emits `account.suspended`.'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - reason
-              properties:
-                reason:
-                  type: string
-                  minLength: 1
-                  maxLength: 200
-      responses:
-        200:
-          description: 'The suspended account.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-            Idempotent-Replayed:
-              $ref: '#/components/headers/Idempotent-Replayed'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManagedAccount'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          $ref: '#/components/responses/Conflict'
-        413:
-          $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          $ref: '#/components/responses/UnsupportedMediaType'
-        422:
-          $ref: '#/components/responses/Unprocessable'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/IdempotencyKey'
-  '/accounts/{id}/reactivate':
-    parameters:
-      -
-        $ref: '#/components/parameters/AccountId'
-    post:
-      operationId: reactivateManagedAccount
-      tags:
-        - 'Managed accounts'
-      summary: 'Reactivate a managed account'
-      description: 'From `suspended`, or from `pending_deletion` before `purge_at`. Emits `account.reactivated`. A suspension set by MyComm support or a kill switch is not lifted by a partner (409 SUSPENDED_BY_SUPPORT).'
-      responses:
-        200:
-          description: 'The reactivated account.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-            Idempotent-Replayed:
-              $ref: '#/components/headers/Idempotent-Replayed'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManagedAccount'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          $ref: '#/components/responses/Conflict'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/IdempotencyKey'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X POST \"$MYCOMM_URL/partner/v1/accounts/<id>/reactivate\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-  '/accounts/{id}/api-keys':
-    parameters:
-      -
-        $ref: '#/components/parameters/AccountId'
-    get:
-      operationId: listManagedAccountKeys
-      tags:
-        - 'Account keys'
-      summary: "List a managed account's keys"
-      description: 'The same resource as `GET /v1/api-keys`. The token is never returned here.'
-      parameters:
-        -
-          name: revoked
-          in: query
-          description: 'Default `false`.'
-          schema:
-            type: boolean
-        -
-          $ref: '#/components/parameters/limit'
-        -
-          $ref: '#/components/parameters/cursor'
-      responses:
-        200:
-          description: 'A page of keys.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                allOf:
-                  -
-                    $ref: '#/components/schemas/ListEnvelope'
-                  -
-                    type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ApiKey'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X GET \"$MYCOMM_URL/partner/v1/accounts/<id>/api-keys\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-    post:
-      operationId: createManagedAccountKey
-      tags:
-        - 'Account keys'
-      summary: 'Mint an account key for a managed account'
-      description: "Same body and `201` response as `POST /v1/api-keys`, unrestricted or restricted to lines or channel\ntypes, with any abilities. The `token` is shown once, in this response.\n"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApiKeyCreate'
-      responses:
-        201:
-          description: 'The new key, including its `token`.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-            Idempotent-Replayed:
-              $ref: '#/components/headers/Idempotent-Replayed'
-          content:
-            application/json:
-              schema:
-                allOf:
-                  -
-                    $ref: '#/components/schemas/ApiKey'
-                  -
-                    type: object
-                    required:
-                      - token
-                    properties:
-                      token:
-                        type: string
-                        description: 'The plaintext key; returned only here.'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        413:
-          $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          $ref: '#/components/responses/UnsupportedMediaType'
-        422:
-          $ref: '#/components/responses/Unprocessable'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/IdempotencyKey'
-  '/accounts/{id}/api-keys/{key_id}':
-    parameters:
-      -
-        $ref: '#/components/parameters/AccountId'
-      -
-        name: key_id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/Uuid'
-    delete:
-      operationId: revokeManagedAccountKey
-      tags:
-        - 'Account keys'
-      summary: "Revoke a managed account's key"
-      description: "Revokes immediately; the key's next call is `401`. Revoking a revoked key is a no-op."
-      responses:
-        204:
-          description: 'The key is revoked.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X DELETE \"$MYCOMM_URL/partner/v1/accounts/<id>/api-keys/<key_id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""

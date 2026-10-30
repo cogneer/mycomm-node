@@ -8,7 +8,7 @@ the table says why.
 
 Customers' developers and partners integrate MyComm from JavaScript and TypeScript servers (Express, Fastify, NestJS,
 Next.js route handlers, serverless and edge functions) without writing HTTP code: send and track messages, sync contacts,
-receive webhooks, provision managed accounts, and create the connect sessions that `@mycomm/connect` shows in the browser.
+receive webhooks, give partner users their own lines, and create the hosted links that `@mycomm/connect` shows in the browser.
 Success means an integration that is correct by default (no double sends, no crashes when the API grows) and that their
 editor can autocomplete.
 
@@ -32,8 +32,8 @@ scope: the device API, which only the MyComm Android app uses, and the browser, 
 
 ## Shape of the API
 
-- **One client, both APIs.** A partner key uses the same `/v1` operations with a `MyComm-Account` header, so
-  `client.forAccount(id)` returns a client that sends it, and the partner operations live under `client.partner`.
+- **One client, both APIs.** A partner key uses the same `/v1` operations with a `MyComm-Line` header naming one of its
+  lines, so `client.forLine(id)` returns a client that sends it, and the partner operations live under `client.partner`.
 - **Names mirror the reference.** Operation `contacts.identities.block` is `client.contacts.identities.block()`; fields keep
   the API's `snake_case` names. A developer reading the API reference never has to translate.
 - **Path ids, then one object.** Ids in the path are positional; every body field and query parameter goes in one typed

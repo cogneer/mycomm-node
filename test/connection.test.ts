@@ -127,17 +127,20 @@ describe('requests', () => {
     expect(request.header('X-Team')).toBe('ops');
   });
 
-  it('acts as a managed account on /v1 only', async () => {
-    const { client, transport } = scripted([json(200, { id: 'acc' })], { apiKey: 'mc_partner_x' });
-    const managed = client.forAccount('acc-1');
+  it('sends_with_the_line_header_for_a_partner_key', async () => {
+    const { client, transport } = scripted([json(200, { id: 'line-1' })], { apiKey: 'mc_partner_x' });
+    const acme = client.forLine('line-1');
 
-    await managed.account.get();
-    await managed.partner.accounts.get('acc-1');
+    await acme.lines.get('line-1');
+    await acme.partner.lines.get('line-1');
+    await client.lines.get('line-1');
 
-    expect(transport.requests[0]!.header('MyComm-Account')).toBe('acc-1');
-    expect(transport.requests[1]!.path).toBe('/partner/v1/accounts/acc-1');
-    expect(transport.requests[1]!.header('MyComm-Account')).toBeUndefined();
+    expect(transport.requests[0]!.header('MyComm-Line')).toBe('line-1');
+    expect(transport.requests[0]!.header('MyComm-Account')).toBeUndefined();
+    expect(transport.requests[1]!.path).toBe('/partner/v1/lines/line-1');
+    expect(transport.requests[1]!.header('MyComm-Line')).toBeUndefined();
     expect(transport.requests[1]!.header('Authorization')).toBe('Bearer mc_partner_x');
+    expect(transport.requests[2]!.header('MyComm-Line')).toBeUndefined();
   });
 
   it.each(['https://api.test', 'https://api.test/', 'https://api.test/v1', 'https://api.test/partner/v1/'])(

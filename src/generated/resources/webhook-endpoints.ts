@@ -49,7 +49,7 @@ export class WebhookEndpointsResource {
    * Requires `webhooks:write`. The `url` must be `https`, carry no credentials and resolve only to public
    * addresses. `events` empty or omitted means every event except the opt-in ones. `line_ids` and `channel_types`
    * `null` mean all. At most 20 endpoints per account. A restricted key's endpoint defaults to (and must stay
-   * inside) its lines, takes the key's channel types and cannot include managed accounts.
+   * inside) its lines, takes the key's channel types and cannot set `partner_lines`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createWebhookEndpoint`
    */
@@ -72,7 +72,7 @@ export class WebhookEndpointsResource {
    * Update a webhook endpoint.
    *
    * Requires `webhooks:write`. Only the fields sent change. `active: true` re-enables a disabled endpoint and
-   * resets its failure counters. An endpoint with `include_managed_accounts` keeps `line_ids` `null`.
+   * resets its failure counters. `line_ids` may name partner lines only while the endpoint has `partner_lines`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `updateWebhookEndpoint`
    */

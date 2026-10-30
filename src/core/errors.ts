@@ -144,7 +144,7 @@ export class InvalidHeaderError extends BadRequestError {}
 /** 401: the API key is missing, malformed, revoked or expired. */
 export class AuthenticationError extends APIError {}
 
-/** 403: the key may not do this (its scope, the account's state, or a partner key without `MyComm-Account`). */
+/** 403: the key may not do this (its scope, the account's state, or a partner key on a route or line it may not reach). */
 export class PermissionDeniedError extends APIError {}
 
 /** 404: nothing with that id in this account. */

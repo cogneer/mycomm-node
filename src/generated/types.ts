@@ -295,7 +295,9 @@ export type ChannelVerificationFailureReason =
   | 'qr_expired'
   | 'token_invalid'
   | 'device_sim_limit'
-  | 'country_not_enabled';
+  | 'country_not_enabled'
+  | 'number_disputed'
+  | 'number_has_account';
 export const ChannelVerificationFailureReason = {
   Timeout: 'timeout',
   DeviceOffline: 'device_offline',
@@ -309,6 +311,8 @@ export const ChannelVerificationFailureReason = {
   TokenInvalid: 'token_invalid',
   DeviceSimLimit: 'device_sim_limit',
   CountryNotEnabled: 'country_not_enabled',
+  NumberDisputed: 'number_disputed',
+  NumberHasAccount: 'number_has_account',
 } as const;
 
 export type ChannelConnectMethod = 'device_pairing' | 'qr_scan' | 'pairing_code' | 'bot_token';
@@ -340,14 +344,6 @@ export const ChannelDeliveryState = {
   Sent: 'sent',
   Delivered: 'delivered',
   Read: 'read',
-} as const;
-
-export type ConnectSessionStatus = 'open' | 'completed' | 'revoked' | 'expired';
-export const ConnectSessionStatus = {
-  Open: 'open',
-  Completed: 'completed',
-  Revoked: 'revoked',
-  Expired: 'expired',
 } as const;
 
 export type ContactFieldType = 'text' | 'number' | 'date' | 'boolean' | 'select';
@@ -481,7 +477,9 @@ export const MessageStatus = {
  * (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `account_limit`, `carrier_cooldown`),
  * the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused
  * (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing
- * approval (`link_restricted`) or a platform hold (`platform_hold`). A new value may appear.
+ * approval (`link_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored allowance
+ * used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform hold
+ * (`platform_hold`). A new value may appear.
  */
 export type HoldReason =
   | 'scheduled'
@@ -501,7 +499,9 @@ export type HoldReason =
   | 'bulk_hours'
   | 'carrier_cooldown'
   | 'device_hot'
-  | 'no_sender_available';
+  | 'no_sender_available'
+  | 'sponsor_quota_exhausted'
+  | 'unpaid';
 export const HoldReason = {
   Scheduled: 'scheduled',
   QuietHours: 'quiet_hours',
@@ -521,6 +521,8 @@ export const HoldReason = {
   CarrierCooldown: 'carrier_cooldown',
   DeviceHot: 'device_hot',
   NoSenderAvailable: 'no_sender_available',
+  SponsorQuotaExhausted: 'sponsor_quota_exhausted',
+  Unpaid: 'unpaid',
 } as const;
 
 /**
@@ -596,13 +598,15 @@ export const DeviceSimServiceState = {
   PowerOff: 'power_off',
 } as const;
 
-export type DeviceRevokedReason = 'owner' | 'partner' | 'admin' | 'app_unpaired' | 'account_deleted';
+export type DeviceRevokedReason = 'owner' | 'partner' | 'admin' | 'app_unpaired' | 'account_deleted' | 'replaced' | 'stolen';
 export const DeviceRevokedReason = {
   Owner: 'owner',
   Partner: 'partner',
   Admin: 'admin',
   AppUnpaired: 'app_unpaired',
   AccountDeleted: 'account_deleted',
+  Replaced: 'replaced',
+  Stolen: 'stolen',
 } as const;
 
 export type ExportType = 'messages_csv' | 'contacts_csv' | 'campaign_report' | 'contact_json' | 'account_zip';
@@ -643,6 +647,23 @@ export const ImportStatus = {
   Cancelled: 'cancelled',
 } as const;
 
+export type HostedLinkPurpose = 'connect' | 'add_channel' | 'replace_device' | 'manage' | 'claim';
+export const HostedLinkPurpose = {
+  Connect: 'connect',
+  AddChannel: 'add_channel',
+  ReplaceDevice: 'replace_device',
+  Manage: 'manage',
+  Claim: 'claim',
+} as const;
+
+export type HostedLinkStatus = 'open' | 'completed' | 'revoked' | 'expired';
+export const HostedLinkStatus = {
+  Open: 'open',
+  Completed: 'completed',
+  Revoked: 'revoked',
+  Expired: 'expired',
+} as const;
+
 /**
  * `direct`: the account's own line, where unclaimed replies land (one per account). `app`: a line an app or
  * integration sends through. `partner`: a line a partner created for a client.
@@ -655,8 +676,8 @@ export const LineKind = {
 } as const;
 
 /**
- * `ordered`: the first healthy sender by position sends. `pool` is reserved for spreading sends over several
- * senders.
+ * `ordered`: the first healthy sender by position sends; the primary is always at position 0. `pool` is reserved
+ * for spreading sends over several senders.
  */
 export type LineSendMode = 'ordered' | 'pool';
 export const LineSendMode = {
@@ -813,11 +834,29 @@ export const WebhookDeliveriesBulkReplayStatus = {
   Dead: 'dead',
 } as const;
 
-export type AccountStatus = 'active' | 'suspended' | 'pending_deletion';
-export const AccountStatus = {
-  Active: 'active',
-  Suspended: 'suspended',
-  PendingDeletion: 'pending_deletion',
+export type LineState = 'connected' | 'needs_attention' | 'not_connected';
+export const LineState = {
+  Connected: 'connected',
+  NeedsAttention: 'needs_attention',
+  NotConnected: 'not_connected',
+} as const;
+
+export type LineNeedsAttentionReason =
+  'device_offline' | 'sim_missing' | 'session_logged_out' | 'no_sender' | 'quota_exhausted' | 'number_disputed' | 'quarantined';
+export const LineNeedsAttentionReason = {
+  DeviceOffline: 'device_offline',
+  SimMissing: 'sim_missing',
+  SessionLoggedOut: 'session_logged_out',
+  NoSender: 'no_sender',
+  QuotaExhausted: 'quota_exhausted',
+  NumberDisputed: 'number_disputed',
+  Quarantined: 'quarantined',
+} as const;
+
+export type SponsorshipOnExhausted = 'hold' | 'allow_user_overage';
+export const SponsorshipOnExhausted = {
+  Hold: 'hold',
+  AllowUserOverage: 'allow_user_overage',
 } as const;
 
 /**
@@ -828,13 +867,14 @@ export const AccountStatus = {
 export type ErrorCode =
   | 'MALFORMED_REQUEST'
   | 'INVALID_HEADER'
-  | 'ACCOUNT_CONTEXT_REQUIRED'
+  | 'LINE_CONTEXT_REQUIRED'
   | 'INVALID_CURSOR'
   | 'UNAUTHENTICATED'
   | 'WRONG_KEY_KIND'
   | 'ABILITY_MISSING'
   | 'IP_NOT_ALLOWED'
-  | 'ACCOUNT_CONTEXT_INVALID'
+  | 'LINE_CONTEXT_INVALID'
+  | 'PARTNER_ROUTE_NOT_ALLOWED'
   | 'ACCOUNT_SUSPENDED'
   | 'ACCOUNT_PENDING_DELETION'
   | 'PARTNER_ACCESS_REVOKED'
@@ -912,6 +952,7 @@ export type ErrorCode =
   | 'PAIRING_CODE_LIMIT_REACHED'
   | 'CONNECT_SESSION_LIMIT_REACHED'
   | 'PAIRING_CODE_EXPIRED'
+  | 'SECOND_FACTOR_REQUIRED'
   | 'BATCH_TOO_LARGE'
   | 'AUDIENCE_EMPTY'
   | 'RANGE_TOO_LARGE'
@@ -922,13 +963,14 @@ export type ErrorCode =
 export const ErrorCode = {
   MalformedRequest: 'MALFORMED_REQUEST',
   InvalidHeader: 'INVALID_HEADER',
-  AccountContextRequired: 'ACCOUNT_CONTEXT_REQUIRED',
+  LineContextRequired: 'LINE_CONTEXT_REQUIRED',
   InvalidCursor: 'INVALID_CURSOR',
   Unauthenticated: 'UNAUTHENTICATED',
   WrongKeyKind: 'WRONG_KEY_KIND',
   AbilityMissing: 'ABILITY_MISSING',
   IpNotAllowed: 'IP_NOT_ALLOWED',
-  AccountContextInvalid: 'ACCOUNT_CONTEXT_INVALID',
+  LineContextInvalid: 'LINE_CONTEXT_INVALID',
+  PartnerRouteNotAllowed: 'PARTNER_ROUTE_NOT_ALLOWED',
   AccountSuspended: 'ACCOUNT_SUSPENDED',
   AccountPendingDeletion: 'ACCOUNT_PENDING_DELETION',
   PartnerAccessRevoked: 'PARTNER_ACCESS_REVOKED',
@@ -1006,6 +1048,7 @@ export const ErrorCode = {
   PairingCodeLimitReached: 'PAIRING_CODE_LIMIT_REACHED',
   ConnectSessionLimitReached: 'CONNECT_SESSION_LIMIT_REACHED',
   PairingCodeExpired: 'PAIRING_CODE_EXPIRED',
+  SecondFactorRequired: 'SECOND_FACTOR_REQUIRED',
   BatchTooLarge: 'BATCH_TOO_LARGE',
   AudienceEmpty: 'AUDIENCE_EMPTY',
   RangeTooLarge: 'RANGE_TOO_LARGE',
@@ -1015,17 +1058,23 @@ export const ErrorCode = {
   ServiceUnavailable: 'SERVICE_UNAVAILABLE',
 } as const;
 
-export type AccountType = 'direct' | 'managed' | 'partner';
-export const AccountType = {
-  Direct: 'direct',
-  Managed: 'managed',
+/** `partner` with the partner key, `owner` by a person of the account, `system` by MyComm. */
+export type LineDetachedBy = 'partner' | 'owner' | 'system';
+export const LineDetachedBy = {
   Partner: 'partner',
+  Owner: 'owner',
+  System: 'system',
+} as const;
+
+export type AccountStatus = 'active' | 'suspended' | 'pending_deletion';
+export const AccountStatus = {
+  Active: 'active',
+  Suspended: 'suspended',
+  PendingDeletion: 'pending_deletion',
 } as const;
 
 export interface Account {
   id: string;
-  /** `direct`, `managed` or `partner`. */
-  type: string;
   name: string;
   /** `active`, `suspended` or `pending_deletion`. */
   status: string;
@@ -1033,8 +1082,6 @@ export interface Account {
   timezone: string;
   /** BCP 47, default `en-GB`. */
   default_locale: string;
-  /** `null` for direct accounts. */
-  external_ref: string | null;
   settings: AccountSettings;
   created_at: string;
 }
@@ -1690,40 +1737,6 @@ export interface ChannelTypeCapabilities {
   groups: boolean;
 }
 
-export interface ConnectSessionsCreateResponse {
-  id: string;
-  status: Open<ConnectSessionStatus>;
-  expires_at: string;
-  return_url: string | null;
-  allowed_origins: string[] | null;
-  locale: string | null;
-  /** Set when the session paired a device. */
-  device_id: string | null;
-  /** Set when the session connected a channel. */
-  channel_id: string | null;
-  completed_at: string | null;
-  revoked_at: string | null;
-  created_at: string;
-  /** `<base_url>/connect/<token>`, the token being 43 base64url characters. */
-  url: string;
-}
-
-export interface ConnectSession {
-  id: string;
-  status: Open<ConnectSessionStatus>;
-  expires_at: string;
-  return_url: string | null;
-  allowed_origins: string[] | null;
-  locale: string | null;
-  /** Set when the session paired a device. */
-  device_id: string | null;
-  /** Set when the session connected a channel. */
-  channel_id: string | null;
-  completed_at: string | null;
-  revoked_at: string | null;
-  created_at: string;
-}
-
 export interface ContactField {
   id: string;
   key: string;
@@ -2184,14 +2197,54 @@ export interface ImportTotals {
   errors: number;
 }
 
+export interface CreatedHostedLink {
+  id: string;
+  purpose: Open<HostedLinkPurpose>;
+  line_id: string;
+  status: Open<HostedLinkStatus>;
+  expires_at: string;
+  return_url: string | null;
+  allowed_origins: string[] | null;
+  locale: string | null;
+  replaces_device_id: string | null;
+  /** Set when the link paired a phone. */
+  device_id: string | null;
+  /** Set when the link connected a channel. */
+  channel_id: string | null;
+  completed_at: string | null;
+  revoked_at: string | null;
+  created_at: string;
+  /** `<base_url>/connect/<token>`, the token being 43 base64url characters. */
+  url: string;
+}
+
+export interface HostedLink {
+  id: string;
+  purpose: Open<HostedLinkPurpose>;
+  line_id: string;
+  status: Open<HostedLinkStatus>;
+  expires_at: string;
+  return_url: string | null;
+  allowed_origins: string[] | null;
+  locale: string | null;
+  replaces_device_id: string | null;
+  /** Set when the link paired a phone. */
+  device_id: string | null;
+  /** Set when the link connected a channel. */
+  channel_id: string | null;
+  completed_at: string | null;
+  revoked_at: string | null;
+  created_at: string;
+}
+
 /** What an app, a partner or the owner sends from and receives into, through its ordered sender list. */
 export interface Line {
   id: string;
   kind: Open<LineKind>;
   name: string;
   /**
-   * `ordered`: the first healthy sender by position sends. `pool` is reserved for spreading sends over several
-   * senders.
+   * `ordered`: the first healthy sender by position sends; the primary is always at position 0. `pool` is reserved
+   * for spreading sends over several senders.
    */
   send_mode: Open<LineSendMode>;
   /** How long a reply on a channel this line wrote from comes back to this line. */
@@ -2605,7 +2658,8 @@ export interface WebhookEndpoint {
   events: string[];
   line_ids: string[] | null;
   channel_types: string[] | null;
-  include_managed_accounts: boolean;
+  /** Also receives the events of the lines you made with the partner API. */
+  partner_lines: boolean;
   active: boolean;
   disabled_at: string | null;
   disabled_reason: string | null;
@@ -2624,7 +2678,8 @@ export interface CreatedWebhookEndpoint {
   events: string[];
   line_ids: string[] | null;
   channel_types: string[] | null;
-  include_managed_accounts: boolean;
+  /** Also receives the events of the lines you made with the partner API. */
+  partner_lines: boolean;
   active: boolean;
   disabled_at: string | null;
   disabled_reason: string | null;
@@ -2650,6 +2705,87 @@ export interface WebhookTestResult {
   error: string | null;
 }
 
+export interface PartnerLineStatus {
+  line_id: string;
+  state: Open<LineState>;
+  /**
+   * Empty unless `needs_attention`. `device_offline`: every sender's phone is offline. `sim_missing`: a sender's
+   * SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the
+   * sponsored allowance is used up. `number_disputed`: someone else verified a sender's number.
+   * `session_logged_out` and `quarantined` are reserved.
+   */
+  needs_attention_reasons: Open<LineNeedsAttentionReason>[];
+  /**
+   * The line's enabled senders by channel type, for every type the line may use. A detached line answers
+   * `not_connected` with `{}` here, no sponsorship and no times.
+   */
+  channels: Record<string, PartnerLineStatusChannel>;
+  sponsorship: PartnerLineStatusSponsorship | null;
+  last_sent_at: string | null;
+  last_received_at: string | null;
+}
+
+export interface PartnerLineStatusChannel {
+  total: number;
+  /** Senders that can send now. */
+  healthy: number;
+}
+
+/**
+ * The messages you pay for on the line this cycle: `allowance` and `used` add up the channel types of
+ * `message_allowance`, `by_type` has them per type. `used` may pass `allowance` when the user's own messages
+ * took over (`allow_user_overage`).
+ */
+export interface PartnerLineStatusSponsorship {
+  allowance: number;
+  used: number;
+  cycle_ends_at: string | null;
+  on_exhausted: Open<SponsorshipOnExhausted>;
+  by_type: Record<string, PartnerLineStatusSponsorshipByType>;
+}
+
+export interface PartnerLineStatusSponsorshipByType {
+  allowance: number;
+  used: number;
+}
+
+/** A line you made, in your user's account. */
+export interface PartnerLine {
+  id: string;
+  /** Your own reference for the line, unique among your live lines; a detached line frees it. */
+  external_ref: string;
+  name: string;
+  account_id: string;
+  /** The channel types the user may connect for this line; `null` for every available type. */
+  allowed_channel_types: string[] | null;
+  /** Whether the line can send. */
+  state: Open<LineState>;
+  created_at: string;
+  /** When the line was detached; `null` while it is live. */
+  archived_at: string | null;
+}
+
+export interface SponsorshipDefaults {
+  default_sponsorship: SponsorshipTerms | null;
+}
+
+/**
+ * What you pay for on a line. Every field is optional. `channel_fee_cover` `{type: n}` pays the monthly fee of
+ * the first n numbers of that type on the line's sender list. `message_allowance` `{type: n}` pays n messages
+ * (SMS: segments) of that type per cycle; a type it does not name is the user's own. At the limit, `hold` (the
+ * default) makes further messages of that type wait with `hold_reason` `sponsor_quota_exhausted` until the next
+ * cycle, and `allow_user_overage` lets the user's own bought messages take over. You get `line.quota_low` at 80%
+ * and `line.quota_exhausted` at 100%, once per cycle and type. A cycle is `cycle_days` long from when the
+ * sponsorship started.
+ */
+export interface SponsorshipTerms {
+  cycle_days?: number;
+  channel_fee_cover?: Record<string, number>;
+  /** At least 1 message per named type; leave a type out to sponsor none of it. */
+  message_allowance?: Record<string, number>;
+  on_exhausted?: Open<SponsorshipOnExhausted>;
+}
+
 export interface UsageResponse {
   from: string;
   to: string;
@@ -2672,7 +2808,8 @@ export interface UsageTotals {
   clicks: number;
   opt_outs: number;
   opt_ins: number;
-  accounts: number;
+  /** How many lines the report covers. */
+  lines: number;
   by_channel_type: Record<string, Record<string, unknown>>;
 }
 
@@ -2690,61 +2827,14 @@ export interface UsageRow {
   clicks: number;
   opt_outs: number;
   opt_ins: number;
+  line_id: string;
   account_id: string;
+  /** Your own reference for the line. */
   external_ref: string;
   name: string;
   by_channel_type: Record<string, Record<string, unknown>>;
+  /** The line's senders that are switched on and active now. */
   channels_active: number;
-  max_daily_segments: number | null;
-}
-
-/** A managed account. */
-export interface ManagedAccount {
-  id: string;
-  type: string;
-  external_ref: string;
-  name: string;
-  status: Open<AccountStatus>;
-  suspended_reason: string | null;
-  country_iso: string;
-  timezone: string;
-  default_locale: string;
-  settings: ManagedAccountSettings;
-  counts: ManagedAccountCounts;
-  deletion_requested_at: string | null;
-  purge_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-/** The same subset as `GET /v1/account`, including `alerts` and `limits`. Unknown keys must be ignored. */
-export interface ManagedAccountSettings {
-  opt_out?: Record<string, unknown>;
-  compliance?: Record<string, unknown>;
-  quiet_hours?: Record<string, unknown>;
-  frequency_cap?: Record<string, unknown>;
-  links?: Record<string, unknown>;
-  default_expiry_minutes?: Record<string, unknown>;
-  sms?: Record<string, unknown>;
-  channels?: Record<string, unknown>;
-  whatsapp?: Record<string, unknown>;
-  retention?: Record<string, unknown>;
-  automation?: Record<string, unknown>;
-  alerts?: Record<string, unknown>;
-  limits?: Record<string, unknown>;
-  support?: Record<string, unknown>;
-}
-
-export interface ManagedAccountCounts {
-  devices_active: number;
-  devices_online: number;
-  channels_active: number;
-  /**
-   * Channels `paused` or `disconnected`, with a SIM safety band `poor` or `critical`, or whose device is
-   * `offline`.
-   */
-  channels_needing_attention: number;
-  channels_by_type: Record<string, number>;
 }
 
 export interface WebhookChannelRef {
@@ -2848,6 +2938,43 @@ export interface WebhookLineNoSenderData {
   held_count: number;
 }
 
+/**
+ * Payload of line.connected, line.needs_attention and line.recovered: the partner line's status after the
+ * change.
+ */
+export interface WebhookLineStatusChangedData {
+  line_id: string;
+  /** The partner's own reference for the line. */
+  external_ref: string | null;
+  state: Open<LineState>;
+  needs_attention_reasons: Open<LineNeedsAttentionReason>[];
+  previous_state: Open<LineState>;
+}
+
+/** Payload of line.detached. */
+export interface WebhookLineDetachedData {
+  line_id: string;
+  /** The partner's own reference for the line; free again for a new line. */
+  external_ref: string | null;
+  /** `partner` with the partner key, `owner` by a person of the account, `system` by MyComm. */
+  by: Open<LineDetachedBy>;
+}
+
+/**
+ * Payload of line.quota_low and line.quota_exhausted: the sponsored allowance of one channel type for this
+ * cycle.
+ */
+export interface WebhookLineQuotaData {
+  line_id: string;
+  /** The partner's own reference for the line. */
+  external_ref: string | null;
+  /** For example `android_sim`. */
+  channel_type: string;
+  allowance: number;
+  used: number;
+  cycle_ends_at: string;
+}
+
 /** Payload of conversation.handed_over. */
 export interface WebhookConversationHandedOverData {
   conversation_id: string;
@@ -2947,8 +3074,6 @@ export interface WebhookAccountData {
 /** The account resource, with its `counts`. */
 export interface WebhookAccount {
   id: string;
-  type: Open<AccountType>;
-  external_ref: string | null;
   name: string;
   status: Open<AccountStatus>;
   suspended_reason: string | null;
@@ -3185,6 +3310,23 @@ export interface SendBatchItem {
 export interface SmartListFilterInput {
   match: SmartListFilterMatch;
   conditions: Array<Record<string, unknown>>;
+}
+
+/**
+ * What you pay for on a line. Every field is optional. `channel_fee_cover` `{type: n}` pays the monthly fee of
+ * the first n numbers of that type on the line's sender list. `message_allowance` `{type: n}` pays n messages
+ * (SMS: segments) of that type per cycle; a type it does not name is the user's own. At the limit, `hold` (the
+ * default) makes further messages of that type wait with `hold_reason` `sponsor_quota_exhausted` until the next
+ * cycle, and `allow_user_overage` lets the user's own bought messages take over. You get `line.quota_low` at 80%
+ * and `line.quota_exhausted` at 100%, once per cycle and type. A cycle is `cycle_days` long from when the
+ * sponsorship started.
+ */
+export interface SponsorshipTermsInput {
+  cycle_days?: number;
+  channel_fee_cover?: Record<string, number>;
+  /** At least 1 message per named type; leave a type out to sponsor none of it. */
+  message_allowance?: Record<string, number>;
+  on_exhausted?: SponsorshipOnExhausted;
 }
 
 /** The parameters of `account.update()`. */
@@ -3442,18 +3584,6 @@ export interface ChannelsUpdateRatePolicyParams {
   acknowledge_risk?: boolean;
   /** `true` restores the suggestion and clears the acknowledgement; not allowed together with policy fields. */
   reset_to_suggested?: boolean;
-}
-
-/** The parameters of `connectSessions.create()`. */
-export interface ConnectSessionsCreateParams {
-  /** `https` URL the page returns to when done; no credentials. */
-  return_url?: string | null;
-  /** Origins that may frame the page and receive its outcome. `null` = no framing and no messages. */
-  allowed_origins?: string[] | null;
-  /** Seconds until the link stops working. */
-  expires_in?: number | null;
-  /** BCP 47 tag of the page's language; defaults to the account's default locale. */
-  locale?: string | null;
 }
 
 /** The parameters of `contactFields.create()`. */
@@ -3812,6 +3942,21 @@ export interface ImportsCreateFromFileParams {
   options?: string;
 }
 
+/** The parameters of `lines.links.create()`. */
+export interface LinesLinksCreateParams {
+  purpose: HostedLinkPurpose;
+  /** `https` URL the page returns to when done; no credentials. */
+  return_url?: string | null;
+  /** Origins that may frame the page and receive its outcome. `null` = no framing and no messages. */
+  allowed_origins?: string[] | null;
+  /** Seconds until the link stops working. */
+  ttl?: number | null;
+  /** BCP 47 tag of the page's language; defaults to the account's default locale. */
+  locale?: string | null;
+  /** Required for `replace_device`, refused for any other purpose. An active phone of the line's account. */
+  replaces_device_id?: string | null;
+}
+
 /** The parameters of `lines.list()`. */
 export interface LinesListParams {
   kind?: LineKind;
@@ -3906,7 +4051,7 @@ export interface MessagesListParams {
    * One value or a comma list. Values: `scheduled`, `quiet_hours`, `frequency_cap`, `channel_paused`,
    * `device_offline`, `device_paused`, `campaign_paused`, `media_processing`, `content_cap`, `recipient_cap`,
    * `new_recipient_cap`, `link_restricted`, `platform_hold`, `account_limit`, `bulk_hours`, `carrier_cooldown`,
-   * `device_hot`, `no_sender_available`.
+   * `device_hot`, `no_sender_available`, `sponsor_quota_exhausted`, `unpaid`.
    */
   hold_reason?: string[] | string;
   /** Recipient address; phone numbers in any accepted format are normalised. */
@@ -4224,10 +4369,11 @@ export interface WebhookEndpointsCreateParams {
   line_ids?: string[] | null;
   channel_types?: string[] | null;
   /**
-   * Also receive the events of every managed account. Only on an approved partner's own account, with `line_ids`
-   * `null`, and never with a restricted key.
+   * Also receive the events of the lines you made for your users with the partner API (events whose `line_id` is
+   * one of your partner lines), and nothing else of their accounts. `line_ids` may then name partner lines too, to
+   * narrow it. Only on an approved partner's own account, never with a restricted key.
    */
-  include_managed_accounts?: boolean;
+  partner_lines?: boolean;
 }
 
 /** The parameters of `webhookEndpoints.update()`. */
@@ -4237,8 +4383,11 @@ export interface WebhookEndpointsUpdateParams {
   events?: string[] | null;
   line_ids?: string[] | null;
   channel_types?: string[] | null;
-  /** Only on an approved partner's own account, with `line_ids` `null`, and never with a restricted key. */
-  include_managed_accounts?: boolean;
+  /**
+   * Only on an approved partner's own account, never with a restricted key. Turning it off while `line_ids` names
+   * partner lines is refused.
+   */
+  partner_lines?: boolean;
   active?: boolean;
 }
 
@@ -4247,91 +4396,69 @@ export interface WebhookEndpointsRotateSecretParams {
   previous_secret_valid_seconds?: number;
 }
 
+/** The parameters of `partner.lines.list()`. */
+export interface PartnerLinesListParams {
+  /** Exact match. */
+  external_ref?: string;
+  include_archived?: boolean;
+  /** Page size, 1 to 200. */
+  limit?: number;
+  /** Opaque cursor from a previous page's `next_cursor`; valid for 24 hours. */
+  cursor?: string;
+}
+
+/** The parameters of `partner.lines.create()`. */
+export interface PartnerLinesCreateParams {
+  external_ref: string;
+  name: string;
+  /** The user's number in E.164, if you know it; only a hint for the connect page. */
+  user_number?: string | null;
+  allowed_channel_types?: string[] | null;
+  /**
+   * What you pay for on the line. Left out: your default terms (`PUT /sponsorship-defaults`), if any. `null`:
+   * none.
+   */
+  sponsorship?: SponsorshipTermsInput | null;
+}
+
+/** The parameters of `partner.lines.update()`. */
+export interface PartnerLinesUpdateParams {
+  name?: string;
+  allowed_channel_types?: string[] | null;
+  /**
+   * New terms, which apply at once within the current cycle (what it used so far stays). `null` ends the
+   * sponsorship: the numbers it paid for get 14 days of grace. Left out: unchanged.
+   */
+  sponsorship?: SponsorshipTermsInput | null;
+}
+
+/** The parameters of `partner.lines.links.create()`. */
+export interface PartnerLinesLinksCreateParams {
+  purpose: HostedLinkPurpose;
+  /** `https` URL the page returns to when done; no credentials. */
+  return_url?: string | null;
+  /** Origins that may frame the page and receive its outcome. `null` = no framing and no messages. */
+  allowed_origins?: string[] | null;
+  /** Seconds until the link stops working. */
+  ttl?: number | null;
+  /** BCP 47 tag of the page's language; defaults to the account's default locale. */
+  locale?: string | null;
+  /** Required for `replace_device`, refused for any other purpose. An active phone of the line's account. */
+  replaces_device_id?: string | null;
+}
+
+/** The parameters of `partner.sponsorshipDefaults.put()`. */
+export interface PartnerSponsorshipDefaultsPutParams {
+  default_sponsorship: SponsorshipTermsInput | null;
+}
+
 /** The parameters of `partner.usage.get()`. */
 export interface PartnerUsageGetParams {
   from: string;
   to: string;
-  account_id?: string;
+  line_id?: string;
   /** Page size, 1 to 200. */
   limit?: number;
   /** Opaque cursor from a previous page's `next_cursor`; valid for 24 hours. */
   cursor?: string;
-}
-
-/** The parameters of `partner.accounts.list()`. */
-export interface PartnerAccountsListParams {
-  /** Exact match. */
-  external_ref?: string;
-  /** One of: `active`, `suspended`, `pending_deletion`. */
-  status?: string;
-  /** Matches the name. */
-  q?: string;
-  created_after?: Date | string;
-  created_before?: Date | string;
-  /** `true` for accounts with `counts.channels_needing_attention` above zero. */
-  needs_attention?: boolean;
-  /** One of: `-created_at`, `name`. */
-  sort?: string;
-  /** Page size, 1 to 200. */
-  limit?: number;
-  /** Opaque cursor from a previous page's `next_cursor`; valid for 24 hours. */
-  cursor?: string;
-}
-
-/** The parameters of `partner.accounts.provision()`. */
-export interface PartnerAccountsProvisionParams {
-  /** The partner's id for its customer; unique per partner. */
-  external_ref: string;
-  /** Shown in the Android app after pairing. */
-  name: string;
-  /** ISO 3166-1 alpha-2. */
-  country_iso: string;
-  /** IANA zone, for example `Asia/Karachi`. */
-  timezone: string;
-  /** BCP 47, default `en-GB`. */
-  default_locale?: string;
-  /** Initial settings (the account settings a partner may set); `channels.auto_connect_sims` defaults to `true`. */
-  settings?: Record<string, unknown>;
-}
-
-/** The parameters of `partner.accounts.update()`. */
-export interface PartnerAccountsUpdateParams {
-  external_ref?: string;
-  name?: string;
-  country_iso?: string;
-  timezone?: string;
-  default_locale?: string;
-  /** Deep-merged; the partner may also set `limits.max_daily_segments` and `channels.allowed_types`. */
-  settings?: Record<string, unknown>;
-}
-
-/** The parameters of `partner.accounts.suspend()`. */
-export interface PartnerAccountsSuspendParams {
-  reason: string;
-}
-
-/** The parameters of `partner.accountKeys.list()`. */
-export interface PartnerAccountKeysListParams {
-  /** Default `false`. */
-  revoked?: boolean;
-  /** Page size, 1 to 200. */
-  limit?: number;
-  /** Opaque cursor from a previous page's `next_cursor`; valid for 24 hours. */
-  cursor?: string;
-}
-
-/** The parameters of `partner.accountKeys.create()`. */
-export interface PartnerAccountKeysCreateParams {
-  name: string;
-  /**
-   * `null` or omitted for all lines. A key limited to one line sends from it without naming a sender (`line_id`,
-   * `channel_id` and `from` can be left out).
-   */
-  line_ids?: string[] | null;
-  /** `null` or omitted for all channel types, for example `["android_sim"]`. */
-  channel_types?: string[] | null;
-  abilities?: string[] | null;
-  /** IPv4/IPv6 addresses or CIDR ranges. */
-  allowed_ips?: string[] | null;
-  expires_at?: Date | string | null;
 }

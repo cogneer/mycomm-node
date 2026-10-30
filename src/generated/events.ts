@@ -24,9 +24,12 @@ import type {
   WebhookDeviceStateData,
   WebhookExportData,
   WebhookImportData,
+  WebhookLineDetachedData,
   WebhookLineFailoverData,
   WebhookLineNoSenderData,
+  WebhookLineQuotaData,
   WebhookLineSenderChangedData,
+  WebhookLineStatusChangedData,
   WebhookLinkClickedData,
   WebhookMessageCancelledData,
   WebhookMessageData,
@@ -50,8 +53,6 @@ export interface WebhookEventBase {
   api_version: string;
   created_at: string;
   account_id: string;
-  /** The managed account's `external_ref`; `null` for direct accounts. */
-  account_external_ref: string | null;
   line_id: string | null;
   channel: WebhookChannelRef | null;
 }
@@ -202,6 +203,64 @@ export interface LineFailoverEvent extends WebhookEventBase {
 export interface LineNoSenderEvent extends WebhookEventBase {
   type: 'line.no_sender';
   data: WebhookLineNoSenderData;
+}
+
+/**
+ * `line.connected`: A partner line left `not_connected`: the user connected a phone and its first number was
+ * verified. Sent once per line, whatever the line's state then is: `state` says it, and when it is
+ * `needs_attention` a `line.needs_attention` follows. Later recoveries send `line.recovered`. Partner lines only
+ * (`partner_lines` endpoints and the account's own endpoints).
+ */
+export interface LineConnectedEvent extends WebhookEventBase {
+  type: 'line.connected';
+  data: WebhookLineStatusChangedData;
+}
+
+/**
+ * `line.needs_attention`: A connected partner line needs its user: `needs_attention_reasons` says why. Sent when
+ * the line enters the state and again when a new reason is added (a reason that goes away is not sent). The same
+ * as `GET /partner/v1/lines/{id}/status` at that moment.
+ */
+export interface LineNeedsAttentionEvent extends WebhookEventBase {
+  type: 'line.needs_attention';
+  data: WebhookLineStatusChangedData;
+}
+
+/** `line.recovered`: A partner line that needed attention is connected again. Sent once per recovery. */
+export interface LineRecoveredEvent extends WebhookEventBase {
+  type: 'line.recovered';
+  data: WebhookLineStatusChangedData;
+}
+
+/**
+ * `line.detached`: A partner line was detached and archived, by the partner (`DELETE /partner/v1/lines/{id}`),
+ * by the account's owner, or by MyComm. The account keeps its numbers and history; the line sends no more. Sent
+ * once.
+ */
+export interface LineDetachedEvent extends WebhookEventBase {
+  type: 'line.detached';
+  data: WebhookLineDetachedData;
+}
+
+/**
+ * `line.quota_low`: A sponsored partner line used 80% of the messages its partner pays for this cycle, for one
+ * channel type. Sent once per cycle and type (when one send takes the line past 80% and to 100%, both this and
+ * `line.quota_exhausted` are sent). Partner lines only.
+ */
+export interface LineQuotaLowEvent extends WebhookEventBase {
+  type: 'line.quota_low';
+  data: WebhookLineQuotaData;
+}
+
+/**
+ * `line.quota_exhausted`: A sponsored partner line used all the messages its partner pays for this cycle, for
+ * one channel type. Further messages of that type wait with `hold_reason` `sponsor_quota_exhausted` until the
+ * next cycle, unless the sponsorship lets the user's own messages take over (`allow_user_overage`). Sent once
+ * per cycle and type.
+ */
+export interface LineQuotaExhaustedEvent extends WebhookEventBase {
+  type: 'line.quota_exhausted';
+  data: WebhookLineQuotaData;
 }
 
 /**
@@ -475,6 +534,12 @@ export type WebhookEvent =
   | LineSenderChangedEvent
   | LineFailoverEvent
   | LineNoSenderEvent
+  | LineConnectedEvent
+  | LineNeedsAttentionEvent
+  | LineRecoveredEvent
+  | LineDetachedEvent
+  | LineQuotaLowEvent
+  | LineQuotaExhaustedEvent
   | ConversationHandedOverEvent
   | LinkClickedEvent
   | ChannelConnectedEvent
@@ -530,6 +595,12 @@ export const EVENT_TYPES: readonly WebhookEventType[] = [
   'line.sender_changed',
   'line.failover',
   'line.no_sender',
+  'line.connected',
+  'line.needs_attention',
+  'line.recovered',
+  'line.detached',
+  'line.quota_low',
+  'line.quota_exhausted',
   'conversation.handed_over',
   'link.clicked',
   'channel.connected',
