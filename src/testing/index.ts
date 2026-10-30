@@ -137,10 +137,10 @@ export class MyCommFake {
    * `validate`: whether the client checks arguments before sending, as a real client does. Turn it off to test how your
    * code handles what the server answers to a request the SDK would have refused.
    */
-  constructor(options: Pick<ClientOptions, 'apiKey' | 'accountId' | 'validate'> = {}) {
+  constructor(options: Pick<ClientOptions, 'apiKey' | 'lineId' | 'validate'> = {}) {
     const internal: InternalOptions = {
       apiKey: options.apiKey ?? 'mc_live_fake',
-      accountId: options.accountId,
+      lineId: options.lineId,
       validate: options.validate,
       // No retries: an error you stub must surface at once, without the client waiting in between.
       maxRetries: 0,

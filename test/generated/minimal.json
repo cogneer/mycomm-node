@@ -1585,43 +1585,6 @@
       }
     },
     {
-      "operation": "connectSessions.create",
-      "key": "connectSessions.create",
-      "status": 201,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "status": "open",
-        "expires_at": "2026-10-01T09:15:02Z",
-        "return_url": null,
-        "allowed_origins": null,
-        "locale": null,
-        "device_id": null,
-        "channel_id": null,
-        "completed_at": null,
-        "revoked_at": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "url": "https://example.com/mycomm"
-      }
-    },
-    {
-      "operation": "connectSessions.get",
-      "key": "connectSessions.get",
-      "status": 200,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "status": "open",
-        "expires_at": "2026-10-01T09:15:02Z",
-        "return_url": null,
-        "allowed_origins": null,
-        "locale": null,
-        "device_id": null,
-        "channel_id": null,
-        "completed_at": null,
-        "revoked_at": null,
-        "created_at": "2026-10-01T09:15:02Z"
-      }
-    },
-    {
       "operation": "contactFields.list",
       "key": "contactFields.list",
       "status": 200,
@@ -2738,6 +2701,49 @@
       }
     },
     {
+      "operation": "lines.links.create",
+      "key": "lines.links.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "purpose": "connect",
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "status": "open",
+        "expires_at": "2026-10-01T09:15:02Z",
+        "return_url": null,
+        "allowed_origins": null,
+        "locale": null,
+        "replaces_device_id": null,
+        "device_id": null,
+        "channel_id": null,
+        "completed_at": null,
+        "revoked_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "url": "https://example.com/mycomm"
+      }
+    },
+    {
+      "operation": "links.get",
+      "key": "links.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "purpose": "connect",
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "status": "open",
+        "expires_at": "2026-10-01T09:15:02Z",
+        "return_url": null,
+        "allowed_origins": null,
+        "locale": null,
+        "replaces_device_id": null,
+        "device_id": null,
+        "channel_id": null,
+        "completed_at": null,
+        "revoked_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
       "operation": "lines.list",
       "key": "lines.list",
       "status": 200,
@@ -3780,7 +3786,7 @@
         "events": [],
         "line_ids": null,
         "channel_types": null,
-        "include_managed_accounts": true,
+        "partner_lines": true,
         "active": true,
         "disabled_at": null,
         "disabled_reason": null,
@@ -3803,7 +3809,7 @@
         "events": [],
         "line_ids": null,
         "channel_types": null,
-        "include_managed_accounts": true,
+        "partner_lines": true,
         "active": true,
         "disabled_at": null,
         "disabled_reason": null,
@@ -3825,7 +3831,7 @@
         "events": [],
         "line_ids": null,
         "channel_types": null,
-        "include_managed_accounts": true,
+        "partner_lines": true,
         "active": true,
         "disabled_at": null,
         "disabled_reason": null,
@@ -3858,6 +3864,133 @@
       }
     },
     {
+      "operation": "partner.lines.status",
+      "key": "partner.lines.status",
+      "status": 200,
+      "body": {
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "state": "connected",
+        "needs_attention_reasons": [],
+        "channels": {},
+        "sponsorship": null,
+        "last_sent_at": null,
+        "last_received_at": null
+      }
+    },
+    {
+      "operation": "partner.lines.list",
+      "key": "partner.lines.list",
+      "status": 200,
+      "body": {
+        "data": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operation": "partner.lines.create",
+      "key": "partner.lines.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "allowed_channel_types": null,
+        "state": "connected",
+        "created_at": "2026-10-01T09:15:02Z",
+        "archived_at": null
+      }
+    },
+    {
+      "operation": "partner.lines.get",
+      "key": "partner.lines.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "allowed_channel_types": null,
+        "state": "connected",
+        "created_at": "2026-10-01T09:15:02Z",
+        "archived_at": null
+      }
+    },
+    {
+      "operation": "partner.lines.update",
+      "key": "partner.lines.update",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": "Example external ref",
+        "name": "Example name",
+        "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "allowed_channel_types": null,
+        "state": "connected",
+        "created_at": "2026-10-01T09:15:02Z",
+        "archived_at": null
+      }
+    },
+    {
+      "operation": "partner.lines.links.create",
+      "key": "partner.lines.links.create",
+      "status": 201,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "purpose": "connect",
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "status": "open",
+        "expires_at": "2026-10-01T09:15:02Z",
+        "return_url": null,
+        "allowed_origins": null,
+        "locale": null,
+        "replaces_device_id": null,
+        "device_id": null,
+        "channel_id": null,
+        "completed_at": null,
+        "revoked_at": null,
+        "created_at": "2026-10-01T09:15:02Z",
+        "url": "https://example.com/mycomm"
+      }
+    },
+    {
+      "operation": "partner.links.get",
+      "key": "partner.links.get",
+      "status": 200,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "purpose": "connect",
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "status": "open",
+        "expires_at": "2026-10-01T09:15:02Z",
+        "return_url": null,
+        "allowed_origins": null,
+        "locale": null,
+        "replaces_device_id": null,
+        "device_id": null,
+        "channel_id": null,
+        "completed_at": null,
+        "revoked_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "partner.sponsorshipDefaults.get",
+      "key": "partner.sponsorshipDefaults.get",
+      "status": 200,
+      "body": {
+        "default_sponsorship": null
+      }
+    },
+    {
+      "operation": "partner.sponsorshipDefaults.put",
+      "key": "partner.sponsorshipDefaults.put",
+      "status": 200,
+      "body": {
+        "default_sponsorship": null
+      }
+    },
+    {
       "operation": "partner.usage.get",
       "key": "partner.usage.get",
       "status": 200,
@@ -3878,249 +4011,11 @@
           "clicks": 1,
           "opt_outs": 1,
           "opt_ins": 1,
-          "accounts": 1,
+          "lines": 1,
           "by_channel_type": {}
         },
         "data": [],
         "next_cursor": null
-      }
-    },
-    {
-      "operation": "partner.accounts.list",
-      "key": "partner.accounts.list",
-      "status": 200,
-      "body": {
-        "data": [],
-        "next_cursor": null
-      }
-    },
-    {
-      "operation": "partner.accounts.provision",
-      "key": "partner.accounts.provision",
-      "status": 200,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "type": "managed",
-        "external_ref": "Example external ref",
-        "name": "Example name",
-        "status": "active",
-        "suspended_reason": null,
-        "country_iso": "PK",
-        "timezone": "Asia/Karachi",
-        "default_locale": "en",
-        "settings": {},
-        "counts": {
-          "devices_active": 1,
-          "devices_online": 1,
-          "channels_active": 1,
-          "channels_needing_attention": 1,
-          "channels_by_type": {}
-        },
-        "deletion_requested_at": null,
-        "purge_at": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "updated_at": "2026-10-01T09:15:02Z"
-      }
-    },
-    {
-      "operation": "partner.accounts.provision",
-      "key": "partner.accounts.provision",
-      "status": 201,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "type": "managed",
-        "external_ref": "Example external ref",
-        "name": "Example name",
-        "status": "active",
-        "suspended_reason": null,
-        "country_iso": "PK",
-        "timezone": "Asia/Karachi",
-        "default_locale": "en",
-        "settings": {},
-        "counts": {
-          "devices_active": 1,
-          "devices_online": 1,
-          "channels_active": 1,
-          "channels_needing_attention": 1,
-          "channels_by_type": {}
-        },
-        "deletion_requested_at": null,
-        "purge_at": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "updated_at": "2026-10-01T09:15:02Z"
-      }
-    },
-    {
-      "operation": "partner.accounts.get",
-      "key": "partner.accounts.get",
-      "status": 200,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "type": "managed",
-        "external_ref": "Example external ref",
-        "name": "Example name",
-        "status": "active",
-        "suspended_reason": null,
-        "country_iso": "PK",
-        "timezone": "Asia/Karachi",
-        "default_locale": "en",
-        "settings": {},
-        "counts": {
-          "devices_active": 1,
-          "devices_online": 1,
-          "channels_active": 1,
-          "channels_needing_attention": 1,
-          "channels_by_type": {}
-        },
-        "deletion_requested_at": null,
-        "purge_at": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "updated_at": "2026-10-01T09:15:02Z"
-      }
-    },
-    {
-      "operation": "partner.accounts.update",
-      "key": "partner.accounts.update",
-      "status": 200,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "type": "managed",
-        "external_ref": "Example external ref",
-        "name": "Example name",
-        "status": "active",
-        "suspended_reason": null,
-        "country_iso": "PK",
-        "timezone": "Asia/Karachi",
-        "default_locale": "en",
-        "settings": {},
-        "counts": {
-          "devices_active": 1,
-          "devices_online": 1,
-          "channels_active": 1,
-          "channels_needing_attention": 1,
-          "channels_by_type": {}
-        },
-        "deletion_requested_at": null,
-        "purge_at": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "updated_at": "2026-10-01T09:15:02Z"
-      }
-    },
-    {
-      "operation": "partner.accounts.delete",
-      "key": "partner.accounts.delete",
-      "status": 202,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "type": "managed",
-        "external_ref": "Example external ref",
-        "name": "Example name",
-        "status": "active",
-        "suspended_reason": null,
-        "country_iso": "PK",
-        "timezone": "Asia/Karachi",
-        "default_locale": "en",
-        "settings": {},
-        "counts": {
-          "devices_active": 1,
-          "devices_online": 1,
-          "channels_active": 1,
-          "channels_needing_attention": 1,
-          "channels_by_type": {}
-        },
-        "deletion_requested_at": null,
-        "purge_at": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "updated_at": "2026-10-01T09:15:02Z"
-      }
-    },
-    {
-      "operation": "partner.accounts.suspend",
-      "key": "partner.accounts.suspend",
-      "status": 200,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "type": "managed",
-        "external_ref": "Example external ref",
-        "name": "Example name",
-        "status": "active",
-        "suspended_reason": null,
-        "country_iso": "PK",
-        "timezone": "Asia/Karachi",
-        "default_locale": "en",
-        "settings": {},
-        "counts": {
-          "devices_active": 1,
-          "devices_online": 1,
-          "channels_active": 1,
-          "channels_needing_attention": 1,
-          "channels_by_type": {}
-        },
-        "deletion_requested_at": null,
-        "purge_at": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "updated_at": "2026-10-01T09:15:02Z"
-      }
-    },
-    {
-      "operation": "partner.accounts.reactivate",
-      "key": "partner.accounts.reactivate",
-      "status": 200,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "type": "managed",
-        "external_ref": "Example external ref",
-        "name": "Example name",
-        "status": "active",
-        "suspended_reason": null,
-        "country_iso": "PK",
-        "timezone": "Asia/Karachi",
-        "default_locale": "en",
-        "settings": {},
-        "counts": {
-          "devices_active": 1,
-          "devices_online": 1,
-          "channels_active": 1,
-          "channels_needing_attention": 1,
-          "channels_by_type": {}
-        },
-        "deletion_requested_at": null,
-        "purge_at": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "updated_at": "2026-10-01T09:15:02Z"
-      }
-    },
-    {
-      "operation": "partner.accountKeys.list",
-      "key": "partner.accountKeys.list",
-      "status": 200,
-      "body": {
-        "data": [],
-        "next_cursor": null
-      }
-    },
-    {
-      "operation": "partner.accountKeys.create",
-      "key": "partner.accountKeys.create",
-      "status": 201,
-      "body": {
-        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-        "kind": "account",
-        "name": "Example name",
-        "prefix": "Example prefix",
-        "scope": {
-          "line_ids": null,
-          "channel_types": null
-        },
-        "abilities": [],
-        "allowed_ips": null,
-        "last_used_at": null,
-        "last_used_ip": null,
-        "expires_at": null,
-        "revoked_at": null,
-        "actor": null,
-        "created_at": "2026-10-01T09:15:02Z",
-        "token": "mc_test_example"
       }
     }
   ],
@@ -4778,6 +4673,108 @@
       "data": {
         "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
         "held_count": 1
+      }
+    },
+    "line.connected": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "line.connected",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "line_id": null,
+      "channel": null,
+      "data": {
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": null,
+        "state": "connected",
+        "needs_attention_reasons": [],
+        "previous_state": "connected"
+      }
+    },
+    "line.needs_attention": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "line.needs_attention",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "line_id": null,
+      "channel": null,
+      "data": {
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": null,
+        "state": "connected",
+        "needs_attention_reasons": [],
+        "previous_state": "connected"
+      }
+    },
+    "line.recovered": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "line.recovered",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "line_id": null,
+      "channel": null,
+      "data": {
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": null,
+        "state": "connected",
+        "needs_attention_reasons": [],
+        "previous_state": "connected"
+      }
+    },
+    "line.detached": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "line.detached",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "line_id": null,
+      "channel": null,
+      "data": {
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": null,
+        "by": "partner"
+      }
+    },
+    "line.quota_low": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "line.quota_low",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "line_id": null,
+      "channel": null,
+      "data": {
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": null,
+        "channel_type": "Example channel type",
+        "allowance": 1,
+        "used": 1,
+        "cycle_ends_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    "line.quota_exhausted": {
+      "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "type": "line.quota_exhausted",
+      "api_version": "1.0.0",
+      "created_at": "2026-10-01T09:15:02Z",
+      "account_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      "account_external_ref": null,
+      "line_id": null,
+      "channel": null,
+      "data": {
+        "line_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "external_ref": null,
+        "channel_type": "Example channel type",
+        "allowance": 1,
+        "used": 1,
+        "cycle_ends_at": "2026-10-01T09:15:02Z"
       }
     },
     "conversation.handed_over": {

@@ -116,7 +116,7 @@ describe('every operation', () => {
 
   it('covers every operation of both specs', () => {
     expect(rows.length).toBeGreaterThan(150);
-    expect(rows.filter((row) => row.resource[0] === 'partner')).toHaveLength(11);
+    expect(rows.filter((row) => row.resource[0] === 'partner')).toHaveLength(12);
     expect(new Set(rows.map((row) => row.key)).size).toBe(rows.length);
   });
 });

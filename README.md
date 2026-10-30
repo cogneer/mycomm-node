@@ -1,7 +1,8 @@
 # MyComm Node.js SDK
 
 The official Node.js and TypeScript client for the [MyComm](https://mycomm.cogneer.tech) messaging API: send and track
-messages, manage contacts and conversations, receive webhooks, and (for partners) provision customer accounts.
+messages, manage contacts and conversations, receive webhooks, and (for partners) give each of your users a line their
+own phone sends from: see [Partners](#partners).
 
 - Every operation of the public API and the partner API, with typed parameters and typed results
 - Checks your arguments against the API's documented rules before sending, and tells you which field is wrong
@@ -59,7 +60,7 @@ operations by resource, so the same call reads `messages.send()`. The PHP SDK us
 | `upsertContactByIdentity`     | `mycomm.contacts.upsertByIdentity({...})`                 |
 | `blockContactIdentity`        | `mycomm.contacts.identities.block(contactId, identityId)` |
 | `rotateWebhookEndpointSecret` | `mycomm.webhookEndpoints.rotateSecret(id)`                |
-| `provisionManagedAccount`     | `mycomm.partner.accounts.provision({...})`                |
+| `createPartnerLineLink`       | `mycomm.partner.lines.links.create(lineId, {...})`        |
 
 `generator/config.ts` holds the full table of operation ids.
 
@@ -337,25 +338,58 @@ endpoint.secret;
 
 ## Partners
 
-A partner key (`mc_partner_...`) provisions managed accounts and then acts as them on the normal API:
+A partner key (`mc_partner_...`) gives each of your users (an ERP's tenant, a shop on your platform) a **line**: their own
+phone sends your messages, and you never hold their MyComm login. The flow for an ERP:
 
 ```ts
 const partner = new MyComm({ apiKey: process.env.MYCOMM_PARTNER_KEY });
 
-const account = await partner.partner.accounts.provision({
-  external_ref: 'erp-business-20418',
+// 1. Once per tenant: create its line and keep the id.
+const line = await partner.partner.lines.create({
+  external_ref: 'erp-tenant-20418', // your own id for the tenant, unique among your live lines
   name: 'Acme Traders',
-  country_iso: 'PK',
-  timezone: 'Asia/Karachi',
+  user_number: '+923001234567', // optional: only pre-fills the number on the connect page
 });
 
-const acme = partner.forAccount(account.id); // every call now carries MyComm-Account
-await acme.messages.send({ to: '+923001234567', body: 'Welcome to Acme' });
+// 2. When the tenant opens your messaging settings: mint a connect link for this visit.
+const link = await partner.partner.lines.links.create(line.id, {
+  purpose: 'connect',
+  return_url: 'https://erp.example.com/settings/messaging',
+  allowed_origins: ['https://erp.example.com'],
+});
+// Hand link.url to the page and never log it: it is a bearer credential for this line, valid 30 minutes.
 
-const usage = await partner.partner.usage.get({ from: '2026-10-01', to: '2026-10-31' });
+// 3. The page renders the widget (@mycomm/connect) with that URL:
+//    <mycomm-connect url="…link.url…" purpose="connect"></mycomm-connect>
+
+// 4. Send as the tenant: every /v1 call of this client carries `MyComm-Line`.
+const acme = partner.forLine(line.id);
+await acme.messages.send({ to: '+923009876543', body: 'Your invoice INV-1042 is ready' });
+
+// 5. Know whether the line can send: poll its status...
+const status = await partner.partner.lines.status(line.id);
+status.state; // 'connected' | 'needs_attention' | 'not_connected'
+status.needs_attention_reasons; // e.g. ['device_offline']
 ```
 
-Or mint a key for the customer's own integration: `partner.partner.accountKeys.create(account.id, { name: 'ERP' })`.
+...or take the `line.*` webhooks (`line.connected`, `line.needs_attention`, `line.recovered`, `line.detached`,
+`line.quota_low`, `line.quota_exhausted`) on an endpoint created with `partner_lines: true`; see [Webhooks](#webhooks).
+
+A partner key reaches `/v1` only through a line it made: without `forLine()` (or the option `lineId`) a `/v1` call
+answers `400 LINE_CONTEXT_REQUIRED`, and only sending, messages, conversations and `lines.get()` of that line are open to
+it. `/partner/v1` calls never carry the header.
+
+| Call                                                                         |                                                                                |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `partner.lines.list()`, `all()`, `create()`, `get()`, `update()`, `detach()` | Your lines; `detach()` ends the line and its open links                        |
+| `partner.lines.status(id)`                                                   | Whether the line can send, and why not                                         |
+| `partner.lines.links.create(id, { purpose })`                                | A hosted link: `connect`, `add_channel`, `replace_device`, `manage` or `claim` |
+| `partner.links.get(id)`, `revoke(id)`                                        | Follow or end a link                                                           |
+| `partner.sponsorshipDefaults.get()`, `put({...})`                            | The sponsorship terms new lines get                                            |
+| `partner.usage.get({ from, to })`                                            | Usage per line                                                                 |
+
+An account key mints the same links for its own lines with `mycomm.lines.links.create(lineId, { purpose })` and follows
+them with `mycomm.links.get(id)` and `revoke(id)`.
 
 ## Uploading files
 

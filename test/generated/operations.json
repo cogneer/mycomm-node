@@ -466,39 +466,6 @@
     "returns": "page"
   },
   {
-    "operation": "connectSessions.create",
-    "key": "connectSessions.create",
-    "resource": ["connectSessions"],
-    "method": "create",
-    "args": [{}],
-    "http": "POST",
-    "path": "/v1/connect-sessions",
-    "format": "json",
-    "returns": "model"
-  },
-  {
-    "operation": "connectSessions.get",
-    "key": "connectSessions.get",
-    "resource": ["connectSessions"],
-    "method": "get",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
-    "http": "GET",
-    "path": "/v1/connect-sessions/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-    "format": "none",
-    "returns": "model"
-  },
-  {
-    "operation": "connectSessions.delete",
-    "key": "connectSessions.delete",
-    "resource": ["connectSessions"],
-    "method": "delete",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
-    "http": "DELETE",
-    "path": "/v1/connect-sessions/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-    "format": "none",
-    "returns": "void"
-  },
-  {
     "operation": "contactFields.list",
     "key": "contactFields.list",
     "resource": ["contactFields"],
@@ -1175,6 +1142,44 @@
     "path": "/v1/imports/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/cancel",
     "format": "none",
     "returns": "model"
+  },
+  {
+    "operation": "lines.links.create",
+    "key": "lines.links.create",
+    "resource": ["lines", "links"],
+    "method": "create",
+    "args": [
+      "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      {
+        "purpose": "connect"
+      }
+    ],
+    "http": "POST",
+    "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/links",
+    "format": "json",
+    "returns": "model"
+  },
+  {
+    "operation": "links.get",
+    "key": "links.get",
+    "resource": ["links"],
+    "method": "get",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "GET",
+    "path": "/v1/links/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "links.revoke",
+    "key": "links.revoke",
+    "resource": ["links"],
+    "method": "revoke",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "DELETE",
+    "path": "/v1/links/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "none",
+    "returns": "void"
   },
   {
     "operation": "lines.list",
@@ -1871,6 +1876,150 @@
     "returns": "model"
   },
   {
+    "operation": "partner.lines.status",
+    "key": "partner.lines.status",
+    "resource": ["partner", "lines"],
+    "method": "status",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "GET",
+    "path": "/partner/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/status",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "partner.lines.list",
+    "key": "partner.lines.list",
+    "resource": ["partner", "lines"],
+    "method": "list",
+    "args": [{}],
+    "http": "GET",
+    "path": "/partner/v1/lines",
+    "format": "none",
+    "returns": "page"
+  },
+  {
+    "operation": "partner.lines.create",
+    "key": "partner.lines.create",
+    "resource": ["partner", "lines"],
+    "method": "create",
+    "args": [
+      {
+        "external_ref": "Example external ref",
+        "name": "Example name"
+      }
+    ],
+    "http": "POST",
+    "path": "/partner/v1/lines",
+    "format": "json",
+    "returns": "model"
+  },
+  {
+    "operation": "partner.lines.get",
+    "key": "partner.lines.get",
+    "resource": ["partner", "lines"],
+    "method": "get",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "GET",
+    "path": "/partner/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "partner.lines.update",
+    "key": "partner.lines.update",
+    "resource": ["partner", "lines"],
+    "method": "update",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", {}],
+    "http": "PATCH",
+    "path": "/partner/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "json",
+    "returns": "model"
+  },
+  {
+    "operation": "partner.lines.detach",
+    "key": "partner.lines.detach",
+    "resource": ["partner", "lines"],
+    "method": "detach",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "DELETE",
+    "path": "/partner/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "none",
+    "returns": "void"
+  },
+  {
+    "operation": "partner.lines.links.create",
+    "key": "partner.lines.links.create",
+    "resource": ["partner", "lines", "links"],
+    "method": "create",
+    "args": [
+      "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      {
+        "purpose": "connect"
+      }
+    ],
+    "http": "POST",
+    "path": "/partner/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/links",
+    "format": "json",
+    "returns": "model"
+  },
+  {
+    "operation": "partner.links.get",
+    "key": "partner.links.get",
+    "resource": ["partner", "links"],
+    "method": "get",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "GET",
+    "path": "/partner/v1/links/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "partner.links.revoke",
+    "key": "partner.links.revoke",
+    "resource": ["partner", "links"],
+    "method": "revoke",
+    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
+    "http": "DELETE",
+    "path": "/partner/v1/links/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+    "format": "none",
+    "returns": "void"
+  },
+  {
+    "operation": "partner.sponsorshipDefaults.get",
+    "key": "partner.sponsorshipDefaults.get",
+    "resource": ["partner", "sponsorshipDefaults"],
+    "method": "get",
+    "args": [],
+    "http": "GET",
+    "path": "/partner/v1/sponsorship-defaults",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "partner.sponsorshipDefaults.put",
+    "key": "partner.sponsorshipDefaults.put",
+    "resource": ["partner", "sponsorshipDefaults"],
+    "method": "put",
+    "args": [
+      {
+        "default_sponsorship": {
+          "cycle_days": 1,
+          "channel_fee_cover": {
+            "example": 1
+          },
+          "message_allowance": {
+            "example": 1
+          },
+          "on_exhausted": "hold"
+        }
+      }
+    ],
+    "http": "PUT",
+    "path": "/partner/v1/sponsorship-defaults",
+    "format": "json",
+    "returns": "model"
+  },
+  {
     "operation": "partner.usage.get",
     "key": "partner.usage.get",
     "resource": ["partner", "usage"],
@@ -1885,132 +2034,5 @@
     "path": "/partner/v1/usage",
     "format": "none",
     "returns": "model"
-  },
-  {
-    "operation": "partner.accounts.list",
-    "key": "partner.accounts.list",
-    "resource": ["partner", "accounts"],
-    "method": "list",
-    "args": [{}],
-    "http": "GET",
-    "path": "/partner/v1/accounts",
-    "format": "none",
-    "returns": "page"
-  },
-  {
-    "operation": "partner.accounts.provision",
-    "key": "partner.accounts.provision",
-    "resource": ["partner", "accounts"],
-    "method": "provision",
-    "args": [
-      {
-        "external_ref": "Example external ref",
-        "name": "Example name",
-        "country_iso": "PK",
-        "timezone": "Asia/Karachi"
-      }
-    ],
-    "http": "POST",
-    "path": "/partner/v1/accounts",
-    "format": "json",
-    "returns": "model"
-  },
-  {
-    "operation": "partner.accounts.get",
-    "key": "partner.accounts.get",
-    "resource": ["partner", "accounts"],
-    "method": "get",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
-    "http": "GET",
-    "path": "/partner/v1/accounts/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-    "format": "none",
-    "returns": "model"
-  },
-  {
-    "operation": "partner.accounts.update",
-    "key": "partner.accounts.update",
-    "resource": ["partner", "accounts"],
-    "method": "update",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", {}],
-    "http": "PATCH",
-    "path": "/partner/v1/accounts/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-    "format": "json",
-    "returns": "model"
-  },
-  {
-    "operation": "partner.accounts.delete",
-    "key": "partner.accounts.delete",
-    "resource": ["partner", "accounts"],
-    "method": "delete",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
-    "http": "DELETE",
-    "path": "/partner/v1/accounts/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-    "format": "none",
-    "returns": "model"
-  },
-  {
-    "operation": "partner.accounts.suspend",
-    "key": "partner.accounts.suspend",
-    "resource": ["partner", "accounts"],
-    "method": "suspend",
-    "args": [
-      "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-      {
-        "reason": "Example reason"
-      }
-    ],
-    "http": "POST",
-    "path": "/partner/v1/accounts/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/suspend",
-    "format": "json",
-    "returns": "model"
-  },
-  {
-    "operation": "partner.accounts.reactivate",
-    "key": "partner.accounts.reactivate",
-    "resource": ["partner", "accounts"],
-    "method": "reactivate",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
-    "http": "POST",
-    "path": "/partner/v1/accounts/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/reactivate",
-    "format": "none",
-    "returns": "model"
-  },
-  {
-    "operation": "partner.accountKeys.list",
-    "key": "partner.accountKeys.list",
-    "resource": ["partner", "accountKeys"],
-    "method": "list",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", {}],
-    "http": "GET",
-    "path": "/partner/v1/accounts/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/api-keys",
-    "format": "none",
-    "returns": "page"
-  },
-  {
-    "operation": "partner.accountKeys.create",
-    "key": "partner.accountKeys.create",
-    "resource": ["partner", "accountKeys"],
-    "method": "create",
-    "args": [
-      "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-      {
-        "name": "Example name"
-      }
-    ],
-    "http": "POST",
-    "path": "/partner/v1/accounts/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/api-keys",
-    "format": "json",
-    "returns": "model"
-  },
-  {
-    "operation": "partner.accountKeys.revoke",
-    "key": "partner.accountKeys.revoke",
-    "resource": ["partner", "accountKeys"],
-    "method": "revoke",
-    "args": ["01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c", "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"],
-    "http": "DELETE",
-    "path": "/partner/v1/accounts/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/api-keys/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
-    "format": "none",
-    "returns": "void"
   }
 ]

@@ -80,9 +80,9 @@ export class ChannelsResource {
    * Disconnect a channel.
    *
    * Requires `channels:write`. → `disconnected` with `disconnect_reason: owner`; the number is released for use
-   * elsewhere, queued outbound messages fail with `CHANNEL_DISCONNECTED`, lines and history stay readable and
-   * sends get `CHANNEL_INACTIVE`. Emits `channel.disconnected`. A `pending_verification` channel that never
-   * connected is deleted instead (`204`).
+   * elsewhere and it leaves every line's senders. Its queued outbound messages move to another sender of their
+   * line of the same type (`line.failover`, reason `sender_removed`); pinned ones, and those whose line has no
+   * such sender left, fail with `CHANNEL_DISCONNECTED`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `disconnectChannel`
    */

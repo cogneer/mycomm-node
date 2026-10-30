@@ -107,16 +107,24 @@ export async function readme(
   endpoint.secret satisfies string;
 
   const partner = new MyComm({ apiKey: process.env.MYCOMM_PARTNER_KEY });
-  const account = await partner.partner.accounts.provision({
-    external_ref: 'erp-business-20418',
+  const line = await partner.partner.lines.create({
+    external_ref: 'erp-tenant-20418',
     name: 'Acme Traders',
-    country_iso: 'PK',
-    timezone: 'Asia/Karachi',
+    user_number: '+923001234567',
   });
-  const acme = partner.forAccount(account.id);
-  await acme.messages.send({ to: '+923001234567', body: 'Welcome to Acme' });
+  const link = await partner.partner.lines.links.create(line.id, {
+    purpose: 'connect',
+    return_url: 'https://erp.example.com/settings/messaging',
+    allowed_origins: ['https://erp.example.com'],
+  });
+  link.url satisfies string;
+  const acme = partner.forLine(line.id);
+  await acme.messages.send({ to: '+923009876543', body: 'Your invoice INV-1042 is ready' });
+  const status = await partner.partner.lines.status(line.id);
+  status.state satisfies string;
+  void status.needs_attention_reasons;
   await partner.partner.usage.get({ from: '2026-10-01', to: '2026-10-31' });
-  await partner.partner.accountKeys.create(account.id, { name: 'ERP' });
+  await mycomm.lines.links.create(line.id, { purpose: 'add_channel' });
 
   const media = await mycomm.media.upload({ file: await fileFromPath('/path/to/photo.jpg') });
   await mycomm.media.upload({ file: toFile(bytes, 'photo.jpg', 'image/jpeg') });

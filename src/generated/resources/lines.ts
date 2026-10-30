@@ -5,9 +5,11 @@ import type { WithMeta } from '../../core/meta.js';
 import type { Page } from '../../core/page.js';
 import type { RequestOptions } from '../../core/request-options.js';
 import type {
+  CreatedHostedLink,
   Line,
   LineSenderList,
   LinesCreateParams,
+  LinesLinksCreateParams,
   LinesListParams,
   LinesSetSendersParams,
   LinesUpdateParams,
@@ -15,8 +17,12 @@ import type {
 
 /** `client.lines` */
 export class LinesResource {
+  readonly links: LinesLinksResource;
+
   /** @internal */
-  constructor(private readonly _connection: Connection) {}
+  constructor(private readonly _connection: Connection) {
+    this.links = new LinesLinksResource(_connection);
+  }
 
   /**
    * List lines.
@@ -45,9 +51,8 @@ export class LinesResource {
    * Create an app line.
    *
    * Requires `channels:write`, which a key restricted to lines never holds. Adds an `app` line that sends through
-   * `senders` in order: the first entry is the primary unless one is marked `primary`, the others are backups.
-   * Every channel must be one of the account's, connected and verified, and appear once (`422 VALIDATION_FAILED`
-   * on `senders`; a channel still pending verification or disconnected answers `422 CHANNEL_INACTIVE`).
+   * `senders` in order: the first entry is the primary unless one is marked `primary`, which is then placed first
+   * (the others keep their order), so the primary always sends first; the others are backups.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createLine`
    */
@@ -96,7 +101,8 @@ export class LinesResource {
   /**
    * Unarchive a line.
    *
-   * Requires `channels:write`. Does nothing when the line is not archived. Takes no body.
+   * Requires `channels:write`. Does nothing when the line is not archived. Takes no body. A partner line that was
+   * detached stays archived: `409 INVALID_STATE` `{line_id}`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unarchiveLine`
    */
@@ -119,12 +125,33 @@ export class LinesResource {
    * Replace a line's senders.
    *
    * Requires `channels:write`. Replaces the whole list; the order is the position (0 first). At most one entry is
-   * `primary`; with none marked the first entry is. An entry without a role is a `backup`. Every channel must be
-   * one of the account's, not disconnected, and appear once (`422 VALIDATION_FAILED` on `senders`).
+   * `primary`; with none marked the first entry is. A marked primary is placed first and the others keep their
+   * order, so role and position always agree. An entry without a role is a `backup`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `setLineSenders`
    */
   setSenders(id: string, params: LinesSetSendersParams, options?: RequestOptions): Promise<WithMeta<LineSenderList>> {
     return this._connection.call('lines.setSenders', [id], params, options) as Promise<WithMeta<LineSenderList>>;
+  }
+}
+
+/** `client.lines.links` */
+export class LinesLinksResource {
+  /** @internal */
+  constructor(private readonly _connection: Connection) {}
+
+  /**
+   * Create a hosted link for a line.
+   *
+   * Requires `links:write`. A short-lived link to MyComm's hosted page for one of your lines: send your user's
+   * browser to `url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's
+   * number and joins an account that already has it, after a code sent to that number), `add_channel` (one more
+   * SIM, added to the line as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of
+   * the line's account), `manage` and `claim`.
+   *
+   * @see https://mycomm.cogneer.tech/docs/api/public `createLineLink`
+   */
+  create(id: string, params: LinesLinksCreateParams, options?: RequestOptions): Promise<WithMeta<CreatedHostedLink>> {
+    return this._connection.call('lines.links.create', [id], params, options) as Promise<WithMeta<CreatedHostedLink>>;
   }
 }

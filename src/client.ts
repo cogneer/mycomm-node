@@ -14,8 +14,8 @@ export interface ClientOptions {
   maxRetries?: number;
   /** Milliseconds per attempt. */
   timeout?: number;
-  /** With a partner key: the managed account to act as on `/v1`. See `forAccount()`. */
-  accountId?: string;
+  /** With a partner key: the line (its id) every `/v1` call acts on. See `forLine()`. */
+  lineId?: string;
   /**
    * Check the arguments of each call against the API's documented rules before sending, and throw `InvalidArgumentError`
    * when one breaks a rule. Turn off only if the API has relaxed a rule this SDK version does not know yet.
@@ -96,7 +96,7 @@ export class MyComm extends Resources {
         transport,
         apiKey,
         baseUrl,
-        accountId: settings.accountId,
+        lineId: settings.lineId,
         maxRetries: settings.maxRetries ?? 2,
         timeout: settings.timeout ?? 30_000,
         validate: settings.validate ?? true,
@@ -107,9 +107,12 @@ export class MyComm extends Resources {
     this.settings = { ...settings, apiKey, baseUrl, [TRANSPORT]: transport };
   }
 
-  /** A client that acts as one managed account: every `/v1` call carries `MyComm-Account`. For partner keys. */
-  forAccount(accountId: string): MyComm {
-    return new MyComm({ ...this.settings, accountId } as ClientOptions);
+  /**
+   * A client that acts on one of your lines: every `/v1` call carries `MyComm-Line`. For partner keys, which reach `/v1`
+   * only through a line they made (`client.partner.lines.create(...)`); `/partner/v1` calls never carry it.
+   */
+  forLine(lineId: string): MyComm {
+    return new MyComm({ ...this.settings, lineId } as ClientOptions);
   }
 
   /**

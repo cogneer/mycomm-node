@@ -6,7 +6,7 @@ info:
   contact:
     name: 'MyComm developer support'
     url: 'https://mycomm.cogneer.tech/docs'
-  description: "Send and receive messages through the phones and accounts you connect to MyComm: SMS through your own SIMs today,\nmore channels later. Everything is JSON over HTTPS under `/v1`.\n\n## Authentication\n\nCreate an API key in the portal (Developers, API keys) and send it as `Authorization: Bearer mc_live_...`. Keep it on\nyour server: the API has no CORS and a key in a browser is a leaked key. A key has abilities (`messages:send`,\n`contacts:write`, ...) and may be limited to some lines and some IP addresses. A partner key acts on a client account\nwith the `MyComm-Account` header.\n\nA key is 54 characters (`mc_live_`) or 57 (`mc_partner_`); the last six are a checksum, so a mistyped key is refused\nat once with `401 UNAUTHENTICATED` and `details.reason: \"malformed_key\"`.\n\n## Conventions\n\n- Requests and responses are JSON, UTF-8, `snake_case`. Send `Content-Type: application/json`; the two upload\n  endpoints (`POST /v1/media`, `POST /v1/imports` with a CSV) take `multipart/form-data`. A request without a body\n  (pause, archive, cancel, ...) sends nothing and needs no `Content-Type`. Bodies over 1 MB answer `413`.\n- Ids are UUIDv7 strings, timestamps RFC 3339 in UTC, absent optional values `null`.\n- Lists are `{\"data\": [...], \"next_cursor\": \"...\" | null}`; pass `next_cursor` back as `cursor`.\n- Send `Idempotency-Key` (1 to 255 printable ASCII characters, a UUID is best) on a POST you may retry. A repeat within\n  24 hours returns the first response with `Idempotent-Replayed: true`; the same key on a different request answers\n  `409 IDEMPOTENCY_KEY_REUSED`.\n- Clients must ignore unknown response fields, unknown enum values and unknown error codes: the API only adds to\n  them within `v1`. Unknown request fields are ignored too.\n\n## Required fields\n\nEvery request schema lists its `required` fields. A rule that depends on other fields is written as JSON Schema\n(`oneOf`, `anyOf`, `dependentRequired`, `if`/`then`) and repeated in plain words in `x-required-when`, a list of\n`{field, when | rule, error}` entries: for example `category` is required when `lane` is `bulk`, and exactly one of\n`to` or `contact_id` is needed. The `error` names the code the API answers when the rule is broken.\n\n## Errors\n\nEvery non-2xx response is `{\"error\": {\"code\", \"message\", \"details\", \"request_id\", \"doc_url\"}}`. Branch on `code`,\nshow `message` to people, log `request_id`, and follow `doc_url` for what the code means and what to do. The\nstatus follows one rule: 400 the request cannot be read or a header is wrong, 401 no usable key, 403 the key may not,\n404 the resource is not yours or does not exist, 409 a conflict with current state, 413 too large, 415 wrong content\ntype, 422 well-formed but not acceptable (invalid fields, or a rule such as an opt-out), 429 slow down, 5xx retry.\n`422 VALIDATION_FAILED` lists every broken field in `details.fields`, each with all the rules it broke.\n\n## Verify your integration\n\n1. `GET /v1/account` with your key proves authentication and returns the account you are acting on.\n2. `POST /v1/messages` with `\"dry_run\": true` runs authentication, the key's abilities, request validation, sender and\n   recipient resolution, content checks, opt-outs and the safety rules, and answers `200` with the message it would\n   create. It stores, queues and sends nothing and does not use up the `Idempotency-Key`. It does not check that the\n   phone is online or that the carrier delivers.\n3. Send a real message to your own number and watch it move through `queued`, `sent` and `delivered`\n   (`GET /v1/messages/{id}`, or the `message.*` webhook events).\n\n## SDKs\n\n- PHP: `composer require mycomm/mycomm-php`\n- Laravel: `composer require mycomm/mycomm-laravel`\n- Connect widget (pair a phone from your own page): `npm install @mycomm/connect`\n"
+  description: "Send and receive messages through the phones and accounts you connect to MyComm: SMS through your own SIMs today,\nmore channels later. Everything is JSON over HTTPS under `/v1`.\n\n## Authentication\n\nCreate an API key in the portal (Developers, API keys) and send it as `Authorization: Bearer mc_live_...`. Keep it on\nyour server: the API has no CORS and a key in a browser is a leaked key. A key has abilities (`messages:send`,\n`contacts:write`, ...) and may be limited to some lines and some IP addresses. A partner key sends and reads through one of\nits partner lines with the `MyComm-Line` header (the line id); it may call only the message and conversation\nendpoints and `GET /v1/lines/{id}` of that line, and every other endpoint answers `403 PARTNER_ROUTE_NOT_ALLOWED`.\n\nA key is 54 characters (`mc_live_`) or 57 (`mc_partner_`); the last six are a checksum, so a mistyped key is refused\nat once with `401 UNAUTHENTICATED` and `details.reason: \"malformed_key\"`.\n\n## Conventions\n\n- Requests and responses are JSON, UTF-8, `snake_case`. Send `Content-Type: application/json`; the two upload\n  endpoints (`POST /v1/media`, `POST /v1/imports` with a CSV) take `multipart/form-data`. A request without a body\n  (pause, archive, cancel, ...) sends nothing and needs no `Content-Type`. Bodies over 1 MB answer `413`.\n- Ids are UUIDv7 strings, timestamps RFC 3339 in UTC, absent optional values `null`.\n- Lists are `{\"data\": [...], \"next_cursor\": \"...\" | null}`; pass `next_cursor` back as `cursor`.\n- Send `Idempotency-Key` (1 to 255 printable ASCII characters, a UUID is best) on a POST you may retry. A repeat within\n  24 hours returns the first response with `Idempotent-Replayed: true`; the same key on a different request answers\n  `409 IDEMPOTENCY_KEY_REUSED`.\n- Clients must ignore unknown response fields, unknown enum values and unknown error codes: the API only adds to\n  them within `v1`. Unknown request fields are ignored too.\n\n## Required fields\n\nEvery request schema lists its `required` fields. A rule that depends on other fields is written as JSON Schema\n(`oneOf`, `anyOf`, `dependentRequired`, `if`/`then`) and repeated in plain words in `x-required-when`, a list of\n`{field, when | rule, error}` entries: for example `category` is required when `lane` is `bulk`, and exactly one of\n`to` or `contact_id` is needed. The `error` names the code the API answers when the rule is broken.\n\n## Errors\n\nEvery non-2xx response is `{\"error\": {\"code\", \"message\", \"details\", \"request_id\", \"doc_url\"}}`. Branch on `code`,\nshow `message` to people, log `request_id`, and follow `doc_url` for what the code means and what to do. The\nstatus follows one rule: 400 the request cannot be read or a header is wrong, 401 no usable key, 403 the key may not,\n404 the resource is not yours or does not exist, 409 a conflict with current state, 413 too large, 415 wrong content\ntype, 422 well-formed but not acceptable (invalid fields, or a rule such as an opt-out), 429 slow down, 5xx retry.\n`422 VALIDATION_FAILED` lists every broken field in `details.fields`, each with all the rules it broke.\n\n## Verify your integration\n\n1. `GET /v1/account` with your key proves authentication and returns the account you are acting on.\n2. `POST /v1/messages` with `\"dry_run\": true` runs authentication, the key's abilities, request validation, sender and\n   recipient resolution, content checks, opt-outs and the safety rules, and answers `200` with the message it would\n   create. It stores, queues and sends nothing and does not use up the `Idempotency-Key`. It does not check that the\n   phone is online or that the carrier delivers.\n3. Send a real message to your own number and watch it move through `queued`, `sent` and `delivered`\n   (`GET /v1/messages/{id}`, or the `message.*` webhook events).\n\n## SDKs\n\n- PHP: `composer require mycomm/mycomm-php`\n- Laravel: `composer require mycomm/mycomm-laravel`\n- Connect widget (pair a phone from your own page): `npm install @mycomm/connect`\n"
 servers:
   -
     url: 'https://mycomm.cogneer.tech/v1'
@@ -156,11 +156,11 @@ components:
         minLength: 1
         maxLength: 255
         pattern: '^[ -~]+$'
-    MyCommAccount:
-      name: MyComm-Account
+    MyCommLine:
+      name: MyComm-Line
       in: header
       required: false
-      description: "The account a partner key acts on. Required with a partner key, optional with an account key (it must then name the key's own account). A value that is not a UUID answers `400 INVALID_HEADER`."
+      description: 'The partner line a partner key acts on (the line id). Required with a partner key: missing answers `400 LINE_CONTEXT_REQUIRED`, a value that is not a UUID `400 INVALID_HEADER`, and anything but an unarchived line of that partner `403 LINE_CONTEXT_INVALID`. The call then sees exactly that line. An account key never sends it (`400 INVALID_HEADER`).'
       schema:
         type: string
         format: uuid
@@ -181,13 +181,14 @@ components:
       enum:
         - MALFORMED_REQUEST
         - INVALID_HEADER
-        - ACCOUNT_CONTEXT_REQUIRED
+        - LINE_CONTEXT_REQUIRED
         - INVALID_CURSOR
         - UNAUTHENTICATED
         - WRONG_KEY_KIND
         - ABILITY_MISSING
         - IP_NOT_ALLOWED
-        - ACCOUNT_CONTEXT_INVALID
+        - LINE_CONTEXT_INVALID
+        - PARTNER_ROUTE_NOT_ALLOWED
         - ACCOUNT_SUSPENDED
         - ACCOUNT_PENDING_DELETION
         - PARTNER_ACCESS_REVOKED
@@ -265,6 +266,7 @@ components:
         - PAIRING_CODE_LIMIT_REACHED
         - CONNECT_SESSION_LIMIT_REACHED
         - PAIRING_CODE_EXPIRED
+        - SECOND_FACTOR_REQUIRED
         - BATCH_TOO_LARGE
         - AUDIENCE_EMPTY
         - RANGE_TOO_LARGE
@@ -2884,6 +2886,8 @@ components:
             - token_invalid
             - device_sim_limit
             - country_not_enabled
+            - number_disputed
+            - number_has_account
             - null
         expires_at:
           oneOf:
@@ -2926,74 +2930,6 @@ components:
               $ref: '#/components/schemas/Timestamp'
             -
               type: 'null'
-    ConnectSession:
-      type: object
-      required:
-        - id
-        - status
-        - expires_at
-        - return_url
-        - allowed_origins
-        - locale
-        - device_id
-        - channel_id
-        - completed_at
-        - revoked_at
-        - created_at
-      properties:
-        id:
-          $ref: '#/components/schemas/Uuid'
-        status:
-          type: string
-          enum:
-            - open
-            - completed
-            - revoked
-            - expired
-        expires_at:
-          $ref: '#/components/schemas/Timestamp'
-        return_url:
-          type:
-            - string
-            - 'null'
-        allowed_origins:
-          oneOf:
-            -
-              type: array
-              items:
-                type: string
-            -
-              type: 'null'
-        locale:
-          type:
-            - string
-            - 'null'
-        device_id:
-          type:
-            - string
-            - 'null'
-          format: uuid
-          description: 'Set when the session paired a device.'
-        channel_id:
-          type:
-            - string
-            - 'null'
-          format: uuid
-          description: 'Set when the session connected a channel.'
-        completed_at:
-          oneOf:
-            -
-              $ref: '#/components/schemas/Timestamp'
-            -
-              type: 'null'
-        revoked_at:
-          oneOf:
-            -
-              $ref: '#/components/schemas/Timestamp'
-            -
-              type: 'null'
-        created_at:
-          $ref: '#/components/schemas/Timestamp'
     ContactField:
       type: object
       required:
@@ -3819,6 +3755,8 @@ components:
             - admin
             - app_unpaired
             - account_deleted
+            - replaced
+            - stolen
             - null
         drain_until:
           oneOf:
@@ -4191,6 +4129,144 @@ components:
               type: 'null'
         created_at:
           $ref: '#/components/schemas/Timestamp'
+    CreateHostedLinkRequest:
+      type: object
+      required:
+        - purpose
+      properties:
+        purpose:
+          type: string
+          enum:
+            - connect
+            - add_channel
+            - replace_device
+            - manage
+            - claim
+        return_url:
+          type:
+            - string
+            - 'null'
+          maxLength: 2048
+          description: '`https` URL the page returns to when done; no credentials.'
+        allowed_origins:
+          description: 'Origins that may frame the page and receive its outcome. `null` = no framing and no messages.'
+          oneOf:
+            -
+              type: array
+              minItems: 1
+              maxItems: 5
+              items:
+                type: string
+                maxLength: 255
+                description: '`https://host[:port]`, no path.'
+            -
+              type: 'null'
+        ttl:
+          type:
+            - integer
+            - 'null'
+          minimum: 300
+          maximum: 3600
+          default: 1800
+          description: 'Seconds until the link stops working.'
+        locale:
+          type:
+            - string
+            - 'null'
+          maxLength: 35
+          description: "BCP 47 tag of the page's language; defaults to the account's default locale."
+        replaces_device_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: "Required for `replace_device`, refused for any other purpose. An active phone of the line's account."
+    HostedLink:
+      type: object
+      required:
+        - id
+        - purpose
+        - line_id
+        - status
+        - expires_at
+        - return_url
+        - allowed_origins
+        - locale
+        - replaces_device_id
+        - device_id
+        - channel_id
+        - completed_at
+        - revoked_at
+        - created_at
+      properties:
+        id:
+          $ref: '#/components/schemas/Uuid'
+        purpose:
+          type: string
+          enum:
+            - connect
+            - add_channel
+            - replace_device
+            - manage
+            - claim
+        line_id:
+          $ref: '#/components/schemas/Uuid'
+        status:
+          type: string
+          enum:
+            - open
+            - completed
+            - revoked
+            - expired
+        expires_at:
+          $ref: '#/components/schemas/Timestamp'
+        return_url:
+          type:
+            - string
+            - 'null'
+        allowed_origins:
+          oneOf:
+            -
+              type: array
+              items:
+                type: string
+            -
+              type: 'null'
+        locale:
+          type:
+            - string
+            - 'null'
+        replaces_device_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        device_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: 'Set when the link paired a phone.'
+        channel_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: 'Set when the link connected a channel.'
+        completed_at:
+          oneOf:
+            -
+              $ref: '#/components/schemas/Timestamp'
+            -
+              type: 'null'
+        revoked_at:
+          oneOf:
+            -
+              $ref: '#/components/schemas/Timestamp'
+            -
+              type: 'null'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
     LineKind:
       type: string
       description: "`direct`: the account's own line, where unclaimed replies land (one per account). `app`: a line an app or integration sends through. `partner`: a line a partner created for a client."
@@ -4225,7 +4301,7 @@ components:
           type: string
         send_mode:
           type: string
-          description: '`ordered`: the first healthy sender by position sends. `pool` is reserved for spreading sends over several senders.'
+          description: '`ordered`: the first healthy sender by position sends; the primary is always at position 0. `pool` is reserved for spreading sends over several senders.'
           enum:
             - ordered
             - pool
@@ -4900,7 +4976,7 @@ components:
         - received
     HoldReason:
       type: string
-      description: 'Why a queued message is waiting: the schedule (`scheduled`, `quiet_hours`, `bulk_hours`), a limit (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `account_limit`, `carrier_cooldown`), the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing approval (`link_restricted`) or a platform hold (`platform_hold`). A new value may appear.'
+      description: "Why a queued message is waiting: the schedule (`scheduled`, `quiet_hours`, `bulk_hours`), a limit (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `account_limit`, `carrier_cooldown`), the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing approval (`link_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored allowance used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform hold (`platform_hold`). A new value may appear."
       enum:
         - scheduled
         - quiet_hours
@@ -4920,6 +4996,8 @@ components:
         - carrier_cooldown
         - device_hot
         - no_sender_available
+        - sponsor_quota_exhausted
+        - unpaid
     MessageEventName:
       type: string
       description: 'What happened to a message, as recorded in its history. A new value may appear.'
@@ -6153,7 +6231,7 @@ components:
         - events
         - line_ids
         - channel_types
-        - include_managed_accounts
+        - partner_lines
         - active
         - disabled_at
         - disabled_reason
@@ -6192,7 +6270,8 @@ components:
                 type: string
             -
               type: 'null'
-        include_managed_accounts:
+        partner_lines:
+          description: 'Also receives the events of the lines you made with the partner API.'
           type: boolean
         active:
           type: boolean
@@ -6519,6 +6598,142 @@ components:
           type: integer
           minimum: 0
           description: 'Messages of the line waiting for a sender when the event was written.'
+    WebhookLineStatusChanged:
+      allOf:
+        -
+          $ref: '#/components/schemas/WebhookEnvelope'
+        -
+          type: object
+          properties:
+            type:
+              enum:
+                - line.connected
+                - line.needs_attention
+                - line.recovered
+            data:
+              $ref: '#/components/schemas/WebhookLineStatusChangedData'
+    WebhookLineStatusChangedData:
+      type: object
+      description: "Payload of line.connected, line.needs_attention and line.recovered: the partner line's status after the change."
+      additionalProperties: false
+      required:
+        - line_id
+        - external_ref
+        - state
+        - needs_attention_reasons
+        - previous_state
+      properties:
+        line_id:
+          $ref: '#/components/schemas/Uuid'
+        external_ref:
+          type:
+            - string
+            - 'null'
+          description: "The partner's own reference for the line."
+        state:
+          type: string
+          enum:
+            - connected
+            - needs_attention
+            - not_connected
+        needs_attention_reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineNeedsAttentionReason'
+        previous_state:
+          type: string
+          enum:
+            - connected
+            - needs_attention
+            - not_connected
+    LineNeedsAttentionReason:
+      type: string
+      enum:
+        - device_offline
+        - sim_missing
+        - session_logged_out
+        - no_sender
+        - quota_exhausted
+        - number_disputed
+        - quarantined
+      description: "`device_offline`: every sender's phone is offline. `sim_missing`: a sender's SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `session_logged_out` and `quarantined` are reserved."
+    WebhookLineDetached:
+      allOf:
+        -
+          $ref: '#/components/schemas/WebhookEnvelope'
+        -
+          type: object
+          properties:
+            type:
+              const: line.detached
+            data:
+              $ref: '#/components/schemas/WebhookLineDetachedData'
+    WebhookLineDetachedData:
+      type: object
+      description: 'Payload of line.detached.'
+      additionalProperties: false
+      required:
+        - line_id
+        - external_ref
+        - by
+      properties:
+        line_id:
+          $ref: '#/components/schemas/Uuid'
+        external_ref:
+          type:
+            - string
+            - 'null'
+          description: "The partner's own reference for the line; free again for a new line."
+        by:
+          type: string
+          enum:
+            - partner
+            - owner
+            - system
+          description: '`partner` with the partner key, `owner` by a person of the account, `system` by MyComm.'
+    WebhookLineQuota:
+      allOf:
+        -
+          $ref: '#/components/schemas/WebhookEnvelope'
+        -
+          type: object
+          properties:
+            type:
+              enum:
+                - line.quota_low
+                - line.quota_exhausted
+            data:
+              $ref: '#/components/schemas/WebhookLineQuotaData'
+    WebhookLineQuotaData:
+      type: object
+      description: 'Payload of line.quota_low and line.quota_exhausted: the sponsored allowance of one channel type for this cycle.'
+      additionalProperties: false
+      required:
+        - line_id
+        - external_ref
+        - channel_type
+        - allowance
+        - used
+        - cycle_ends_at
+      properties:
+        line_id:
+          $ref: '#/components/schemas/Uuid'
+        external_ref:
+          type:
+            - string
+            - 'null'
+          description: "The partner's own reference for the line."
+        channel_type:
+          type: string
+          description: 'For example `android_sim`.'
+        allowance:
+          type: integer
+          minimum: 0
+        used:
+          type: integer
+          minimum: 0
+        cycle_ends_at:
+          $ref: '#/components/schemas/Timestamp'
     WebhookLineSenderChanged:
       allOf:
         -
@@ -6876,6 +7091,8 @@ components:
             - token_invalid
             - device_sim_limit
             - country_not_enabled
+            - number_disputed
+            - number_has_account
     WebhookChannelDisconnectedData:
       type: object
       required:
@@ -7041,6 +7258,8 @@ components:
             - admin
             - app_unpaired
             - account_deleted
+            - replaced
+            - stolen
     WebhookAccountData:
       type: object
       required:
@@ -7629,18 +7848,18 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountContextRequired:
+    ErrLineContextRequired:
       type: object
-      description: 'A partner key must name the account it acts on with the MyComm-Account header.'
+      description: 'A partner key must name the partner line it acts on with the MyComm-Line header (the line id).'
       x-http-status: 400
       examples:
         -
           error:
-            code: ACCOUNT_CONTEXT_REQUIRED
-            message: 'A partner key must name the account it acts on with the MyComm-Account header.'
+            code: LINE_CONTEXT_REQUIRED
+            message: 'A partner key must name the partner line it acts on with the MyComm-Line header (the line id).'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-context-required'
+            doc_url: 'https://api.mycomm.example/docs/errors#line-context-required'
       required:
         - error
       properties:
@@ -7655,7 +7874,7 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_CONTEXT_REQUIRED
+              const: LINE_CONTEXT_REQUIRED
             message:
               type: string
             details:
@@ -7879,18 +8098,18 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountContextInvalid:
+    ErrLineContextInvalid:
       type: object
-      description: "The MyComm-Account header does not name an account this key can act on. Check the account id and the key's allowed accounts."
+      description: 'The MyComm-Line header does not name a line this partner key can act on: the line belongs to another partner, was detached or does not exist. Check the line id.'
       x-http-status: 403
       examples:
         -
           error:
-            code: ACCOUNT_CONTEXT_INVALID
-            message: "The MyComm-Account header does not name an account this key can act on. Check the account id and the key's allowed accounts."
+            code: LINE_CONTEXT_INVALID
+            message: 'The MyComm-Line header does not name a line this partner key can act on: the line belongs to another partner, was detached or does not exist. Check the line id.'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-context-invalid'
+            doc_url: 'https://api.mycomm.example/docs/errors#line-context-invalid'
       required:
         - error
       properties:
@@ -7905,7 +8124,45 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_CONTEXT_INVALID
+              const: LINE_CONTEXT_INVALID
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrPartnerRouteNotAllowed:
+      type: object
+      description: 'A partner key cannot call this endpoint. Partner keys send and read messages and conversations of their own line; the user manages channels, phones and settings.'
+      x-http-status: 403
+      examples:
+        -
+          error:
+            code: PARTNER_ROUTE_NOT_ALLOWED
+            message: 'A partner key cannot call this endpoint. Partner keys send and read messages and conversations of their own line; the user manages channels, phones and settings.'
+            details: {}
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#partner-route-not-allowed'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: PARTNER_ROUTE_NOT_ALLOWED
             message:
               type: string
             details:
@@ -11231,6 +11488,50 @@ components:
             doc_url:
               type: string
               format: uri
+    ErrSecondFactorRequired:
+      type: object
+      description: 'This action needs the account owner to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
+      x-http-status: 403
+      examples:
+        -
+          error:
+            code: SECOND_FACTOR_REQUIRED
+            message: 'This action needs the account owner to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
+            details:
+              reason: 'Example text.'
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#second-factor-required'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: SECOND_FACTOR_REQUIRED
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                reason:
+                  type: string
+              required:
+                - reason
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
     ErrBatchTooLarge:
       type: object
       description: 'A request holds at most :max items. Split it into smaller requests.'
@@ -11553,6 +11854,12 @@ components:
         - line.sender_changed
         - line.failover
         - line.no_sender
+        - line.connected
+        - line.needs_attention
+        - line.recovered
+        - line.detached
+        - line.quota_low
+        - line.quota_exhausted
         - conversation.handed_over
         - link.clicked
         - channel.connected
@@ -11589,7 +11896,7 @@ components:
         - ping
   responses:
     BadRequest:
-      description: '400 MALFORMED_REQUEST (the body is not a JSON object; `details.reason` says why), INVALID_HEADER (`details.header`, `details.reason`, `details.expected`), ACCOUNT_CONTEXT_REQUIRED or INVALID_CURSOR.'
+      description: '400 MALFORMED_REQUEST (the body is not a JSON object; `details.reason` says why), INVALID_HEADER (`details.header`, `details.reason`, `details.expected`), LINE_CONTEXT_REQUIRED (a partner key without `MyComm-Line`) or INVALID_CURSOR.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -11619,7 +11926,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
     Forbidden:
-      description: '403 WRONG_KEY_KIND, ABILITY_MISSING, IP_NOT_ALLOWED, ACCOUNT_CONTEXT_INVALID, ACCOUNT_SUSPENDED, ACCOUNT_PENDING_DELETION, PARTNER_ACCESS_REVOKED or PARTNER_KEY_RESTRICTED.'
+      description: '403 WRONG_KEY_KIND, ABILITY_MISSING, IP_NOT_ALLOWED, LINE_CONTEXT_INVALID, PARTNER_ROUTE_NOT_ALLOWED, ACCOUNT_SUSPENDED, ACCOUNT_PENDING_DELETION or PARTNER_ACCESS_REVOKED.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -11948,9 +12255,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -12002,9 +12306,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   /api-keys:
     get:
       operationId: listApiKeys
@@ -12035,8 +12336,6 @@ paths:
           $ref: '#/components/parameters/limit'
         -
           $ref: '#/components/parameters/cursor'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of keys.'
@@ -12197,8 +12496,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/api-keys/{id}':
     parameters:
       -
@@ -12239,9 +12536,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -12349,8 +12643,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/lines/{id}/automation-rules':
     parameters:
       -
@@ -12395,9 +12687,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -12412,8 +12701,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -12477,8 +12764,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -12573,9 +12858,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -12629,9 +12911,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: deleteAutomationRule
       tags:
@@ -12664,9 +12943,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -12733,8 +13009,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   /automation-runs:
     get:
       operationId: listAutomationRuns
@@ -12802,8 +13076,6 @@ paths:
               - '-created_at'
               - created_at
             default: '-created_at'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of runs.'
@@ -12901,8 +13173,6 @@ paths:
               - created_at
               - '-created_at'
             default: created_at
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of recipients.'
@@ -12993,9 +13263,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -13052,8 +13319,6 @@ paths:
               - created_at
               - '-created_at'
             default: '-created_at'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of campaigns.'
@@ -13107,8 +13372,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -13197,9 +13460,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -13255,9 +13515,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: deleteCampaign
       tags:
@@ -13292,9 +13549,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -13317,8 +13571,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -13381,8 +13633,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -13455,8 +13705,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -13521,8 +13769,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -13587,8 +13833,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -13666,8 +13910,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -13729,8 +13971,6 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Uuid'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -13816,9 +14056,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -13840,8 +14077,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'The paused channel.'
@@ -13897,8 +14132,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'The active channel.'
@@ -13944,7 +14177,7 @@ paths:
       tags:
         - Channels
       summary: 'Disconnect a channel'
-      description: "Requires `channels:write`. → `disconnected` with `disconnect_reason: owner`; the number is released for use\nelsewhere, queued outbound messages fail with `CHANNEL_DISCONNECTED`, lines and history stay readable and\nsends get `CHANNEL_INACTIVE`. Emits `channel.disconnected`. A `pending_verification` channel that never\nconnected is deleted instead (`204`). An already disconnected channel is `409 INVALID_STATE`.\n"
+      description: "Requires `channels:write`. → `disconnected` with `disconnect_reason: owner`; the number is released for use\nelsewhere and it leaves every line's senders. Its queued outbound messages move to another sender of their line\nof the same type (`line.failover`, reason `sender_removed`); pinned ones, and those whose line has no such\nsender left, fail with `CHANNEL_DISCONNECTED`. Lines and history stay readable and sends naming it get\n`CHANNEL_INACTIVE`. Emits `channel.disconnected`. A `pending_verification` channel that never\nconnected is deleted instead (`204`). An already disconnected channel is `409 INVALID_STATE`. The last\nactive or paused channel of a number the account verified as its own is `403 SECOND_FACTOR_REQUIRED`\n(`reason: not_a_user`): only the owner can let that number go, in the portal, with a second factor.\n"
       parameters:
         -
           name: id
@@ -13954,8 +14187,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'The disconnected channel.'
@@ -14018,8 +14249,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -14110,8 +14339,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -14175,8 +14402,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -14269,8 +14494,6 @@ paths:
           $ref: '#/components/parameters/limit'
         -
           $ref: '#/components/parameters/cursor'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of channels.'
@@ -14329,8 +14552,6 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Uuid'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         400:
           $ref: '#/components/responses/BadRequest'
@@ -14365,8 +14586,6 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Uuid'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -14451,206 +14670,11 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
           label: curl
           source: "curl -X GET \"$MYCOMM_URL/v1/channels/types\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-  /connect-sessions:
-    post:
-      operationId: createConnectSession
-      tags:
-        - Devices
-      summary: 'Create a connect session'
-      description: "Requires `channels:write`. Send your tenant's browser to `url` to connect a phone on\nMyComm's hosted page without an API key in the browser. Works with an account key and with a partner key\nacting as a managed account (`MyComm-Account`). `url` is returned only here and is a bearer credential:\ntreat it like a password. At most 20 sessions are open per account (`422 CONNECT_SESSION_LIMIT_REACHED`\nwith `details.max`) and 60 are created per account per hour (`429 RATE_LIMITED`).\n"
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                return_url:
-                  type:
-                    - string
-                    - 'null'
-                  maxLength: 2048
-                  description: '`https` URL the page returns to when done; no credentials.'
-                allowed_origins:
-                  description: 'Origins that may frame the page and receive its outcome. `null` = no framing and no messages.'
-                  oneOf:
-                    -
-                      type: array
-                      minItems: 1
-                      maxItems: 5
-                      items:
-                        type: string
-                        maxLength: 255
-                        description: '`https://host[:port]`, no path.'
-                    -
-                      type: 'null'
-                expires_in:
-                  type:
-                    - integer
-                    - 'null'
-                  minimum: 300
-                  maximum: 3600
-                  default: 1800
-                  description: 'Seconds until the link stops working.'
-                locale:
-                  type:
-                    - string
-                    - 'null'
-                  maxLength: 35
-                  description: "BCP 47 tag of the page's language; defaults to the account's default locale."
-      responses:
-        201:
-          description: 'The new session. `url` is returned only here.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-            Idempotent-Replayed:
-              $ref: '#/components/headers/Idempotent-Replayed'
-          content:
-            application/json:
-              schema:
-                allOf:
-                  -
-                    $ref: '#/components/schemas/ConnectSession'
-                  -
-                    type: object
-                    required:
-                      - url
-                    properties:
-                      url:
-                        type: string
-                        description: '`<base_url>/connect/<token>`, the token being 43 base64url characters.'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        413:
-          $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          $ref: '#/components/responses/UnsupportedMediaType'
-        422:
-          $ref: '#/components/responses/Unprocessable'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
-  '/connect-sessions/{id}':
-    parameters:
-      -
-        name: id
-        in: path
-        required: true
-        schema:
-          $ref: '#/components/schemas/Uuid'
-    get:
-      operationId: getConnectSession
-      tags:
-        - Devices
-      summary: 'Get a connect session'
-      description: 'Requires `channels:read`. The session without `url`; `status` reads `expired` once `expires_at` has passed.'
-      responses:
-        200:
-          description: 'The connect session.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectSession'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X GET \"$MYCOMM_URL/v1/connect-sessions/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-    delete:
-      operationId: deleteConnectSession
-      tags:
-        - Devices
-      summary: 'Revoke a connect session'
-      description: "Requires `channels:write`. The link stops working at once, also for a page already open. Only an `open`\nsession can be revoked; any other status is `409 INVALID_STATE` with `details.status`.\n"
-      responses:
-        204:
-          description: 'The session is revoked.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          $ref: '#/components/responses/Conflict'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X DELETE \"$MYCOMM_URL/v1/connect-sessions/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
   /contact-fields:
     get:
       operationId: listContactFields
@@ -14693,9 +14717,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -14805,8 +14826,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/contact-fields/{id}':
     parameters:
       -
@@ -14880,9 +14899,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: deleteContactField
       tags:
@@ -14917,9 +14933,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -14943,8 +14956,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -15085,9 +15096,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: deleteContactIdentity
       tags:
@@ -15122,9 +15130,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -15200,8 +15205,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/contacts/{id}/identities/{identity_id}/unblock':
     parameters:
       -
@@ -15272,8 +15275,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/contacts/{id}/opt-out':
     parameters:
       -
@@ -15292,8 +15293,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         description: 'A JSON object; send `{}` when there is no note.'
@@ -15494,9 +15493,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -15512,8 +15508,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -15696,8 +15690,6 @@ paths:
               - '-updated_at'
               - updated_at
             default: '-created_at'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of contacts.'
@@ -15795,8 +15787,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/contacts/{id}':
     parameters:
       -
@@ -15841,9 +15831,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -15897,9 +15884,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: deleteContact
       tags:
@@ -15913,8 +15897,6 @@ paths:
           description: '`true` erases the contact and everything on the erasure list.'
           schema:
             type: boolean
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         202:
           description: 'The erasure is queued.'
@@ -15998,8 +15980,6 @@ paths:
               - '-last_message_at'
               - last_message_at
             default: '-last_message_at'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of conversations.'
@@ -16062,8 +16042,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -16125,8 +16103,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -16188,8 +16164,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -16251,8 +16225,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -16314,8 +16286,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -16377,8 +16347,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -16430,7 +16398,7 @@ paths:
       tags:
         - Conversations
       summary: 'Hand a conversation over to another line'
-      description: "Moves the conversation and its messages to another line of the account; the contact's next replies land on that\nline, also when it does not send through the conversation's channel. When the target line already has a\nconversation with the same contact, the two merge into it and the answer is that conversation. Emits\n`conversation.handed_over`. Requires `conversations:write`. The conversation and the target line must both be\nin the key's line scope (else 404). An archived target answers 422 `LINE_ARCHIVED`; the conversation's own line\nanswers 422 `VALIDATION_FAILED`.\n"
+      description: "Moves the conversation and its messages to another line of the account; the contact's next replies land on that\nline, also when it does not send through the conversation's channel. When the target line already has a\nconversation with the same contact, the two merge into it and the answer is that conversation. Emits\n`conversation.handed_over`. Requires `conversations:write`. The conversation and the target line must both be\nin the key's line scope (else 404). An archived target answers 422 `LINE_ARCHIVED`; the conversation's own line\nanswers 422 `VALIDATION_FAILED`. Queued outbound messages move with the conversation: an unpinned one then\nsends from the target line's senders (when its channel is not one of them, the next failover run hands it to\nthe target line's first healthy sender, `line.failover` with reason `sender_removed`); a `sender_pinned` one\nkeeps its channel.\n"
       parameters:
         -
           name: id
@@ -16440,8 +16408,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -16506,8 +16472,6 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Uuid'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         202:
           description: 'The deletion was started.'
@@ -16564,7 +16528,7 @@ paths:
           schema:
             $ref: '#/components/schemas/Uuid'
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       responses:
         200:
           description: 'The conversation.'
@@ -16690,7 +16654,7 @@ paths:
               - last_message_at
             default: '-last_message_at'
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       responses:
         200:
           description: 'A page of conversations.'
@@ -16793,7 +16757,7 @@ paths:
               - created_at
             default: '-created_at'
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       responses:
         200:
           description: 'A page of messages.'
@@ -16855,8 +16819,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -16963,8 +16925,6 @@ paths:
           $ref: '#/components/parameters/limit'
         -
           $ref: '#/components/parameters/cursor'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of devices.'
@@ -17053,9 +17013,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -17111,9 +17068,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/devices/{id}/pause':
     parameters:
       -
@@ -17131,8 +17085,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'The paused device.'
@@ -17189,8 +17141,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'The resumed device.'
@@ -17243,12 +17193,10 @@ paths:
       tags:
         - Devices
       summary: 'Revoke (unpair) a device'
-      description: "Requires `channels:write`. `status: revoked` with `revoked_reason: owner` (`partner` when a partner key calls\nit). Its channels become `paused` with `pause_reason: device_revoked`. Messages the phone holds are not\nre-queued: their leases are orphaned and the phone may still report them until `drain_until` (= `revoked_at` +\n24 h); any still unresolved then fail with `UNCONFIRMED`. The phone gets no further leases, its next heartbeat\ncarries an `unpair` action, and after `drain_until` every device call gets `410 DEVICE_REVOKED`. Emits\n`device.revoked`. Revoking a revoked device returns it unchanged.\n"
+      description: "Requires `channels:write`. `status: revoked` with `revoked_reason: owner` (`partner` when a partner key calls\nit). Its channels become `paused` with `pause_reason: device_revoked`. Messages the phone holds are not\nre-queued: their leases are orphaned and the phone may still report them until `drain_until` (= `revoked_at` +\n24 h); any still unresolved then fail with `UNCONFIRMED`. The phone gets no further leases, its next heartbeat\ncarries an `unpair` action, and after `drain_until` every device call gets `410 DEVICE_REVOKED`. Emits\n`device.revoked`. Revoking a revoked device returns it unchanged. A device that carries the last active or\npaused channel of a number the account verified as its own is `403 SECOND_FACTOR_REQUIRED`\n(`reason: not_a_user`): only the owner can let that number go, in the portal, with a second factor.\n`revoked_reason` is also `replaced` (the numbers moved to a phone paired with a Replace code) or `stolen`\n(removed as stolen in the portal); both skip the drain, so `drain_until` is null.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'The revoked device.'
@@ -17339,9 +17287,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -17483,8 +17428,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     get:
       operationId: listExports
       tags:
@@ -17506,8 +17449,6 @@ paths:
           $ref: '#/components/parameters/limit'
         -
           $ref: '#/components/parameters/cursor'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of exports.'
@@ -17596,9 +17537,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -17632,8 +17570,6 @@ paths:
               - name
               - '-name'
             default: name
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of groups.'
@@ -17743,8 +17679,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/groups/{id}':
     parameters:
       -
@@ -17789,9 +17723,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -17857,9 +17788,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: deleteGroup
       tags:
@@ -17894,9 +17822,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -18015,8 +17940,6 @@ paths:
               - '-updated_at'
               - updated_at
             default: '-created_at'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of contacts.'
@@ -18129,8 +18052,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/groups/{id}/members/remove':
     parameters:
       -
@@ -18200,8 +18121,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   /imports:
     post:
       requestBody:
@@ -18294,8 +18213,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     get:
       operationId: listImports
       tags:
@@ -18317,8 +18234,6 @@ paths:
           $ref: '#/components/parameters/limit'
         -
           $ref: '#/components/parameters/cursor'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of imports.'
@@ -18407,9 +18322,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -18466,13 +18378,170 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
           label: curl
           source: "curl -X POST \"$MYCOMM_URL/v1/imports/<id>/cancel\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+  '/lines/{id}/links':
+    parameters:
+      -
+        name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Uuid'
+    post:
+      operationId: createLineLink
+      tags:
+        - Lines
+      summary: 'Create a hosted link for a line'
+      description: "Requires `links:write`. A short-lived link to MyComm's hosted page for one of your lines: send your user's browser to\n`url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and joins\nan account that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the\nline as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's account),\n`manage` and `claim`. `url` is returned only here and is a bearer credential: treat it like a password. At most\n20 links of a line are open at once (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are created\nper line per hour (`429 RATE_LIMITED`). A detached line takes no new link (`422`), and detaching a line ends its\nopen links. A line this key does not see is `404 NOT_FOUND`. Partner keys use `POST /partner/v1/lines/{id}/links`.\n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHostedLinkRequest'
+      responses:
+        201:
+          description: 'The new link. `url` is returned only here.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+            Idempotent-Replayed:
+              $ref: '#/components/headers/Idempotent-Replayed'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  -
+                    $ref: '#/components/schemas/HostedLink'
+                  -
+                    type: object
+                    required:
+                      - url
+                    properties:
+                      url:
+                        type: string
+                        description: '`<base_url>/connect/<token>`, the token being 43 base64url characters.'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          $ref: '#/components/responses/Unprocessable'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      parameters:
+        -
+          $ref: '#/components/parameters/IdempotencyKey'
+  '/links/{id}':
+    parameters:
+      -
+        name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Uuid'
+    get:
+      operationId: getLink
+      tags:
+        - Lines
+      summary: 'Get a hosted link'
+      description: "Requires `channels:read`. The link without `url`; `status` reads `expired` once `expires_at` has passed. A link of\na line this key does not see is `404 NOT_FOUND`.\n"
+      responses:
+        200:
+          description: 'The hosted link.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostedLink'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X GET \"$MYCOMM_URL/v1/links/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+    delete:
+      operationId: deleteLink
+      tags:
+        - Lines
+      summary: 'Revoke a hosted link'
+      description: "Requires `links:write`. The link stops working at once, also for a page already open. Only an `open` link can be\nrevoked; any other status is `409 INVALID_STATE` with `details.status`.\n"
+      responses:
+        204:
+          description: 'The link is revoked.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X DELETE \"$MYCOMM_URL/v1/links/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
   /lines:
     get:
       operationId: listLines
@@ -18512,8 +18581,6 @@ paths:
           $ref: '#/components/parameters/limit'
         -
           $ref: '#/components/parameters/cursor'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of lines.'
@@ -18563,7 +18630,7 @@ paths:
       tags:
         - Lines
       summary: 'Create an app line'
-      description: "Requires `channels:write`, which a key restricted to lines never holds. Adds an `app` line that sends through\n`senders` in order: the first entry is the primary unless one is marked `primary`, the others are backups.\nEvery channel must be one of the account's, connected and verified, and appear once (`422 VALIDATION_FAILED`\non `senders`; a channel still pending verification or disconnected answers `422 CHANNEL_INACTIVE`).\n`409 NAME_TAKEN` `{field: \"name\"}` when another line of the account has the name (case-insensitive, the Direct\nline's included). A line without senders is allowed; it can send once it has one.\n"
+      description: "Requires `channels:write`, which a key restricted to lines never holds. Adds an `app` line that sends through\n`senders` in order: the first entry is the primary unless one is marked `primary`, which is then placed first\n(the others keep their order), so the primary always sends first; the others are backups.\nEvery channel must be one of the account's, connected and verified, and appear once (`422 VALIDATION_FAILED`\non `senders`; a channel still pending verification or disconnected answers `422 CHANNEL_INACTIVE`).\n`409 NAME_TAKEN` `{field: \"name\"}` when another line of the account has the name (case-insensitive, the Direct\nline's included). A line without senders is allowed; it can send once it has one.\n"
       x-error-codes:
         - VALIDATION_FAILED
         - CHANNEL_INACTIVE
@@ -18663,8 +18730,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/lines/{id}':
     parameters:
       -
@@ -18711,7 +18776,7 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
       parameters:
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       x-codeSamples:
         -
           lang: Shell
@@ -18722,10 +18787,11 @@ paths:
       tags:
         - Lines
       summary: 'Update a line'
-      description: "Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a\nchannel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a\nkey set to `null` is removed). `409 NAME_TAKEN` `{field: \"name\"}` when another line of the account has the\nname (case-insensitive). The sender list changes with `PUT /lines/{id}/senders`.\n"
+      description: "Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a\nchannel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a\nkey set to `null` is removed). `409 NAME_TAKEN` `{field: \"name\"}` when another line of the account has the\nname (case-insensitive). The Direct line keeps its name: a different `name` answers `422 LINE_IS_DIRECT`\n`{line_id}`, while its other fields change as usual. The sender list changes with `PUT /lines/{id}/senders`.\n"
       x-error-codes:
         - VALIDATION_FAILED
         - NAME_TAKEN
+        - LINE_IS_DIRECT
       requestBody:
         required: true
         content:
@@ -18780,7 +18846,7 @@ paths:
         415:
           $ref: '#/components/responses/UnsupportedMediaType'
         422:
-          description: '422: one of `VALIDATION_FAILED`. More codes may be added within v1; treat an unknown one by its status.'
+          description: '422: one of `VALIDATION_FAILED`, `LINE_IS_DIRECT`. More codes may be added within v1; treat an unknown one by its status.'
           headers:
             MyComm-Request-Id:
               $ref: '#/components/headers/MyComm-Request-Id'
@@ -18797,6 +18863,8 @@ paths:
                   -
                     $ref: '#/components/schemas/ValidationError'
                   -
+                    $ref: '#/components/schemas/ErrLineIsDirect'
+                  -
                     $ref: '#/components/schemas/Error'
         429:
           $ref: '#/components/responses/RateLimited'
@@ -18804,9 +18872,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: archiveLine
       tags:
@@ -18864,9 +18929,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -18885,7 +18947,9 @@ paths:
       tags:
         - Lines
       summary: 'Unarchive a line'
-      description: 'Requires `channels:write`. Does nothing when the line is not archived. Takes no body.'
+      description: "Requires `channels:write`. Does nothing when the line is not archived. Takes no body. A partner line that was\ndetached stays archived: `409 INVALID_STATE` `{line_id}`.\n"
+      x-error-codes:
+        - INVALID_STATE
       responses:
         200:
           description: 'The line.'
@@ -18912,6 +18976,25 @@ paths:
           $ref: '#/components/responses/Forbidden'
         404:
           $ref: '#/components/responses/NotFound'
+        409:
+          description: '409: one of `INVALID_STATE`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ErrInvalidState'
+                  -
+                    $ref: '#/components/schemas/Error'
         429:
           $ref: '#/components/responses/RateLimited'
         500:
@@ -18921,8 +19004,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -18972,9 +19053,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -18985,7 +19063,7 @@ paths:
       tags:
         - Lines
       summary: "Replace a line's senders"
-      description: "Requires `channels:write`. Replaces the whole list; the order is the position (0 first). At most one entry is\n`primary`; with none marked the first entry is. An entry without a role is a `backup`. Every channel must be\none of the account's, not disconnected, and appear once (`422 VALIDATION_FAILED` on `senders`). An empty list\nleaves the line without senders: sends from it are held (`no_sender_available`). Fires\n`line.sender_changed`. Queued messages on a sender that left the list move to the next healthy sender.\n"
+      description: "Requires `channels:write`. Replaces the whole list; the order is the position (0 first). At most one entry is\n`primary`; with none marked the first entry is. A marked primary is placed first and the others keep their\norder, so role and position always agree. An entry without a role is a `backup`. Every channel must be\none of the account's, not disconnected, and appear once (`422 VALIDATION_FAILED` on `senders`). An empty list\nleaves the line without senders: sends from it are held (`no_sender_available`). Fires\n`line.sender_changed`. Queued messages on a sender that left the list move to the next healthy sender.\n"
       x-error-codes:
         - VALIDATION_FAILED
       requestBody:
@@ -19055,9 +19133,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   /media:
     post:
       operationId: uploadMedia
@@ -19116,8 +19191,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/media/{id}':
     parameters:
       -
@@ -19162,9 +19235,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -19187,7 +19257,7 @@ paths:
         -
           $ref: '#/components/parameters/IdempotencyKey'
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       requestBody:
         required: false
         content:
@@ -19268,8 +19338,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: false
         content:
@@ -19331,7 +19399,7 @@ paths:
         -
           $ref: '#/components/parameters/IdempotencyKey'
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       requestBody:
         required: true
         content:
@@ -19555,7 +19623,7 @@ paths:
         -
           $ref: '#/components/parameters/IdempotencyKey'
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       requestBody:
         required: true
         content:
@@ -19789,7 +19857,7 @@ paths:
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
-          description: '403 WRONG_KEY_KIND, ABILITY_MISSING, IP_NOT_ALLOWED, ACCOUNT_CONTEXT_INVALID, ACCOUNT_SUSPENDED, ACCOUNT_PENDING_DELETION, PARTNER_ACCESS_REVOKED or PARTNER_KEY_RESTRICTED.'
+          description: '403 WRONG_KEY_KIND, ABILITY_MISSING, IP_NOT_ALLOWED, LINE_CONTEXT_INVALID, PARTNER_ROUTE_NOT_ALLOWED, ACCOUNT_SUSPENDED, ACCOUNT_PENDING_DELETION or PARTNER_ACCESS_REVOKED.'
           headers:
             MyComm-Request-Id:
               $ref: '#/components/headers/MyComm-Request-Id'
@@ -20231,7 +20299,7 @@ paths:
               - created_at
             default: '-created_at'
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       responses:
         200:
           description: 'A page of messages.'
@@ -20291,7 +20359,7 @@ paths:
           schema:
             $ref: '#/components/schemas/Uuid'
         -
-          $ref: '#/components/parameters/MyCommAccount'
+          $ref: '#/components/parameters/MyCommLine'
       responses:
         200:
           description: 'The message.'
@@ -20341,8 +20409,6 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Uuid'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'The timeline.'
@@ -20444,8 +20510,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/pairing-codes/{id}':
     parameters:
       -
@@ -20490,9 +20554,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -20532,9 +20593,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -20568,8 +20626,6 @@ paths:
               - name
               - '-name'
             default: name
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of smart lists.'
@@ -20677,8 +20733,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   /smart-lists/preview:
     post:
       operationId: previewSmartList
@@ -20736,8 +20790,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/smart-lists/{id}':
     parameters:
       -
@@ -20782,9 +20834,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -20847,9 +20896,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: deleteSmartList
       tags:
@@ -20884,9 +20930,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -21005,8 +21048,6 @@ paths:
               - '-updated_at'
               - updated_at
             default: '-created_at'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of contacts.'
@@ -21105,9 +21146,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -21176,8 +21214,6 @@ paths:
             default: 200
         -
           $ref: '#/components/parameters/cursor'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'Daily counters.'
@@ -21266,8 +21302,6 @@ paths:
           schema:
             type: string
             format: date
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: Summary.
@@ -21356,8 +21390,6 @@ paths:
               - '-created_at'
               - created_at
             default: '-created_at'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of suppressions.'
@@ -21411,8 +21443,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -21490,8 +21520,6 @@ paths:
             $ref: '#/components/schemas/Uuid'
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       requestBody:
         required: true
         content:
@@ -21560,8 +21588,6 @@ paths:
               - whatsapp
               - telegram
             default: phone
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'Whether the address is suppressed, with the suppression when it is.'
@@ -21660,8 +21686,6 @@ paths:
               - '-created_at'
               - created_at
             default: '-created_at'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of consent events.'
@@ -21748,8 +21772,6 @@ paths:
               - created_at
               - '-created_at'
             default: name
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of templates.'
@@ -21888,8 +21910,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   /templates/preview:
     post:
       operationId: previewTemplate
@@ -21952,8 +21972,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/templates/{id}':
     parameters:
       -
@@ -21998,9 +22016,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -22074,9 +22089,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: archiveTemplate
       tags:
@@ -22113,9 +22125,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -22184,8 +22193,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/templates/{id}/render':
     parameters:
       -
@@ -22247,8 +22254,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/webhook-endpoints/{id}/deliveries':
     parameters:
       -
@@ -22305,8 +22310,6 @@ paths:
           schema:
             type: string
             format: date-time
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of deliveries.'
@@ -22435,8 +22438,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/webhook-deliveries/{id}':
     parameters:
       -
@@ -22481,9 +22482,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -22540,8 +22538,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -22559,8 +22555,6 @@ paths:
           $ref: '#/components/parameters/limit'
         -
           $ref: '#/components/parameters/cursor'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       responses:
         200:
           description: 'A page of endpoints.'
@@ -22610,7 +22604,7 @@ paths:
       tags:
         - Webhooks
       summary: 'Create a webhook endpoint'
-      description: "Requires `webhooks:write`. The `url` must be `https`, carry no credentials and resolve only to public\naddresses. `events` empty or omitted means every event except the opt-in ones. `line_ids` and\n`channel_types` `null` mean all. At most 20 endpoints per account. A restricted key's endpoint defaults to\n(and must stay inside) its lines, takes the key's channel types and cannot include managed accounts.\nThe `secret` is shown once, in this response.\n"
+      description: "Requires `webhooks:write`. The `url` must be `https`, carry no credentials and resolve only to public\naddresses. `events` empty or omitted means every event except the opt-in ones. `line_ids` and\n`channel_types` `null` mean all. At most 20 endpoints per account. A restricted key's endpoint defaults to\n(and must stay inside) its lines, takes the key's channel types and cannot set `partner_lines`.\nThe `secret` is shown once, in this response.\n"
       requestBody:
         required: true
         content:
@@ -22619,23 +22613,6 @@ paths:
               type: object
               required:
                 - url
-              if:
-                properties:
-                  include_managed_accounts:
-                    const: true
-                required:
-                  - include_managed_accounts
-              then:
-                properties:
-                  line_ids:
-                    type: 'null'
-              x-required-when:
-                -
-                  field: line_ids
-                  when: 'include_managed_accounts is true'
-                  rule: must_be_null
-                  error: VALIDATION_FAILED
-                  note: "A partner-wide endpoint receives every line of every managed account. Only an approved partner's own account, with an unrestricted key, may include managed accounts."
               properties:
                 url:
                   type: string
@@ -22672,9 +22649,10 @@ paths:
                         $ref: '#/components/schemas/WebhookEventType'
                     -
                       type: 'null'
-                include_managed_accounts:
+                partner_lines:
                   type: boolean
-                  description: "Also receive the events of every managed account. Only on an approved partner's\nown account, with `line_ids` `null`, and never with a restricted key.\n"
+                  default: false
+                  description: "Also receive the events of the lines you made for your users with the partner API (events\nwhose `line_id` is one of your partner lines), and nothing else of their accounts. `line_ids`\nmay then name partner lines too, to narrow it. Only on an approved partner's own account,\nnever with a restricted key.\n"
       responses:
         201:
           description: 'The new endpoint, including its `secret`.'
@@ -22724,8 +22702,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/webhook-endpoints/{id}':
     parameters:
       -
@@ -22770,9 +22746,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -22783,7 +22756,7 @@ paths:
       tags:
         - Webhooks
       summary: 'Update a webhook endpoint'
-      description: "Requires `webhooks:write`. Only the fields sent change. `active: true` re-enables a disabled endpoint and\nresets its failure counters. An endpoint with `include_managed_accounts` keeps `line_ids` `null`.\n"
+      description: "Requires `webhooks:write`. Only the fields sent change. `active: true` re-enables a disabled endpoint and\nresets its failure counters. `line_ids` may name partner lines only while the endpoint has `partner_lines`.\n"
       requestBody:
         required: true
         content:
@@ -22826,9 +22799,9 @@ paths:
                         $ref: '#/components/schemas/WebhookEventType'
                     -
                       type: 'null'
-                include_managed_accounts:
+                partner_lines:
                   type: boolean
-                  description: "Only on an approved partner's own account, with `line_ids` `null`, and never with a restricted\nkey.\n"
+                  description: "Only on an approved partner's own account, never with a restricted key. Turning it off while\n`line_ids` names partner lines is refused.\n"
                 active:
                   type: boolean
       responses:
@@ -22867,9 +22840,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
     delete:
       operationId: deleteWebhookEndpoint
       tags:
@@ -22902,9 +22872,6 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
-      parameters:
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -22984,8 +22951,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
   '/webhook-endpoints/{id}/test':
     parameters:
       -
@@ -23058,8 +23023,6 @@ paths:
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
-        -
-          $ref: '#/components/parameters/MyCommAccount'
       x-codeSamples:
         -
           lang: Shell
@@ -24053,6 +24016,225 @@ webhooks:
                   data:
                     line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                     held_count: 0
+      responses:
+        2XX:
+          description: 'Any 2xx response acknowledges the delivery.'
+  line.connected:
+    post:
+      operationId: onLineConnected
+      tags:
+        - Webhooks
+      summary: line.connected
+      description: "A partner line left `not_connected`: the user connected a phone and its first number was verified. Sent once per line, whatever the line's state then is: `state` says it, and when it is `needs_attention` a `line.needs_attention` follows. Later recoveries send `line.recovered`. Partner lines only (`partner_lines` endpoints and the account's own endpoints)."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookLineStatusChanged'
+            examples:
+              sample:
+                summary: 'Sample payload'
+                value:
+                  id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  type: line.connected
+                  api_version: 2.0.0
+                  created_at: '2026-10-01T09:15:02Z'
+                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  account_external_ref: example
+                  line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  channel:
+                    id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    type: example
+                  data:
+                    line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    external_ref: example
+                    state: connected
+                    needs_attention_reasons:
+                      - device_offline
+                    previous_state: connected
+      responses:
+        2XX:
+          description: 'Any 2xx response acknowledges the delivery.'
+  line.needs_attention:
+    post:
+      operationId: onLineNeedsAttention
+      tags:
+        - Webhooks
+      summary: line.needs_attention
+      description: 'A connected partner line needs its user: `needs_attention_reasons` says why. Sent when the line enters the state and again when a new reason is added (a reason that goes away is not sent). The same as `GET /partner/v1/lines/{id}/status` at that moment.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookLineStatusChanged'
+            examples:
+              sample:
+                summary: 'Sample payload'
+                value:
+                  id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  type: line.needs_attention
+                  api_version: 2.0.0
+                  created_at: '2026-10-01T09:15:02Z'
+                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  account_external_ref: example
+                  line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  channel:
+                    id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    type: example
+                  data:
+                    line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    external_ref: example
+                    state: connected
+                    needs_attention_reasons:
+                      - device_offline
+                    previous_state: connected
+      responses:
+        2XX:
+          description: 'Any 2xx response acknowledges the delivery.'
+  line.recovered:
+    post:
+      operationId: onLineRecovered
+      tags:
+        - Webhooks
+      summary: line.recovered
+      description: 'A partner line that needed attention is connected again. Sent once per recovery.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookLineStatusChanged'
+            examples:
+              sample:
+                summary: 'Sample payload'
+                value:
+                  id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  type: line.recovered
+                  api_version: 2.0.0
+                  created_at: '2026-10-01T09:15:02Z'
+                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  account_external_ref: example
+                  line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  channel:
+                    id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    type: example
+                  data:
+                    line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    external_ref: example
+                    state: connected
+                    needs_attention_reasons:
+                      - device_offline
+                    previous_state: connected
+      responses:
+        2XX:
+          description: 'Any 2xx response acknowledges the delivery.'
+  line.detached:
+    post:
+      operationId: onLineDetached
+      tags:
+        - Webhooks
+      summary: line.detached
+      description: "A partner line was detached and archived, by the partner (`DELETE /partner/v1/lines/{id}`), by the account's owner, or by MyComm. The account keeps its numbers and history; the line sends no more. Sent once."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookLineDetached'
+            examples:
+              sample:
+                summary: 'Sample payload'
+                value:
+                  id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  type: line.detached
+                  api_version: 2.0.0
+                  created_at: '2026-10-01T09:15:02Z'
+                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  account_external_ref: example
+                  line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  channel:
+                    id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    type: example
+                  data:
+                    line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    external_ref: example
+                    by: partner
+      responses:
+        2XX:
+          description: 'Any 2xx response acknowledges the delivery.'
+  line.quota_low:
+    post:
+      operationId: onLineQuotaLow
+      tags:
+        - Webhooks
+      summary: line.quota_low
+      description: 'A sponsored partner line used 80% of the messages its partner pays for this cycle, for one channel type. Sent once per cycle and type (when one send takes the line past 80% and to 100%, both this and `line.quota_exhausted` are sent). Partner lines only.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookLineQuota'
+            examples:
+              sample:
+                summary: 'Sample payload'
+                value:
+                  id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  type: line.quota_low
+                  api_version: 2.0.0
+                  created_at: '2026-10-01T09:15:02Z'
+                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  account_external_ref: example
+                  line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  channel:
+                    id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    type: example
+                  data:
+                    line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    external_ref: example
+                    channel_type: example
+                    allowance: 0
+                    used: 0
+                    cycle_ends_at: '2026-10-01T09:15:02Z'
+      responses:
+        2XX:
+          description: 'Any 2xx response acknowledges the delivery.'
+  line.quota_exhausted:
+    post:
+      operationId: onLineQuotaExhausted
+      tags:
+        - Webhooks
+      summary: line.quota_exhausted
+      description: "A sponsored partner line used all the messages its partner pays for this cycle, for one channel type. Further messages of that type wait with `hold_reason` `sponsor_quota_exhausted` until the next cycle, unless the sponsorship lets the user's own messages take over (`allow_user_overage`). Sent once per cycle and type."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookLineQuota'
+            examples:
+              sample:
+                summary: 'Sample payload'
+                value:
+                  id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  type: line.quota_exhausted
+                  api_version: 2.0.0
+                  created_at: '2026-10-01T09:15:02Z'
+                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  account_external_ref: example
+                  line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  channel:
+                    id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    type: example
+                  data:
+                    line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    external_ref: example
+                    channel_type: example
+                    allowance: 0
+                    used: 0
+                    cycle_ends_at: '2026-10-01T09:15:02Z'
       responses:
         2XX:
           description: 'Any 2xx response acknowledges the delivery.'

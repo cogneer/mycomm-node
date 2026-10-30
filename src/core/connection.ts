@@ -19,7 +19,7 @@ export interface ConnectionOptions {
   transport: Transport;
   apiKey: string;
   baseUrl: string;
-  accountId: string | undefined;
+  lineId: string | undefined;
   maxRetries: number;
   /** Milliseconds per attempt. */
   timeout: number;
@@ -167,9 +167,9 @@ export class Connection {
       Accept: 'application/json',
       ...userAgent(),
     };
-    // Acting as a managed account applies to /v1 only; /partner/v1 is the partner's own context.
-    if (this.options.accountId !== undefined && path.startsWith('/v1/')) {
-      headers['MyComm-Account'] = this.options.accountId;
+    // A partner key acts on its line on /v1 only; /partner/v1 is the partner's own context.
+    if (this.options.lineId !== undefined && path.startsWith('/v1/')) {
+      headers['MyComm-Line'] = this.options.lineId;
     }
 
     let json: Record<string, unknown> | undefined;

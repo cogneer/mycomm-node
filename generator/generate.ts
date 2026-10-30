@@ -67,8 +67,13 @@ for (const [type, { schema, summary }] of Object.entries(webhooks)) {
     description: summary,
     data: types.output(main, flat.properties.data ?? {}, `${name}Data`, `webhook:${type}.data`),
   });
-  eventExamples[type] = example(main, schema);
-  eventMinimal[type] = minimalExample(main, schema);
+  eventExamples[type] = typed(example(main, schema), type);
+  eventMinimal[type] = typed(minimalExample(main, schema), type);
+}
+
+/** An event example with its own type, where the schema lists the types of several events. */
+function typed(value: unknown, type: string): unknown {
+  return typeof value === 'object' && value !== null && 'type' in value ? { ...value, type } : value;
 }
 
 const unused = Object.keys(config.nullable).filter((key) => !types.corrected.has(key));

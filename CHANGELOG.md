@@ -6,8 +6,8 @@ All notable changes to this package are listed here. The format follows
 
 ## [2.0.0] - Unreleased
 
-Built from the MyComm public API and partner API `2.0.0`, where lines replace inboxes. The same names and behaviour as
-`mycomm/mycomm-php` 2.0.0. Nothing from 1.x is kept as an alias.
+Built from the MyComm public API and partner API `2.0.0`, where lines replace inboxes and partners give each user a line.
+The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is kept as an alias.
 
 ### Changed (breaking)
 
@@ -17,13 +17,38 @@ Built from the MyComm public API and partner API `2.0.0`, where lines replace in
 - `inbox_id` is now `line_id` everywhere: `messages.send()`, `sendBatch()` items, conversations, messages and webhook
   events.
 - `client.verify({ to, lineId })`: the option was `inboxId`.
+- Partner keys act on a line, not an account: `client.forLine(lineId)` replaces `forAccount()` and every `/v1` call of
+  that client carries `MyComm-Line` (was `MyComm-Account`); the option `lineId` replaces `accountId`, in `MyCommFake`
+  too.
+
+### Removed (breaking)
+
+- Managed accounts: `partner.accounts` (`provision`, `list`, `all`, `get`, `update`, `suspend`, `reactivate`, `delete`)
+  and `partner.accountKeys` (`create`, `list`, `all`, `revoke`), with the `ManagedAccount` types. A partner gives each
+  user a line instead.
+- Connect sessions: `connectSessions` (`create`, `get`, `delete`) and the `ConnectSession` types. Hosted links replace
+  them.
 
 ### Added
+
+- Partner lines: `partner.lines.list()`, `all()`, `create()`, `get()`, `update()` and `detach()`, and
+  `partner.lines.status(id)` (`PartnerLineStatus`: `state`, `needs_attention_reasons`, channels and sponsorship).
+- Hosted links: `partner.lines.links.create(lineId, { purpose })` and `partner.links.get()` / `revoke()` for partner
+  keys, `lines.links.create()` and `links.get()` / `revoke()` for account keys (`CreatedHostedLink`, with the one-time
+  `url`, and `HostedLink`; purposes `connect`, `add_channel`, `replace_device`, `manage`, `claim`).
+- `partner.sponsorshipDefaults.get()` and `put()`, and `sponsorship` on partner lines (`SponsorshipTerms`).
+- `partner.usage.get()` reports one row per partner line (`line_id`, `external_ref`); its filter is `line_id`.
+- `webhookEndpoints.create()` / `update()`: `partner_lines`.
+- Webhook events `line.connected`, `line.needs_attention`, `line.recovered`, `line.detached`, `line.quota_low` and
+  `line.quota_exhausted` (56 in all); types `LineState`, `LineNeedsAttentionReason`, `LineDetachedBy`,
+  `HostedLinkPurpose`, `HostedLinkStatus` and `SponsorshipOnExhausted`.
+- README: the partner flow for an ERP (a line per tenant, a `connect` link, the widget, `forLine()`, status and `line.*`
+  webhooks).
 
 - `lines.listSenders(id)` and `lines.setSenders(id, { senders })`: the channels a line sends from, with role (`primary`,
   `backup`, `pool`) and health.
 - `conversations.handover(id, { line_id })`: hand a conversation over to another line.
-- Webhook events `line.sender_changed`, `line.failover`, `line.no_sender` and `conversation.handed_over` (50 in all).
+- Webhook events `line.sender_changed`, `line.failover`, `line.no_sender` and `conversation.handed_over`.
 - `Message.sender_pinned` and `sender_attempts`; `Channel.line_ids`.
 
 ### Fixed
