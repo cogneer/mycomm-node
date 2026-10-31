@@ -44,7 +44,7 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
 - `client.verify()` with a partner key checks the key on the partner API and dry-runs the send through the line of
   `forLine()` (or its `lineId`); `client.isPartnerKey()`.
 - Webhook events `line.connected`, `line.needs_attention`, `line.recovered`, `line.detached`, `line.quota_low` and
-  `line.quota_exhausted` (56 in all); types `LineState`, `LineNeedsAttentionReason`, `LineDetachedBy`,
+  `line.quota_exhausted`; types `LineState`, `LineNeedsAttentionReason`, `LineDetachedBy`,
   `HostedLinkPurpose`, `HostedLinkStatus` and `SponsorshipOnExhausted`.
 - README: the partner flow for an ERP (a line per tenant, a `connect` link, the widget, `forLine()`, status and `line.*`
   webhooks).
@@ -54,6 +54,13 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
 - `conversations.handover(id, { line_id })`: hand a conversation over to another line.
 - Webhook events `line.sender_changed`, `line.failover`, `line.no_sender` and `conversation.handed_over`.
 - `Message.sender_pinned` and `sender_attempts`; `Channel.line_ids`.
+- `lines.update()` takes `send_mode`, `sticky_sender`, `prefer`, `cross_type_fallback`, `on_unconfirmed`,
+  `failover_seconds` and `alarm_thresholds`, and `Line` returns them (`LineCrossTypeFallback`, `LineFailoverSeconds`,
+  `LineAlarmThresholds`; type `LinePrefer`).
+- `mirror_inbound` on `LineSenderInput` and `LineSender`: copy inbound messages that land on another line to this line.
+- `prefer` on `messages.send()` and `sendBatch()` items (type `MessagePrefer`).
+- `Message.fallback_of`, `WebhookMessageReceivedData.mirrored` and `WebhookLineSenderChangedData.sticky_cleared_count`.
+- Webhook event `line.alarm` (`WebhookLineAlarmData`, type `AlarmKind`), for public and partner endpoints; 57 events in all.
 
 ### Fixed
 

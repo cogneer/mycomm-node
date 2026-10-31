@@ -50,7 +50,9 @@ export class PartnerLinesResource {
    * Requires `lines:read`. How the line is doing now, computed at the time of the call. `not_connected` until the
    * user's first number is verified on the line; then `connected`, or `needs_attention` with the reasons. You are
    * told of every change by webhook: `line.connected`, `line.needs_attention` and `line.recovered` reach your
-   * endpoints that have `partner_lines`.
+   * endpoints that have `partner_lines`, and so does `line.alarm`, once per episode of a condition that needs
+   * attention (a failover, no sender, a blocked pool member, a sender near its hourly limit, many messages between
+   * the user's own numbers, a low sponsored allowance, unconfirmed messages).
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `getPartnerLineStatus`
    */

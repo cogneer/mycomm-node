@@ -24,6 +24,7 @@ import type {
   WebhookDeviceStateData,
   WebhookExportData,
   WebhookImportData,
+  WebhookLineAlarmData,
   WebhookLineDetachedData,
   WebhookLineFailoverData,
   WebhookLineNoSenderData,
@@ -185,10 +186,10 @@ export interface LineSenderChangedEvent extends WebhookEventBase {
 
 /**
  * `line.failover`: Queued messages of a line moved from one sender to another because the first could not send:
- * it left the line, was disconnected, stayed unhealthy longer than the lane allows (high 2 min, normal 15 min,
- * bulk 60 min), reported a sender fault, or the messages were waiting for any sender. One event per line, sender
- * pair and sweep; `message_ids` lists at most 100 of the `message_count` messages. Messages sent with a named
- * `channel_id` or `from` never move.
+ * it left the line, was disconnected, stayed unhealthy longer than the line's `failover_seconds` allow for the
+ * lane (by default high 2 min, normal 15 min, bulk 60 min), reported a sender fault, or the messages were
+ * waiting for any sender. One event per line, sender pair and sweep; `message_ids` lists at most 100 of the
+ * `message_count` messages. Messages sent with a named `channel_id` or `from` never move.
  */
 export interface LineFailoverEvent extends WebhookEventBase {
   type: 'line.failover';
@@ -261,6 +262,27 @@ export interface LineQuotaLowEvent extends WebhookEventBase {
 export interface LineQuotaExhaustedEvent extends WebhookEventBase {
   type: 'line.quota_exhausted';
   data: WebhookLineQuotaData;
+}
+
+/**
+ * `line.alarm`: Something about the line needs attention, sent once per episode: while the condition lasts it
+ * only counts, and once it has cleared the next occurrence is a new episode. `kind`: `failover` (messages moved
+ * to another sender; ends after an hour without another move), `no_sender` (no sender can send; ends after 15
+ * minutes with one that can, and a new loss within those minutes only counts), `pool_member_blocked` (a pool
+ * member was paused or disconnected; ends when it is resumed), `budget_80` (a sender used
+ * `alarm_thresholds.budget_percent` of its hourly limit; ends below 60 % of that limit, or 20 points under
+ * `alarm_thresholds.budget_percent` when that is lower), `self_loop` (a sender sent
+ * `alarm_thresholds.self_loop_per_hour` messages to the account's own numbers within an hour; ends after an hour
+ * without one), `sponsor_quota_low` (80 % of the sponsored allowance is used; ends with the next cycle or when
+ * the line has no active sponsorship) or `unconfirmed` (messages an unpaired phone never confirmed were failed
+ * or sent again, per `on_unconfirmed`; ends after 24 hours without one). Archiving or detaching a line ends its
+ * open alarms. An alarm about a sender (`channel_id` set, as for `pool_member_blocked` and `budget_80`) is sent
+ * once for each line holding it. The events that already tell of a change (`line.failover`, `line.no_sender`,
+ * `line.quota_low`) are still sent.
+ */
+export interface LineAlarmEvent extends WebhookEventBase {
+  type: 'line.alarm';
+  data: WebhookLineAlarmData;
 }
 
 /**
@@ -457,8 +479,9 @@ export interface MessageCancelledEvent extends WebhookEventBase {
 }
 
 /**
- * `message.received`: An inbound message was stored. `data` adds `contact_created`; `conversation.created` is
- * true when this message created the conversation.
+ * `message.received`: An inbound message was stored. `data` adds `contact_created` and `mirrored`;
+ * `conversation.created` is true when this message created the conversation. A line that mirrors the channel
+ * gets a copy marked `mirrored`. An endpoint for all lines receives both events, so filter on `mirrored`.
  */
 export interface MessageReceivedEvent extends WebhookEventBase {
   type: 'message.received';
@@ -540,6 +563,7 @@ export type WebhookEvent =
   | LineDetachedEvent
   | LineQuotaLowEvent
   | LineQuotaExhaustedEvent
+  | LineAlarmEvent
   | ConversationHandedOverEvent
   | LinkClickedEvent
   | ChannelConnectedEvent
@@ -601,6 +625,7 @@ export const EVENT_TYPES: readonly WebhookEventType[] = [
   'line.detached',
   'line.quota_low',
   'line.quota_exhausted',
+  'line.alarm',
   'conversation.handed_over',
   'link.clicked',
   'channel.connected',
