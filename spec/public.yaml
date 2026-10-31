@@ -4257,6 +4257,29 @@ components:
               type: 'null'
         created_at:
           $ref: '#/components/schemas/Timestamp'
+    LinePrefer:
+      type: string
+      description: "The channel type the line sends with first (default `auto`): `sms`, `whatsapp`, or `auto` = the type of the channel the contact last wrote to on this line while that message is inside the type's service window (WhatsApp 24 h; SMS the line's `reply_window_days`), else the type of the first sender. When the preferred type has no healthy sender, or cannot reach the contact, the next type sends. A reply in a conversation (and a campaign through its channel) tries the type of that channel first, whatever the line prefers."
+      enum:
+        - auto
+        - sms
+        - whatsapp
+    LineCrossTypeFallback:
+      type: object
+      description: "Resend a message that was not delivered after `after_seconds` through the line's next channel type (for example WhatsApp first, SMS after two minutes). The resend is a new message whose `fallback_of` is the original; a queued original is cancelled with reason `cross_type_fallback`. A message falls back at most once, and only to a contact with a phone number. Only text messages fall back, and only those sent within `after_seconds` + 1 hour (older ones are left as they are). It may double the cost of a message."
+      required:
+        - enabled
+        - after_seconds
+      additionalProperties: false
+      properties:
+        enabled:
+          type: boolean
+          description: 'Off by default.'
+        after_seconds:
+          type: integer
+          minimum: 60
+          maximum: 3600
+          description: 'How long the first type has to deliver (default 120).'
     LineKind:
       type: string
       description: "`direct`: the account's own line, where unclaimed replies land (one per account). `app`: a line an app or integration sends through. `partner`: a line a partner created for a client."
@@ -4272,8 +4295,13 @@ components:
         - kind
         - name
         - send_mode
+        - sticky_sender
+        - failover_seconds
+        - prefer
+        - cross_type_fallback
         - reply_window_days
         - on_unconfirmed
+        - alarm_thresholds
         - show_in_portal
         - senders
         - settings
@@ -4290,11 +4318,16 @@ components:
         name:
           type: string
         send_mode:
-          type: string
-          description: '`ordered`: the first healthy sender by position sends; the primary is always at position 0. `pool` is reserved for spreading sends over several senders.'
-          enum:
-            - ordered
-            - pool
+          $ref: '#/components/schemas/LineSendMode'
+        sticky_sender:
+          type: boolean
+          description: "Keep each contact on the sender that first sent to it while that sender is healthy (default `true`). While it is not, the contact's messages go through the line's normal order and return to it once it is healthy again."
+        failover_seconds:
+          $ref: '#/components/schemas/LineFailoverSeconds'
+        prefer:
+          $ref: '#/components/schemas/LinePrefer'
+        cross_type_fallback:
+          $ref: '#/components/schemas/LineCrossTypeFallback'
         reply_window_days:
           type: integer
           minimum: 1
@@ -4306,6 +4339,8 @@ components:
           enum:
             - fail
             - resend
+        alarm_thresholds:
+          $ref: '#/components/schemas/LineAlarmThresholds'
         show_in_portal:
           type: boolean
           description: "Whether the line's conversations show in the portal's conversation view."
@@ -4330,6 +4365,49 @@ components:
           $ref: '#/components/schemas/Timestamp'
         updated_at:
           $ref: '#/components/schemas/Timestamp'
+    LineSendMode:
+      type: string
+      description: 'How the line picks the sender of a message that names no channel. `ordered`: the first healthy sender by position; the primary is always at position 0. `pool`: the healthy `primary` and `pool` senders share the sending, the one with the most of its hourly budget left first (ties by position); `backup` senders send only when no pool sender is healthy. A message sent with `channel_id` or `from` always uses that channel.'
+      enum:
+        - ordered
+        - pool
+    LineAlarmThresholds:
+      type: object
+      description: "When the line's alarms fire (`line.alarm`). `budget_percent` (50 to 100, default 80): a sender of the line used this share of its hourly limit; for a sender on several lines the lowest value counts. `self_loop_per_hour` (5 to 500, default 20): a sender of the line sent this many messages to the account's own numbers within an hour. A value above the default warns later than advised."
+      additionalProperties: false
+      required:
+        - budget_percent
+        - self_loop_per_hour
+      properties:
+        budget_percent:
+          type: integer
+          minimum: 50
+          maximum: 100
+        self_loop_per_hour:
+          type: integer
+          minimum: 5
+          maximum: 500
+    LineFailoverSeconds:
+      type: object
+      description: 'How long a message of each lane waits on a sender that cannot send before it moves to another sender of the line, in seconds (30 to 7200). Defaults: high 120, normal 900, bulk 3600.'
+      additionalProperties: false
+      required:
+        - high
+        - normal
+        - bulk
+      properties:
+        high:
+          type: integer
+          minimum: 30
+          maximum: 7200
+        normal:
+          type: integer
+          minimum: 30
+          maximum: 7200
+        bulk:
+          type: integer
+          minimum: 30
+          maximum: 7200
     LineSender:
       type: object
       description: "One entry of a line's sender list."
@@ -4340,6 +4418,7 @@ components:
         - role
         - position
         - enabled
+        - mirror_inbound
         - healthy
       properties:
         channel_id:
@@ -4362,6 +4441,9 @@ components:
         enabled:
           type: boolean
           description: 'A disabled sender stays in the list but never sends.'
+        mirror_inbound:
+          type: boolean
+          description: 'The line gets a read-only copy of every new inbound on this channel that lands on another line: one more `message.received` with the envelope `line_id` of this line and `data.mirrored: true`. No conversation or message is stored on this line, and history imports are never copied.'
         healthy:
           type: boolean
           description: 'Active, its phone online, not throttled, and with hourly and daily budget left. Changes from moment to moment.'
@@ -4383,6 +4465,9 @@ components:
         enabled:
           type: boolean
           description: 'Default `true`.'
+        mirror_inbound:
+          type: boolean
+          description: 'Copy every new inbound on this channel that lands on another line to this line (see `LineSender`). When left out, an entry already on the list keeps its value and a new entry starts with `false`.'
     LineSenderList:
       type: object
       required:
@@ -4420,9 +4505,65 @@ components:
           maximum: 365
         show_in_portal:
           type: boolean
+        send_mode:
+          $ref: '#/components/schemas/LineSendMode'
+        sticky_sender:
+          type: boolean
+        prefer:
+          $ref: '#/components/schemas/LinePrefer'
+        cross_type_fallback:
+          type: object
+          description: 'The fallback fields to change; fields left out keep theirs.'
+          additionalProperties: false
+          properties:
+            enabled:
+              type: boolean
+            after_seconds:
+              type: integer
+              minimum: 60
+              maximum: 3600
+        failover_seconds:
+          type:
+            - object
+            - 'null'
+          description: 'Hold times to change, by lane (30 to 7200 seconds each); lanes left out keep theirs. `null` restores the defaults.'
+          additionalProperties: false
+          properties:
+            high:
+              type: integer
+              minimum: 30
+              maximum: 7200
+            normal:
+              type: integer
+              minimum: 30
+              maximum: 7200
+            bulk:
+              type: integer
+              minimum: 30
+              maximum: 7200
+        on_unconfirmed:
+          type: string
+          enum:
+            - fail
+            - resend
+        alarm_thresholds:
+          type:
+            - object
+            - 'null'
+          description: 'Alarm thresholds to change; fields left out keep theirs. `null` restores the defaults.'
+          additionalProperties: false
+          properties:
+            budget_percent:
+              type: integer
+              minimum: 50
+              maximum: 100
+            self_loop_per_hour:
+              type: integer
+              minimum: 5
+              maximum: 500
         settings:
           type: object
-          description: 'Merged key by key into the line settings; `null` removes a key.'
+          description: 'Merged key by key into the line settings; `null` removes a key. The hold times change through `failover_seconds` and the alarm thresholds through `alarm_thresholds`, not here.'
     Media:
       type: object
       required:
@@ -4663,6 +4804,12 @@ components:
         channel_type:
           type: string
           description: 'Only to choose between channels of different types that share the `from` address.'
+        prefer:
+          type: string
+          enum:
+            - sms
+            - whatsapp
+          description: "The channel type to try first when the line picks the sender; beats the line's `prefer`. When that type has no healthy sender or cannot reach the recipient, the line's next type sends."
         to:
           type: string
           description: "Recipient address in the channel's format (a phone number in any accepted format for SMS). Not together with `contact_id`."
@@ -5195,6 +5342,7 @@ components:
           expires_at: '2026-10-02T09:15:02Z'
           attempts: 0
           sender_pinned: false
+          fallback_of: null
           sender_attempts:
             -
               channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -5251,6 +5399,7 @@ components:
         - expires_at
         - attempts
         - sender_pinned
+        - fallback_of
         - sender_attempts
         - failure
         - cancel_requested_at
@@ -5381,6 +5530,13 @@ components:
         sender_pinned:
           type: boolean
           description: '`true` when the send named its channel (`channel_id` or `from`): the message never moves to another sender. `false` for inbound messages.'
+        fallback_of:
+          oneOf:
+            -
+              $ref: '#/components/schemas/Uuid'
+            -
+              type: 'null'
+          description: "The message this one resends through another channel type (the line's cross-type fallback), else `null`."
         sender_attempts:
           type: array
           description: 'The senders the message has been on, oldest first (outbound only, else empty). A new entry opens on a retry and when the message fails over to another sender of its line.'
@@ -6724,6 +6880,60 @@ components:
           minimum: 0
         cycle_ends_at:
           $ref: '#/components/schemas/Timestamp'
+    WebhookLineAlarm:
+      allOf:
+        -
+          $ref: '#/components/schemas/WebhookEnvelope'
+        -
+          type: object
+          properties:
+            type:
+              const: line.alarm
+            data:
+              $ref: '#/components/schemas/WebhookLineAlarmData'
+    WebhookLineAlarmData:
+      type: object
+      description: 'Payload of line.alarm: a new alarm episode about the line or one of its senders.'
+      additionalProperties: false
+      required:
+        - alarm_id
+        - kind
+        - line_id
+        - channel_id
+        - count
+        - first_at
+        - data
+      properties:
+        alarm_id:
+          $ref: '#/components/schemas/Uuid'
+        kind:
+          type: string
+          enum:
+            - failover
+            - no_sender
+            - pool_member_blocked
+            - budget_80
+            - self_loop
+            - sponsor_quota_low
+            - unconfirmed
+        line_id:
+          $ref: '#/components/schemas/Uuid'
+        channel_id:
+          description: 'The sender the alarm is about; null for an alarm about the line itself.'
+          oneOf:
+            -
+              $ref: '#/components/schemas/Uuid'
+            -
+              type: 'null'
+        count:
+          type: integer
+          minimum: 1
+          description: 'How many times it happened when the episode began (for `failover` and `unconfirmed`, the messages).'
+        first_at:
+          $ref: '#/components/schemas/Timestamp'
+        data:
+          type: object
+          description: 'Details of the kind, for example `{percent}` for `budget_80` or `{channel_type, allowance, used}` for `sponsor_quota_low`. Clients must ignore keys they do not know.'
     WebhookLineSenderChanged:
       allOf:
         -
@@ -6742,6 +6952,7 @@ components:
       required:
         - line_id
         - senders
+        - sticky_cleared_count
       properties:
         line_id:
           $ref: '#/components/schemas/Uuid'
@@ -6749,6 +6960,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WebhookLineSender'
+        sticky_cleared_count:
+          type: integer
+          minimum: 0
+          description: "How many conversations lost their sticky sender with this change because their sender left the list or was disconnected; their next message goes through the line's normal order."
     WebhookLineSender:
       type: object
       description: "One entry of a line's sender list."
@@ -7438,9 +7653,13 @@ components:
           type: object
           required:
             - contact_created
+            - mirrored
           properties:
             contact_created:
               type: boolean
+            mirrored:
+              type: boolean
+              description: '`true` on the copy a mirror line gets (a sender entry with `mirror_inbound`): the envelope `line_id` is the mirror line, while `message.line_id` and `conversation` stay those of the line the message landed on. `false` on the normal event.'
     WebhookMessageCancelledData:
       allOf:
         -
@@ -7454,7 +7673,7 @@ components:
               type:
                 - string
                 - 'null'
-              description: '`api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `account_deleted` (may gain values).'
+              description: '`api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `account_deleted`, `cross_type_fallback` (may gain values).'
     WebhookMessageQueued:
       allOf:
         -
@@ -11832,6 +12051,7 @@ components:
         - line.detached
         - line.quota_low
         - line.quota_exhausted
+        - line.alarm
         - conversation.handed_over
         - link.clicked
         - channel.connected
@@ -18759,7 +18979,7 @@ paths:
       tags:
         - Lines
       summary: 'Update a line'
-      description: "Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a\nchannel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a\nkey set to `null` is removed). `409 NAME_TAKEN` `{field: \"name\"}` when another line of the account has the\nname (case-insensitive). The Direct line keeps its name: a different `name` answers `422 LINE_IS_DIRECT`\n`{line_id}`, while its other fields change as usual. The sender list changes with `PUT /lines/{id}/senders`.\n"
+      description: "Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a\nchannel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a\nkey set to `null` is removed). `409 NAME_TAKEN` `{field: \"name\"}` when another line of the account has the\nname (case-insensitive). The Direct line keeps its name: a different `name` answers `422 LINE_IS_DIRECT`\n`{line_id}`, while its other fields change as usual. `send_mode`, `sticky_sender` and `failover_seconds` set how\nthe line picks its sender; `failover_seconds` is merged lane by lane into the stored hold times (`null` restores\nthe defaults). `prefer` sets the channel type the line sends with first and `cross_type_fallback` (merged into the\nstored value) resends an undelivered message through the next type; a fallback may double the cost of a message.\n`on_unconfirmed` decides what happens to a message an unpaired phone never confirmed, and `alarm_thresholds`\n(merged into the stored values, `null` restores the defaults) when the line's `line.alarm` fires.\nThe sender list changes with `PUT /lines/{id}/senders`.\n"
       x-error-codes:
         - VALIDATION_FAILED
         - NAME_TAKEN
@@ -19458,6 +19678,7 @@ paths:
                           expires_at: '2026-10-02T09:15:02Z'
                           attempts: 0
                           sender_pinned: false
+                          fallback_of: null
                           sender_attempts:
                             -
                               channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -19728,6 +19949,7 @@ paths:
                     expires_at: '2026-10-02T09:15:02Z'
                     attempts: 0
                     sender_pinned: false
+                    fallback_of: null
                     sender_attempts:
                       -
                         channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -19793,6 +20015,7 @@ paths:
                     expires_at: '2026-10-02T09:15:02Z'
                     attempts: 0
                     sender_pinned: false
+                    fallback_of: null
                     sender_attempts:
                       -
                         channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -23903,6 +24126,7 @@ webhooks:
                         role: primary
                         position: 0
                         enabled: true
+                    sticky_cleared_count: 0
       responses:
         2XX:
           description: 'Any 2xx response acknowledges the delivery.'
@@ -23912,7 +24136,7 @@ webhooks:
       tags:
         - Webhooks
       summary: line.failover
-      description: 'Queued messages of a line moved from one sender to another because the first could not send: it left the line, was disconnected, stayed unhealthy longer than the lane allows (high 2 min, normal 15 min, bulk 60 min), reported a sender fault, or the messages were waiting for any sender. One event per line, sender pair and sweep; `message_ids` lists at most 100 of the `message_count` messages. Messages sent with a named `channel_id` or `from` never move.'
+      description: "Queued messages of a line moved from one sender to another because the first could not send: it left the line, was disconnected, stayed unhealthy longer than the line's `failover_seconds` allow for the lane (by default high 2 min, normal 15 min, bulk 60 min), reported a sender fault, or the messages were waiting for any sender. One event per line, sender pair and sweep; `message_ids` lists at most 100 of the `message_count` messages. Messages sent with a named `channel_id` or `from` never move."
       requestBody:
         required: true
         content:
@@ -24185,6 +24409,43 @@ webhooks:
                     allowance: 0
                     used: 0
                     cycle_ends_at: '2026-10-01T09:15:02Z'
+      responses:
+        2XX:
+          description: 'Any 2xx response acknowledges the delivery.'
+  line.alarm:
+    post:
+      operationId: onLineAlarm
+      tags:
+        - Webhooks
+      summary: line.alarm
+      description: "Something about the line needs attention, sent once per episode: while the condition lasts it only counts, and once it has cleared the next occurrence is a new episode. `kind`: `failover` (messages moved to another sender; ends after an hour without another move), `no_sender` (no sender can send; ends when one can), `pool_member_blocked` (a pool member was paused or disconnected; ends when it is resumed), `budget_80` (a sender used `alarm_thresholds.budget_percent` of its hourly limit; ends below 60 %), `self_loop` (a sender sent `alarm_thresholds.self_loop_per_hour` messages to the account's own numbers within an hour; ends after an hour without one), `sponsor_quota_low` (80 % of the sponsored allowance is used; ends with the next cycle) or `unconfirmed` (messages an unpaired phone never confirmed were failed or sent again, per `on_unconfirmed`; ends after 24 hours without one). An alarm about a sender (`channel_id` set, as for `pool_member_blocked` and `budget_80`) is sent once for each line holding it. The events that already tell of a change (`line.failover`, `line.no_sender`, `line.quota_low`) are still sent."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookLineAlarm'
+            examples:
+              sample:
+                summary: 'Sample payload'
+                value:
+                  id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  type: line.alarm
+                  api_version: 2.0.0
+                  created_at: '2026-10-01T09:15:02Z'
+                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  channel:
+                    id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    type: example
+                  data:
+                    alarm_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    kind: failover
+                    line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    count: 1
+                    first_at: '2026-10-01T09:15:02Z'
+                    data: {}
       responses:
         2XX:
           description: 'Any 2xx response acknowledges the delivery.'
@@ -25825,6 +26086,7 @@ webhooks:
                       expires_at: '2026-10-02T09:15:02Z'
                       attempts: 0
                       sender_pinned: false
+                      fallback_of: null
                       sender_attempts:
                         -
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -25921,6 +26183,7 @@ webhooks:
                       expires_at: '2026-10-02T09:15:02Z'
                       attempts: 0
                       sender_pinned: false
+                      fallback_of: null
                       sender_attempts:
                         -
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -26017,6 +26280,7 @@ webhooks:
                       expires_at: '2026-10-02T09:15:02Z'
                       attempts: 0
                       sender_pinned: false
+                      fallback_of: null
                       sender_attempts:
                         -
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -26113,6 +26377,7 @@ webhooks:
                       expires_at: '2026-10-02T09:15:02Z'
                       attempts: 0
                       sender_pinned: false
+                      fallback_of: null
                       sender_attempts:
                         -
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -26209,6 +26474,7 @@ webhooks:
                       expires_at: '2026-10-02T09:15:02Z'
                       attempts: 0
                       sender_pinned: false
+                      fallback_of: null
                       sender_attempts:
                         -
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -26305,6 +26571,7 @@ webhooks:
                       expires_at: '2026-10-02T09:15:02Z'
                       attempts: 0
                       sender_pinned: false
+                      fallback_of: null
                       sender_attempts:
                         -
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -26401,6 +26668,7 @@ webhooks:
                       expires_at: '2026-10-02T09:15:02Z'
                       attempts: 0
                       sender_pinned: false
+                      fallback_of: null
                       sender_attempts:
                         -
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -26441,7 +26709,7 @@ webhooks:
       tags:
         - Webhooks
       summary: message.received
-      description: 'An inbound message was stored. `data` adds `contact_created`; `conversation.created` is true when this message created the conversation.'
+      description: 'An inbound message was stored. `data` adds `contact_created` and `mirrored`; `conversation.created` is true when this message created the conversation. A line that mirrors the channel gets a copy marked `mirrored`. An endpoint for all lines receives both events, so filter on `mirrored`.'
       requestBody:
         required: true
         content:
@@ -26498,6 +26766,7 @@ webhooks:
                       expires_at: '2026-10-02T09:15:02Z'
                       attempts: 0
                       sender_pinned: false
+                      fallback_of: null
                       sender_attempts:
                         -
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
@@ -26529,6 +26798,7 @@ webhooks:
                       created: true
                     sender_attempt_count: 0
                     contact_created: true
+                    mirrored: true
       responses:
         2XX:
           description: 'Any 2xx response acknowledges the delivery.'

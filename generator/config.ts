@@ -214,6 +214,10 @@ export const config = {
     'SponsorshipTerms.on_exhausted': 'SponsorshipOnExhausted',
     'PartnerLineStatusSponsorship.on_exhausted': 'SponsorshipOnExhausted',
     'WebhookLineDetachedData.by': 'LineDetachedBy',
+    'LineUpdate.on_unconfirmed': 'LineOnUnconfirmed',
+    'SendMessageRequest.prefer': 'MessagePrefer',
+    'SendBatchItem.prefer': 'MessagePrefer',
+    'WebhookLineAlarmData.kind': 'AlarmKind',
   } as Record<string, string>,
 
   // An answer described inline becomes a model named after its operation (`ApiKeysCreateResponse`). Better names, and one

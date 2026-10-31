@@ -676,13 +676,29 @@ export const LineKind = {
 } as const;
 
 /**
- * `ordered`: the first healthy sender by position sends; the primary is always at position 0. `pool` is reserved
- * for spreading sends over several senders.
+ * How the line picks the sender of a message that names no channel. `ordered`: the first healthy sender by
+ * position; the primary is always at position 0. `pool`: the healthy `primary` and `pool` senders share the
+ * sending, the one with the most of its hourly budget left first (ties by position); `backup` senders send only
+ * when no pool sender is healthy. A message sent with `channel_id` or `from` always uses that channel.
  */
 export type LineSendMode = 'ordered' | 'pool';
 export const LineSendMode = {
   Ordered: 'ordered',
   Pool: 'pool',
+} as const;
+
+/**
+ * The channel type the line sends with first (default `auto`): `sms`, `whatsapp`, or `auto` = the type of the
+ * channel the contact last wrote to on this line while that message is inside the type's service window
+ * (WhatsApp 24 h; SMS the line's `reply_window_days`), else the type of the first sender. When the preferred
+ * type has no healthy sender, or cannot reach the contact, the next type sends. A reply in a conversation (and a
+ * campaign through its channel) tries the type of that channel first, whatever the line prefers.
+ */
+export type LinePrefer = 'auto' | 'sms' | 'whatsapp';
+export const LinePrefer = {
+  Auto: 'auto',
+  Sms: 'sms',
+  Whatsapp: 'whatsapp',
 } as const;
 
 /**
@@ -706,6 +722,16 @@ export type SendBatchResultStatus = 'accepted' | 'rejected';
 export const SendBatchResultStatus = {
   Accepted: 'accepted',
   Rejected: 'rejected',
+} as const;
+
+/**
+ * The channel type to try first when the line picks the sender; beats the line's `prefer`. When that type has no
+ * healthy sender or cannot reach the recipient, the line's next type sends.
+ */
+export type MessagePrefer = 'sms' | 'whatsapp';
+export const MessagePrefer = {
+  Sms: 'sms',
+  Whatsapp: 'whatsapp',
 } as const;
 
 /** What happened to a message, as recorded in its history. A new value may appear. */
@@ -1064,6 +1090,18 @@ export const LineDetachedBy = {
   Partner: 'partner',
   Owner: 'owner',
   System: 'system',
+} as const;
+
+export type AlarmKind =
+  'failover' | 'no_sender' | 'pool_member_blocked' | 'budget_80' | 'self_loop' | 'sponsor_quota_low' | 'unconfirmed';
+export const AlarmKind = {
+  Failover: 'failover',
+  NoSender: 'no_sender',
+  PoolMemberBlocked: 'pool_member_blocked',
+  Budget80: 'budget_80',
+  SelfLoop: 'self_loop',
+  SponsorQuotaLow: 'sponsor_quota_low',
+  Unconfirmed: 'unconfirmed',
 } as const;
 
 export type AccountStatus = 'active' | 'suspended' | 'pending_deletion';
@@ -1899,6 +1937,8 @@ export interface Message {
    * `false` for inbound messages.
    */
   sender_pinned: boolean;
+  /** The message this one resends through another channel type (the line's cross-type fallback), else `null`. */
+  fallback_of: string | null;
   /**
    * The senders the message has been on, oldest first (outbound only, else empty). A new entry opens on a retry
    * and when the message fails over to another sender of its line.
@@ -2031,6 +2071,8 @@ export interface SendMessageResponse {
    * `false` for inbound messages.
    */
   sender_pinned: boolean;
+  /** The message this one resends through another channel type (the line's cross-type fallback), else `null`. */
+  fallback_of: string | null;
   /**
    * The senders the message has been on, oldest first (outbound only, else empty). A new entry opens on a retry
    * and when the message fails over to another sender of its line.
@@ -2242,11 +2284,15 @@ export interface Line {
   id: string;
   kind: Open<LineKind>;
   name: string;
-  /**
-   * `ordered`: the first healthy sender by position sends; the primary is always at position 0. `pool` is reserved
-   * for spreading sends over several senders.
-   */
   send_mode: Open<LineSendMode>;
+  /**
+   * Keep each contact on the sender that first sent to it while that sender is healthy (default `true`). While it
+   * is not, the contact's messages go through the line's normal order and return to it once it is healthy again.
+   */
+  sticky_sender: boolean;
+  failover_seconds: LineFailoverSeconds;
+  prefer: Open<LinePrefer>;
+  cross_type_fallback: LineCrossTypeFallback;
   /** How long a reply on a channel this line wrote from comes back to this line. */
   reply_window_days: number;
   /**
@@ -2254,6 +2300,7 @@ export interface Line {
    * next sender, accepting a possible duplicate.
    */
   on_unconfirmed: Open<LineOnUnconfirmed>;
+  alarm_thresholds: LineAlarmThresholds;
   /** Whether the line's conversations show in the portal's conversation view. */
   show_in_portal: boolean;
   senders: LineSender[];
@@ -2264,6 +2311,41 @@ export interface Line {
   archived_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * How long a message of each lane waits on a sender that cannot send before it moves to another sender of the
+ * line, in seconds (30 to 7200). Defaults: high 120, normal 900, bulk 3600.
+ */
+export interface LineFailoverSeconds {
+  high: number;
+  normal: number;
+  bulk: number;
+}
+
+/**
+ * Resend a message that was not delivered after `after_seconds` through the line's next channel type (for
+ * example WhatsApp first, SMS after two minutes). The resend is a new message whose `fallback_of` is the
+ * original; a queued original is cancelled with reason `cross_type_fallback`. A message falls back at most once,
+ * and only to a contact with a phone number. Only text messages fall back, and only those sent within
+ * `after_seconds` + 1 hour (older ones are left as they are). It may double the cost of a message.
+ */
+export interface LineCrossTypeFallback {
+  /** Off by default. */
+  enabled: boolean;
+  /** How long the first type has to deliver (default 120). */
+  after_seconds: number;
+}
+
+/**
+ * When the line's alarms fire (`line.alarm`). `budget_percent` (50 to 100, default 80): a sender of the line
+ * used this share of its hourly limit; for a sender on several lines the lowest value counts.
+ * `self_loop_per_hour` (5 to 500, default 20): a sender of the line sent this many messages to the account's own
+ * numbers within an hour. A value above the default warns later than advised.
+ */
+export interface LineAlarmThresholds {
+  budget_percent: number;
+  self_loop_per_hour: number;
 }
 
 /** One entry of a line's sender list. */
@@ -2277,6 +2359,12 @@ export interface LineSender {
   position: number;
   /** A disabled sender stays in the list but never sends. */
   enabled: boolean;
+  /**
+   * The line gets a read-only copy of every new inbound on this channel that lands on another line: one more
+   * `message.received` with the envelope `line_id` of this line and `data.mirrored: true`. No conversation or
+   * message is stored on this line, and history imports are never copied.
+   */
+  mirror_inbound: boolean;
   /** Active, its phone online, not throttled, and with hourly and daily budget left. Changes from moment to moment. */
   healthy: boolean;
 }
@@ -2900,6 +2988,11 @@ export interface WebhookExportDataExport {
 export interface WebhookLineSenderChangedData {
   line_id: string;
   senders: WebhookLineSender[];
+  /**
+   * How many conversations lost their sticky sender with this change because their sender left the list or was
+   * disconnected; their next message goes through the line's normal order.
+   */
+  sticky_cleared_count: number;
 }
 
 /** One entry of a line's sender list. */
@@ -2973,6 +3066,23 @@ export interface WebhookLineQuotaData {
   allowance: number;
   used: number;
   cycle_ends_at: string;
+}
+
+/** Payload of line.alarm: a new alarm episode about the line or one of its senders. */
+export interface WebhookLineAlarmData {
+  alarm_id: string;
+  kind: Open<AlarmKind>;
+  line_id: string;
+  /** The sender the alarm is about; null for an alarm about the line itself. */
+  channel_id: string | null;
+  /** How many times it happened when the episode began (for `failover` and `unconfirmed`, the messages). */
+  count: number;
+  first_at: string;
+  /**
+   * Details of the kind, for example `{percent}` for `budget_80` or `{channel_type, allowance, used}` for
+   * `sponsor_quota_low`. Clients must ignore keys they do not know.
+   */
+  data: Record<string, unknown>;
 }
 
 /** Payload of conversation.handed_over. */
@@ -3129,7 +3239,10 @@ export interface WebhookMessageCancelledData {
    * or a failover, 0 for inbound.
    */
   sender_attempt_count: number;
-  /** `api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `account_deleted` (may gain values). */
+  /**
+   * `api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `account_deleted`,
+   * `cross_type_fallback` (may gain values).
+   */
   reason: string | null;
 }
 
@@ -3142,6 +3255,12 @@ export interface WebhookMessageReceivedData {
    */
   sender_attempt_count: number;
   contact_created: boolean;
+  /**
+   * `true` on the copy a mirror line gets (a sender entry with `mirror_inbound`): the envelope `line_id` is the
+   * mirror line, while `message.line_id` and `conversation` stay those of the line the message landed on. `false`
+   * on the normal event.
+   */
+  mirrored: boolean;
 }
 
 export interface WebhookConversationData {
@@ -3239,6 +3358,11 @@ export interface LineSenderInput {
   role?: LineSenderRole;
   /** Default `true`. */
   enabled?: boolean;
+  /**
+   * Copy every new inbound on this channel that lands on another line to this line (see `LineSender`). When left
+   * out, an entry already on the list keeps its value and a new entry starts with `false`.
+   */
+  mirror_inbound?: boolean;
 }
 
 /**
@@ -3256,6 +3380,11 @@ export interface SendBatchItem {
   from?: string;
   /** Only to choose between channels of different types that share the `from` address. */
   channel_type?: string;
+  /**
+   * The channel type to try first when the line picks the sender; beats the line's `prefer`. When that type has no
+   * healthy sender or cannot reach the recipient, the line's next type sends.
+   */
+  prefer?: MessagePrefer;
   /**
    * Recipient address in the channel's format (a phone number in any accepted format for SMS). Not together with
    * `contact_id`.
@@ -3983,7 +4112,23 @@ export interface LinesUpdateParams {
   name?: string;
   reply_window_days?: number;
   show_in_portal?: boolean;
-  /** Merged key by key into the line settings; `null` removes a key. */
+  send_mode?: LineSendMode;
+  sticky_sender?: boolean;
+  prefer?: LinePrefer;
+  /** The fallback fields to change; fields left out keep theirs. */
+  cross_type_fallback?: { enabled?: boolean; after_seconds?: number };
+  /**
+   * Hold times to change, by lane (30 to 7200 seconds each); lanes left out keep theirs. `null` restores the
+   * defaults.
+   */
+  failover_seconds?: { high?: number; normal?: number; bulk?: number } | null;
+  on_unconfirmed?: LineOnUnconfirmed;
+  /** Alarm thresholds to change; fields left out keep theirs. `null` restores the defaults. */
+  alarm_thresholds?: { budget_percent?: number; self_loop_per_hour?: number } | null;
+  /**
+   * Merged key by key into the line settings; `null` removes a key. The hold times change through
+   * `failover_seconds` and the alarm thresholds through `alarm_thresholds`, not here.
+   */
   settings?: Record<string, unknown>;
 }
 
@@ -4082,6 +4227,11 @@ export interface MessagesSendParams {
   from?: string;
   /** Only to choose between channels of different types that share the `from` address. */
   channel_type?: string;
+  /**
+   * The channel type to try first when the line picks the sender; beats the line's `prefer`. When that type has no
+   * healthy sender or cannot reach the recipient, the line's next type sends.
+   */
+  prefer?: MessagePrefer;
   /**
    * Recipient address in the channel's format (a phone number in any accepted format for SMS). Not together with
    * `contact_id`.

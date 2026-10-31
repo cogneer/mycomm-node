@@ -127,7 +127,7 @@ describe('webhooks', () => {
   });
 
   it('knows every event of the reference', () => {
-    expect(EVENT_TYPES).toHaveLength(56);
+    expect(EVENT_TYPES).toHaveLength(57);
     expect(Object.keys(examples.events).sort()).toEqual([...EVENT_TYPES].sort());
   });
 });

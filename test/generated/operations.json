@@ -1274,7 +1274,8 @@
           {
             "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
             "role": "primary",
-            "enabled": true
+            "enabled": true,
+            "mirror_inbound": true
           }
         ]
       }
@@ -1345,6 +1346,7 @@
             "channel_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
             "from": "+923001234567",
             "channel_type": "Example channel type",
+            "prefer": "sms",
             "to": "+923001234567",
             "contact_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
             "content": {},
