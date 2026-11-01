@@ -3,7 +3,7 @@ openapi: 3.1.0
 info:
   title: 'MyComm Partner API'
   version: 2.0.0
-  description: "For platforms that give their own users messaging through MyComm. Authenticate with a partner key (`mc_partner_...`)\nsent as `Authorization: Bearer <key>`.\n\nA partner owns **lines**, not accounts. `POST /lines` makes a line for one of your users, known to you by your\n`external_ref`; it lives in the user's MyComm account (an empty one until the user connects a phone), and the user\nowns that account. Send and read through a line on `/v1` with the partner key plus the `MyComm-Line: <line id>`\nheader; a partner key reaches only the message and conversation endpoints of that line and `GET /v1/lines/{id}`.\n`DELETE /lines/{id}` detaches the line: it is archived, the user keeps the account, its channels and its history.\n`/usage` reports usage.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
+  description: "For platforms that give their own users messaging through MyComm. Authenticate with a partner key (`mc_partner_...`)\nsent as `Authorization: Bearer <key>`.\n\nA partner owns **lines**, not accounts. `POST /lines` makes a line for one of your users, known to you by your\n`external_ref`; it lives in the user's MyComm account (an empty one until the user connects a phone), and the user\nowns that account. Send and read through a line on `/v1` with the partner key plus the `MyComm-Line: <line id>`\nheader; a partner key reaches only the message and conversation endpoints of that line and `GET /v1/lines/{id}`.\n`DELETE /lines/{id}` detaches the line: it is archived, the user keeps the account, its channels and its history.\n`/usage` reports usage. `POST /lines/{id}/vouch` answers a `line.recovery_requested` webhook.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
 servers:
   -
     url: 'https://mycomm.cogneer.tech/partner/v1'
@@ -367,7 +367,7 @@ components:
             - not_connected
         needs_attention_reasons:
           type: array
-          description: "Empty unless `needs_attention`. `device_offline`: every sender's phone is offline. `sim_missing`: a sender's SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `session_logged_out` and `quarantined` are reserved."
+          description: "Empty unless `needs_attention`. `device_offline`: every sender's phone is offline. `sim_missing`: a sender's SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `quarantined`: a sender is paused by the carrier safety hold. `session_logged_out` is reserved."
           items:
             type: string
             enum:
@@ -452,6 +452,25 @@ components:
               $ref: '#/components/schemas/Timestamp'
             -
               type: 'null'
+    VouchForRecoveryRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - recovery_request_id
+      properties:
+        recovery_request_id:
+          $ref: '#/components/schemas/Uuid'
+    RecoveryVouch:
+      type: object
+      additionalProperties: false
+      required:
+        - recovery_request_id
+        - vouched_at
+      properties:
+        recovery_request_id:
+          $ref: '#/components/schemas/Uuid'
+        vouched_at:
+          $ref: '#/components/schemas/Timestamp'
     PartnerLine:
       type: object
       description: "A line you made, in your user's account."
@@ -5521,6 +5540,82 @@ paths:
           lang: Shell
           label: curl
           source: "curl -X DELETE \"$MYCOMM_URL/partner/v1/lines/<id>\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+  '/lines/{id}/vouch':
+    parameters:
+      -
+        name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Uuid'
+    post:
+      operationId: vouchForRecovery
+      tags:
+        - Lines
+      summary: 'Vouch for a recovery request'
+      description: "Requires `lines:write`. Someone asked to recover the account of your line (`line.recovery_requested`), and you know\nthis person. MyComm staff see your answer when they decide. It is never required and never enough alone: nothing\nchanges before the 7-day wait is over and staff approve. A repeat changes nothing and answers `200` with the first\n`vouched_at`. A line that is not your live line in that request's account, or no such request, is `404 NOT_FOUND`;\na request already decided is `409 INVALID_STATE`.\n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VouchForRecoveryRequest'
+      responses:
+        200:
+          description: 'The vouch is recorded.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+            Idempotent-Replayed:
+              $ref: '#/components/headers/Idempotent-Replayed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecoveryVouch'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: '409 INVALID_STATE: the request is already decided.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          $ref: '#/components/responses/Unprocessable'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      parameters:
+        -
+          $ref: '#/components/parameters/IdempotencyKey'
   '/lines/{id}/links':
     parameters:
       -

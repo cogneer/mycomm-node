@@ -1,7 +1,7 @@
 import { createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { EVENT_TYPES, Webhook, WebhookSignatureError, type WebhookEvent } from '../src/index.js';
+import { ChannelDisconnectReason, EVENT_TYPES, Webhook, WebhookSignatureError, type WebhookEvent } from '../src/index.js';
 import { examples, FakeWebhook } from '../src/testing/index.js';
 
 const SECRET = '5f1c8a0e9d3b47c2a6e4f0b1d2c3a4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1';
@@ -126,8 +126,25 @@ describe('webhooks', () => {
     }
   });
 
+  it('reads a recovery request', () => {
+    const raw = examples.events['line.recovery_requested'] as { data: Record<string, unknown> };
+
+    const event = Webhook.parse(JSON.stringify(raw));
+
+    expect(event.type).toBe('line.recovery_requested');
+    expect(event.data).toEqual(raw.data);
+    expect(raw.data).toHaveProperty('recovery_request_id');
+    expect(raw.data).toHaveProperty('waiting_until');
+  });
+
+  it('knows the released number reason', () => {
+    const reason: ChannelDisconnectReason = ChannelDisconnectReason.NumberReleased;
+
+    expect(reason).toBe('number_released');
+  });
+
   it('knows every event of the reference', () => {
-    expect(EVENT_TYPES).toHaveLength(57);
+    expect(EVENT_TYPES).toHaveLength(58);
     expect(Object.keys(examples.events).sort()).toEqual([...EVENT_TYPES].sort());
   });
 });

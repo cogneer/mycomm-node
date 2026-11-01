@@ -385,6 +385,7 @@ through the line (`partner.forLine(lineId).verify({ to })`).
 | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `partner.lines.list()`, `all()`, `create()`, `get()`, `update()`, `detach()` | Your lines; `detach()` ends the line and its open links                        |
 | `partner.lines.status(id)`                                                   | Whether the line can send, and why not                                         |
+| `partner.lines.vouch(id, { recovery_request_id })`                           | Answer a `line.recovery_requested` webhook when you know the person            |
 | `partner.lines.links.create(id, { purpose })`                                | A hosted link: `connect`, `add_channel`, `replace_device`, `manage` or `claim` |
 | `partner.links.get(id)`, `revoke(id)`                                        | Follow or end a link                                                           |
 | `partner.sponsorshipDefaults.get()`, `put({...})`                            | The sponsorship terms new lines get                                            |

@@ -1949,6 +1949,22 @@
     "returns": "void"
   },
   {
+    "operation": "partner.lines.vouch",
+    "key": "partner.lines.vouch",
+    "resource": ["partner", "lines"],
+    "method": "vouch",
+    "args": [
+      "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+      {
+        "recovery_request_id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c"
+      }
+    ],
+    "http": "POST",
+    "path": "/partner/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/vouch",
+    "format": "json",
+    "returns": "model"
+  },
+  {
     "operation": "partner.lines.links.create",
     "key": "partner.lines.links.create",
     "resource": ["partner", "lines", "links"],

@@ -60,7 +60,11 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
 - `mirror_inbound` on `LineSenderInput` and `LineSender`: copy inbound messages that land on another line to this line.
 - `prefer` on `messages.send()` and `sendBatch()` items (type `MessagePrefer`).
 - `Message.fallback_of`, `WebhookMessageReceivedData.mirrored` and `WebhookLineSenderChangedData.sticky_cleared_count`.
-- Webhook event `line.alarm` (`WebhookLineAlarmData`, type `AlarmKind`), for public and partner endpoints; 57 events in all.
+- Webhook event `line.alarm` (`WebhookLineAlarmData`, type `AlarmKind`), for public and partner endpoints.
+- `partner.lines.vouch(id, { recovery_request_id })` (`RecoveryVouch`): answer a `line.recovery_requested` webhook when
+  you know the person. MyComm staff see it when they decide; it is never required and never enough alone.
+- Webhook event `line.recovery_requested` (`WebhookLineRecoveryRequestedData`); 58 events in all.
+- `number_released` on `ChannelDisconnectReason`: the channel was disconnected because its number was let go.
 
 ### Fixed
 

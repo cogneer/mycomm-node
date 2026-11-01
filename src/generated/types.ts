@@ -211,7 +211,8 @@ export type ChannelDisconnectReason =
   | 'sim_removed'
   | 'session_lost'
   | 'provider_banned'
-  | 'credentials_invalid';
+  | 'credentials_invalid'
+  | 'number_released';
 export const ChannelDisconnectReason = {
   Owner: 'owner',
   AdminForceRelease: 'admin_force_release',
@@ -223,6 +224,7 @@ export const ChannelDisconnectReason = {
   SessionLost: 'session_lost',
   ProviderBanned: 'provider_banned',
   CredentialsInvalid: 'credentials_invalid',
+  NumberReleased: 'number_released',
 } as const;
 
 export type ChannelRatePolicySource = 'suggested' | 'custom';
@@ -2799,8 +2801,8 @@ export interface PartnerLineStatus {
   /**
    * Empty unless `needs_attention`. `device_offline`: every sender's phone is offline. `sim_missing`: a sender's
    * SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the
-   * sponsored allowance is used up. `number_disputed`: someone else verified a sender's number.
-   * `session_logged_out` and `quarantined` are reserved.
+   * sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `quarantined`: a
+   * sender is paused by the carrier safety hold. `session_logged_out` is reserved.
    */
   needs_attention_reasons: Open<LineNeedsAttentionReason>[];
   /**
@@ -2851,6 +2853,11 @@ export interface PartnerLine {
   created_at: string;
   /** When the line was detached; `null` while it is live. */
   archived_at: string | null;
+}
+
+export interface RecoveryVouch {
+  recovery_request_id: string;
+  vouched_at: string;
 }
 
 export interface SponsorshipDefaults {
@@ -3083,6 +3090,19 @@ export interface WebhookLineAlarmData {
    * `sponsor_quota_low`. Clients must ignore keys they do not know.
    */
   data: Record<string, unknown>;
+}
+
+/**
+ * Payload of line.recovery_requested: who asked, as they gave it. The number is proved by a code, the name is
+ * not.
+ */
+export interface WebhookLineRecoveryRequestedData {
+  line_id: string;
+  recovery_request_id: string;
+  contact_name: string;
+  contact_number: string;
+  requested_at: string;
+  waiting_until: string;
 }
 
 /** Payload of conversation.handed_over. */
@@ -4580,6 +4600,11 @@ export interface PartnerLinesUpdateParams {
    * sponsorship: the numbers it paid for get 14 days of grace. Left out: unchanged.
    */
   sponsorship?: SponsorshipTermsInput | null;
+}
+
+/** The parameters of `partner.lines.vouch()`. */
+export interface PartnerLinesVouchParams {
+  recovery_request_id: string;
 }
 
 /** The parameters of `partner.lines.links.create()`. */

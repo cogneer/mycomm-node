@@ -13,8 +13,10 @@ import type {
   PartnerLinesLinksCreateParams,
   PartnerLinesListParams,
   PartnerLinesUpdateParams,
+  PartnerLinesVouchParams,
   PartnerSponsorshipDefaultsPutParams,
   PartnerUsageGetParams,
+  RecoveryVouch,
   SponsorshipDefaults,
   UsageResponse,
 } from '../types.js';
@@ -131,6 +133,19 @@ export class PartnerLinesResource {
    */
   detach(id: string, options?: RequestOptions): Promise<void> {
     return this._connection.call('partner.lines.detach', [id], undefined, options) as Promise<void>;
+  }
+
+  /**
+   * Vouch for a recovery request.
+   *
+   * Requires `lines:write`. Someone asked to recover the account of your line (`line.recovery_requested`), and you
+   * know this person. MyComm staff see your answer when they decide. It is never required and never enough alone:
+   * nothing changes before the 7-day wait is over and staff approve.
+   *
+   * @see https://mycomm.cogneer.tech/docs/api/partner `vouchForRecovery`
+   */
+  vouch(id: string, params: PartnerLinesVouchParams, options?: RequestOptions): Promise<WithMeta<RecoveryVouch>> {
+    return this._connection.call('partner.lines.vouch', [id], params, options) as Promise<WithMeta<RecoveryVouch>>;
   }
 }
 
