@@ -2403,6 +2403,7 @@ components:
             - session_lost
             - provider_banned
             - credentials_invalid
+            - number_released
             - null
         device_id:
           oneOf:
@@ -6934,6 +6935,41 @@ components:
         data:
           type: object
           description: 'Details of the kind, for example `{percent}` for `budget_80` or `{channel_type, allowance, used}` for `sponsor_quota_low`. Clients must ignore keys they do not know.'
+    WebhookLineRecoveryRequested:
+      allOf:
+        -
+          $ref: '#/components/schemas/WebhookEnvelope'
+        -
+          type: object
+          properties:
+            type:
+              const: line.recovery_requested
+            data:
+              $ref: '#/components/schemas/WebhookLineRecoveryRequestedData'
+    WebhookLineRecoveryRequestedData:
+      type: object
+      description: 'Payload of line.recovery_requested: who asked, as they gave it. The number is proved by a code, the name is not.'
+      additionalProperties: false
+      required:
+        - line_id
+        - recovery_request_id
+        - contact_name
+        - contact_number
+        - requested_at
+        - waiting_until
+      properties:
+        line_id:
+          $ref: '#/components/schemas/Uuid'
+        recovery_request_id:
+          $ref: '#/components/schemas/Uuid'
+        contact_name:
+          type: string
+        contact_number:
+          type: string
+        requested_at:
+          $ref: '#/components/schemas/Timestamp'
+        waiting_until:
+          $ref: '#/components/schemas/Timestamp'
     WebhookLineSenderChanged:
       allOf:
         -
@@ -7320,6 +7356,7 @@ components:
             - session_lost
             - provider_banned
             - credentials_invalid
+            - number_released
     WebhookChannelPausedData:
       type: object
       required:
@@ -12052,6 +12089,7 @@ components:
         - line.quota_low
         - line.quota_exhausted
         - line.alarm
+        - line.recovery_requested
         - conversation.handed_over
         - link.clicked
         - channel.connected
@@ -24446,6 +24484,42 @@ webhooks:
                     count: 1
                     first_at: '2026-10-01T09:15:02Z'
                     data: {}
+      responses:
+        2XX:
+          description: 'Any 2xx response acknowledges the delivery.'
+  line.recovery_requested:
+    post:
+      operationId: onLineRecoveryRequested
+      tags:
+        - Webhooks
+      summary: line.recovery_requested
+      description: 'Someone who says they lost their number asked to recover the account of this line; sent once per partner, on its oldest live line of the account. Nothing has changed on the account. If you know this person, answer with `POST /partner/v1/lines/{id}/vouch`. It is never required and never enough alone: MyComm staff decide, no earlier than `waiting_until`.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookLineRecoveryRequested'
+            examples:
+              sample:
+                summary: 'Sample payload'
+                value:
+                  id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  type: line.recovery_requested
+                  api_version: 2.0.0
+                  created_at: '2026-10-01T09:15:02Z'
+                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  channel:
+                    id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    type: example
+                  data:
+                    line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    recovery_request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                    contact_name: example
+                    contact_number: example
+                    requested_at: '2026-10-01T09:15:02Z'
+                    waiting_until: '2026-10-01T09:15:02Z'
       responses:
         2XX:
           description: 'Any 2xx response acknowledges the delivery.'

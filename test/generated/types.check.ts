@@ -43,6 +43,7 @@ import type {
   PairingCode,
   PartnerLine,
   PartnerLineStatus,
+  RecoveryVouch,
   RotatedWebhookSecret,
   SendBatchResponse,
   SendMessageDryRunResponse,
@@ -111,6 +112,7 @@ import type {
   LineQuotaExhaustedEvent,
   LineQuotaLowEvent,
   LineRecoveredEvent,
+  LineRecoveryRequestedEvent,
   LineSenderChangedEvent,
   LinkClickedEvent,
   MessageCancelledEvent,
@@ -6747,8 +6749,18 @@ export const answer293 = {
   created_at: '2026-10-01T09:15:02Z',
   archived_at: null,
 } satisfies PartnerLine;
-// partner.lines.links.create 201 (full)
+// partner.lines.vouch 200 (full)
 export const answer294 = {
+  recovery_request_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  vouched_at: '2026-10-01T09:15:02Z',
+} satisfies RecoveryVouch;
+// partner.lines.vouch 200 (minimal)
+export const answer295 = {
+  recovery_request_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  vouched_at: '2026-10-01T09:15:02Z',
+} satisfies RecoveryVouch;
+// partner.lines.links.create 201 (full)
+export const answer296 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   purpose: 'connect',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -6766,7 +6778,7 @@ export const answer294 = {
   url: 'https://example.com/mycomm',
 } satisfies CreatedHostedLink;
 // partner.lines.links.create 201 (minimal)
-export const answer295 = {
+export const answer297 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   purpose: 'connect',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -6784,7 +6796,7 @@ export const answer295 = {
   url: 'https://example.com/mycomm',
 } satisfies CreatedHostedLink;
 // partner.links.get 200 (full)
-export const answer296 = {
+export const answer298 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   purpose: 'connect',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -6801,7 +6813,7 @@ export const answer296 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies HostedLink;
 // partner.links.get 200 (minimal)
-export const answer297 = {
+export const answer299 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   purpose: 'connect',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -6818,17 +6830,6 @@ export const answer297 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies HostedLink;
 // partner.sponsorshipDefaults.get 200 (full)
-export const answer298 = {
-  default_sponsorship: {
-    cycle_days: 1,
-    channel_fee_cover: { example: 1 },
-    message_allowance: { example: 1 },
-    on_exhausted: 'hold',
-  },
-} satisfies SponsorshipDefaults;
-// partner.sponsorshipDefaults.get 200 (minimal)
-export const answer299 = { default_sponsorship: null } satisfies SponsorshipDefaults;
-// partner.sponsorshipDefaults.put 200 (full)
 export const answer300 = {
   default_sponsorship: {
     cycle_days: 1,
@@ -6837,10 +6838,21 @@ export const answer300 = {
     on_exhausted: 'hold',
   },
 } satisfies SponsorshipDefaults;
-// partner.sponsorshipDefaults.put 200 (minimal)
+// partner.sponsorshipDefaults.get 200 (minimal)
 export const answer301 = { default_sponsorship: null } satisfies SponsorshipDefaults;
-// partner.usage.get 200 (full)
+// partner.sponsorshipDefaults.put 200 (full)
 export const answer302 = {
+  default_sponsorship: {
+    cycle_days: 1,
+    channel_fee_cover: { example: 1 },
+    message_allowance: { example: 1 },
+    on_exhausted: 'hold',
+  },
+} satisfies SponsorshipDefaults;
+// partner.sponsorshipDefaults.put 200 (minimal)
+export const answer303 = { default_sponsorship: null } satisfies SponsorshipDefaults;
+// partner.usage.get 200 (full)
+export const answer304 = {
   from: '2026-10-01',
   to: '2026-10-01',
   totals: {
@@ -6886,7 +6898,7 @@ export const answer302 = {
   next_cursor: null,
 } satisfies UsageResponse;
 // partner.usage.get 200 (minimal)
-export const answer303 = {
+export const answer305 = {
   from: '2026-10-01',
   to: '2026-10-01',
   totals: {
@@ -6910,7 +6922,7 @@ export const answer303 = {
   next_cursor: null,
 } satisfies UsageResponse;
 // campaign.scheduled (full)
-export const event304 = {
+export const event306 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.scheduled',
   api_version: '1.0.0',
@@ -6960,7 +6972,7 @@ export const event304 = {
   },
 } satisfies CampaignScheduledEvent;
 // campaign.scheduled (minimal)
-export const event305 = {
+export const event307 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.scheduled',
   api_version: '1.0.0',
@@ -7001,7 +7013,7 @@ export const event305 = {
   },
 } satisfies CampaignScheduledEvent;
 // campaign.unscheduled (full)
-export const event306 = {
+export const event308 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.unscheduled',
   api_version: '1.0.0',
@@ -7051,7 +7063,7 @@ export const event306 = {
   },
 } satisfies CampaignUnscheduledEvent;
 // campaign.unscheduled (minimal)
-export const event307 = {
+export const event309 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.unscheduled',
   api_version: '1.0.0',
@@ -7092,7 +7104,7 @@ export const event307 = {
   },
 } satisfies CampaignUnscheduledEvent;
 // campaign.started (full)
-export const event308 = {
+export const event310 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.started',
   api_version: '1.0.0',
@@ -7141,7 +7153,7 @@ export const event308 = {
   },
 } satisfies CampaignStartedEvent;
 // campaign.started (minimal)
-export const event309 = {
+export const event311 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.started',
   api_version: '1.0.0',
@@ -7181,7 +7193,7 @@ export const event309 = {
   },
 } satisfies CampaignStartedEvent;
 // campaign.paused (full)
-export const event310 = {
+export const event312 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.paused',
   api_version: '1.0.0',
@@ -7231,7 +7243,7 @@ export const event310 = {
   },
 } satisfies CampaignPausedEvent;
 // campaign.paused (minimal)
-export const event311 = {
+export const event313 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.paused',
   api_version: '1.0.0',
@@ -7272,7 +7284,7 @@ export const event311 = {
   },
 } satisfies CampaignPausedEvent;
 // campaign.resumed (full)
-export const event312 = {
+export const event314 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.resumed',
   api_version: '1.0.0',
@@ -7322,7 +7334,7 @@ export const event312 = {
   },
 } satisfies CampaignResumedEvent;
 // campaign.resumed (minimal)
-export const event313 = {
+export const event315 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.resumed',
   api_version: '1.0.0',
@@ -7363,7 +7375,7 @@ export const event313 = {
   },
 } satisfies CampaignResumedEvent;
 // campaign.completed (full)
-export const event314 = {
+export const event316 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.completed',
   api_version: '1.0.0',
@@ -7412,7 +7424,7 @@ export const event314 = {
   },
 } satisfies CampaignCompletedEvent;
 // campaign.completed (minimal)
-export const event315 = {
+export const event317 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.completed',
   api_version: '1.0.0',
@@ -7452,7 +7464,7 @@ export const event315 = {
   },
 } satisfies CampaignCompletedEvent;
 // campaign.cancelled (full)
-export const event316 = {
+export const event318 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.cancelled',
   api_version: '1.0.0',
@@ -7502,7 +7514,7 @@ export const event316 = {
   },
 } satisfies CampaignCancelledEvent;
 // campaign.cancelled (minimal)
-export const event317 = {
+export const event319 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'campaign.cancelled',
   api_version: '1.0.0',
@@ -7543,7 +7555,7 @@ export const event317 = {
   },
 } satisfies CampaignCancelledEvent;
 // contact.created (full)
-export const event318 = {
+export const event320 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.created',
   api_version: '1.0.0',
@@ -7584,7 +7596,7 @@ export const event318 = {
   },
 } satisfies ContactCreatedEvent;
 // contact.created (minimal)
-export const event319 = {
+export const event321 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.created',
   api_version: '1.0.0',
@@ -7625,7 +7637,7 @@ export const event319 = {
   },
 } satisfies ContactCreatedEvent;
 // contact.updated (full)
-export const event320 = {
+export const event322 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.updated',
   api_version: '1.0.0',
@@ -7667,7 +7679,7 @@ export const event320 = {
   },
 } satisfies ContactUpdatedEvent;
 // contact.updated (minimal)
-export const event321 = {
+export const event323 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.updated',
   api_version: '1.0.0',
@@ -7709,7 +7721,7 @@ export const event321 = {
   },
 } satisfies ContactUpdatedEvent;
 // contact.deleted (full)
-export const event322 = {
+export const event324 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.deleted',
   api_version: '1.0.0',
@@ -7720,7 +7732,7 @@ export const event322 = {
   data: { contact_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', erased: true, merged_into: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c' },
 } satisfies ContactDeletedEvent;
 // contact.deleted (minimal)
-export const event323 = {
+export const event325 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.deleted',
   api_version: '1.0.0',
@@ -7731,7 +7743,7 @@ export const event323 = {
   data: { contact_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', erased: true, merged_into: null },
 } satisfies ContactDeletedEvent;
 // import.completed (full)
-export const event324 = {
+export const event326 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'import.completed',
   api_version: '1.0.0',
@@ -7758,7 +7770,7 @@ export const event324 = {
   },
 } satisfies ImportCompletedEvent;
 // import.completed (minimal)
-export const event325 = {
+export const event327 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'import.completed',
   api_version: '1.0.0',
@@ -7785,7 +7797,7 @@ export const event325 = {
   },
 } satisfies ImportCompletedEvent;
 // import.failed (full)
-export const event326 = {
+export const event328 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'import.failed',
   api_version: '1.0.0',
@@ -7812,7 +7824,7 @@ export const event326 = {
   },
 } satisfies ImportFailedEvent;
 // import.failed (minimal)
-export const event327 = {
+export const event329 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'import.failed',
   api_version: '1.0.0',
@@ -7839,7 +7851,7 @@ export const event327 = {
   },
 } satisfies ImportFailedEvent;
 // export.completed (full)
-export const event328 = {
+export const event330 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'export.completed',
   api_version: '1.0.0',
@@ -7862,7 +7874,7 @@ export const event328 = {
   },
 } satisfies ExportCompletedEvent;
 // export.completed (minimal)
-export const event329 = {
+export const event331 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'export.completed',
   api_version: '1.0.0',
@@ -7885,7 +7897,7 @@ export const event329 = {
   },
 } satisfies ExportCompletedEvent;
 // line.sender_changed (full)
-export const event330 = {
+export const event332 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.sender_changed',
   api_version: '1.0.0',
@@ -7900,7 +7912,7 @@ export const event330 = {
   },
 } satisfies LineSenderChangedEvent;
 // line.sender_changed (minimal)
-export const event331 = {
+export const event333 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.sender_changed',
   api_version: '1.0.0',
@@ -7911,7 +7923,7 @@ export const event331 = {
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', senders: [], sticky_cleared_count: 1 },
 } satisfies LineSenderChangedEvent;
 // line.failover (full)
-export const event332 = {
+export const event334 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.failover',
   api_version: '1.0.0',
@@ -7929,7 +7941,7 @@ export const event332 = {
   },
 } satisfies LineFailoverEvent;
 // line.failover (minimal)
-export const event333 = {
+export const event335 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.failover',
   api_version: '1.0.0',
@@ -7947,7 +7959,7 @@ export const event333 = {
   },
 } satisfies LineFailoverEvent;
 // line.no_sender (full)
-export const event334 = {
+export const event336 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.no_sender',
   api_version: '1.0.0',
@@ -7958,7 +7970,7 @@ export const event334 = {
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', held_count: 1 },
 } satisfies LineNoSenderEvent;
 // line.no_sender (minimal)
-export const event335 = {
+export const event337 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.no_sender',
   api_version: '1.0.0',
@@ -7969,7 +7981,7 @@ export const event335 = {
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', held_count: 1 },
 } satisfies LineNoSenderEvent;
 // line.connected (full)
-export const event336 = {
+export const event338 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.connected',
   api_version: '1.0.0',
@@ -7986,7 +7998,7 @@ export const event336 = {
   },
 } satisfies LineConnectedEvent;
 // line.connected (minimal)
-export const event337 = {
+export const event339 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.connected',
   api_version: '1.0.0',
@@ -8003,7 +8015,7 @@ export const event337 = {
   },
 } satisfies LineConnectedEvent;
 // line.needs_attention (full)
-export const event338 = {
+export const event340 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.needs_attention',
   api_version: '1.0.0',
@@ -8020,7 +8032,7 @@ export const event338 = {
   },
 } satisfies LineNeedsAttentionEvent;
 // line.needs_attention (minimal)
-export const event339 = {
+export const event341 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.needs_attention',
   api_version: '1.0.0',
@@ -8037,7 +8049,7 @@ export const event339 = {
   },
 } satisfies LineNeedsAttentionEvent;
 // line.recovered (full)
-export const event340 = {
+export const event342 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.recovered',
   api_version: '1.0.0',
@@ -8054,7 +8066,7 @@ export const event340 = {
   },
 } satisfies LineRecoveredEvent;
 // line.recovered (minimal)
-export const event341 = {
+export const event343 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.recovered',
   api_version: '1.0.0',
@@ -8071,7 +8083,7 @@ export const event341 = {
   },
 } satisfies LineRecoveredEvent;
 // line.detached (full)
-export const event342 = {
+export const event344 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.detached',
   api_version: '1.0.0',
@@ -8082,7 +8094,7 @@ export const event342 = {
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', external_ref: 'Example external ref', by: 'partner' },
 } satisfies LineDetachedEvent;
 // line.detached (minimal)
-export const event343 = {
+export const event345 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.detached',
   api_version: '1.0.0',
@@ -8093,7 +8105,7 @@ export const event343 = {
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', external_ref: null, by: 'partner' },
 } satisfies LineDetachedEvent;
 // line.quota_low (full)
-export const event344 = {
+export const event346 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.quota_low',
   api_version: '1.0.0',
@@ -8111,7 +8123,7 @@ export const event344 = {
   },
 } satisfies LineQuotaLowEvent;
 // line.quota_low (minimal)
-export const event345 = {
+export const event347 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.quota_low',
   api_version: '1.0.0',
@@ -8129,7 +8141,7 @@ export const event345 = {
   },
 } satisfies LineQuotaLowEvent;
 // line.quota_exhausted (full)
-export const event346 = {
+export const event348 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.quota_exhausted',
   api_version: '1.0.0',
@@ -8147,7 +8159,7 @@ export const event346 = {
   },
 } satisfies LineQuotaExhaustedEvent;
 // line.quota_exhausted (minimal)
-export const event347 = {
+export const event349 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.quota_exhausted',
   api_version: '1.0.0',
@@ -8165,7 +8177,7 @@ export const event347 = {
   },
 } satisfies LineQuotaExhaustedEvent;
 // line.alarm (full)
-export const event348 = {
+export const event350 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.alarm',
   api_version: '1.0.0',
@@ -8184,7 +8196,7 @@ export const event348 = {
   },
 } satisfies LineAlarmEvent;
 // line.alarm (minimal)
-export const event349 = {
+export const event351 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'line.alarm',
   api_version: '1.0.0',
@@ -8202,8 +8214,44 @@ export const event349 = {
     data: {},
   },
 } satisfies LineAlarmEvent;
+// line.recovery_requested (full)
+export const event352 = {
+  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  type: 'line.recovery_requested',
+  api_version: '1.0.0',
+  created_at: '2026-10-01T09:15:02Z',
+  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
+  data: {
+    line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+    recovery_request_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+    contact_name: 'Example contact name',
+    contact_number: 'Example contact number',
+    requested_at: '2026-10-01T09:15:02Z',
+    waiting_until: '2026-10-01T09:15:02Z',
+  },
+} satisfies LineRecoveryRequestedEvent;
+// line.recovery_requested (minimal)
+export const event353 = {
+  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  type: 'line.recovery_requested',
+  api_version: '1.0.0',
+  created_at: '2026-10-01T09:15:02Z',
+  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  line_id: null,
+  channel: null,
+  data: {
+    line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+    recovery_request_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+    contact_name: 'Example contact name',
+    contact_number: 'Example contact number',
+    requested_at: '2026-10-01T09:15:02Z',
+    waiting_until: '2026-10-01T09:15:02Z',
+  },
+} satisfies LineRecoveryRequestedEvent;
 // conversation.handed_over (full)
-export const event350 = {
+export const event354 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.handed_over',
   api_version: '1.0.0',
@@ -8218,7 +8266,7 @@ export const event350 = {
   },
 } satisfies ConversationHandedOverEvent;
 // conversation.handed_over (minimal)
-export const event351 = {
+export const event355 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.handed_over',
   api_version: '1.0.0',
@@ -8233,7 +8281,7 @@ export const event351 = {
   },
 } satisfies ConversationHandedOverEvent;
 // link.clicked (full)
-export const event352 = {
+export const event356 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'link.clicked',
   api_version: '1.0.0',
@@ -8254,7 +8302,7 @@ export const event352 = {
   },
 } satisfies LinkClickedEvent;
 // link.clicked (minimal)
-export const event353 = {
+export const event357 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'link.clicked',
   api_version: '1.0.0',
@@ -8275,7 +8323,7 @@ export const event353 = {
   },
 } satisfies LinkClickedEvent;
 // channel.connected (full)
-export const event354 = {
+export const event358 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.connected',
   api_version: '1.0.0',
@@ -8372,7 +8420,7 @@ export const event354 = {
   },
 } satisfies ChannelConnectedEvent;
 // channel.connected (minimal)
-export const event355 = {
+export const event359 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.connected',
   api_version: '1.0.0',
@@ -8448,7 +8496,7 @@ export const event355 = {
   },
 } satisfies ChannelConnectedEvent;
 // channel.verification_failed (full)
-export const event356 = {
+export const event360 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.verification_failed',
   api_version: '1.0.0',
@@ -8546,7 +8594,7 @@ export const event356 = {
   },
 } satisfies ChannelVerificationFailedEvent;
 // channel.verification_failed (minimal)
-export const event357 = {
+export const event361 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.verification_failed',
   api_version: '1.0.0',
@@ -8623,7 +8671,7 @@ export const event357 = {
   },
 } satisfies ChannelVerificationFailedEvent;
 // channel.disconnected (full)
-export const event358 = {
+export const event362 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.disconnected',
   api_version: '1.0.0',
@@ -8721,7 +8769,7 @@ export const event358 = {
   },
 } satisfies ChannelDisconnectedEvent;
 // channel.disconnected (minimal)
-export const event359 = {
+export const event363 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.disconnected',
   api_version: '1.0.0',
@@ -8798,7 +8846,7 @@ export const event359 = {
   },
 } satisfies ChannelDisconnectedEvent;
 // channel.paused (full)
-export const event360 = {
+export const event364 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.paused',
   api_version: '1.0.0',
@@ -8898,7 +8946,7 @@ export const event360 = {
   },
 } satisfies ChannelPausedEvent;
 // channel.paused (minimal)
-export const event361 = {
+export const event365 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.paused',
   api_version: '1.0.0',
@@ -8977,7 +9025,7 @@ export const event361 = {
   },
 } satisfies ChannelPausedEvent;
 // channel.resumed (full)
-export const event362 = {
+export const event366 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.resumed',
   api_version: '1.0.0',
@@ -9074,7 +9122,7 @@ export const event362 = {
   },
 } satisfies ChannelResumedEvent;
 // channel.resumed (minimal)
-export const event363 = {
+export const event367 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.resumed',
   api_version: '1.0.0',
@@ -9150,7 +9198,7 @@ export const event363 = {
   },
 } satisfies ChannelResumedEvent;
 // channel.health_changed (full)
-export const event364 = {
+export const event368 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.health_changed',
   api_version: '1.0.0',
@@ -9171,7 +9219,7 @@ export const event364 = {
   },
 } satisfies ChannelHealthChangedEvent;
 // channel.health_changed (minimal)
-export const event365 = {
+export const event369 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.health_changed',
   api_version: '1.0.0',
@@ -9186,7 +9234,7 @@ export const event365 = {
   },
 } satisfies ChannelHealthChangedEvent;
 // channel.volume_warning (full)
-export const event366 = {
+export const event370 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.volume_warning',
   api_version: '1.0.0',
@@ -9197,7 +9245,7 @@ export const event366 = {
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', window: '24h', used_segments: 1, cap: 1, date: 'Example date' },
 } satisfies ChannelVolumeWarningEvent;
 // channel.volume_warning (minimal)
-export const event367 = {
+export const event371 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.volume_warning',
   api_version: '1.0.0',
@@ -9208,7 +9256,7 @@ export const event367 = {
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', window: '24h', used_segments: 1, cap: 1, date: 'Example date' },
 } satisfies ChannelVolumeWarningEvent;
 // channel.qr_updated (full)
-export const event368 = {
+export const event372 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.qr_updated',
   api_version: '1.0.0',
@@ -9223,7 +9271,7 @@ export const event368 = {
   },
 } satisfies ChannelQrUpdatedEvent;
 // channel.qr_updated (minimal)
-export const event369 = {
+export const event373 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'channel.qr_updated',
   api_version: '1.0.0',
@@ -9234,7 +9282,7 @@ export const event369 = {
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', qr_png_base64: null, expires_at: null },
 } satisfies ChannelQrUpdatedEvent;
 // device.paired (full)
-export const event370 = {
+export const event374 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.paired',
   api_version: '1.0.0',
@@ -9297,7 +9345,7 @@ export const event370 = {
   },
 } satisfies DevicePairedEvent;
 // device.paired (minimal)
-export const event371 = {
+export const event375 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.paired',
   api_version: '1.0.0',
@@ -9344,7 +9392,7 @@ export const event371 = {
   },
 } satisfies DevicePairedEvent;
 // device.online (full)
-export const event372 = {
+export const event376 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.online',
   api_version: '1.0.0',
@@ -9407,7 +9455,7 @@ export const event372 = {
   },
 } satisfies DeviceOnlineEvent;
 // device.online (minimal)
-export const event373 = {
+export const event377 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.online',
   api_version: '1.0.0',
@@ -9454,7 +9502,7 @@ export const event373 = {
   },
 } satisfies DeviceOnlineEvent;
 // device.degraded (full)
-export const event374 = {
+export const event378 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.degraded',
   api_version: '1.0.0',
@@ -9517,7 +9565,7 @@ export const event374 = {
   },
 } satisfies DeviceDegradedEvent;
 // device.degraded (minimal)
-export const event375 = {
+export const event379 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.degraded',
   api_version: '1.0.0',
@@ -9564,7 +9612,7 @@ export const event375 = {
   },
 } satisfies DeviceDegradedEvent;
 // device.offline (full)
-export const event376 = {
+export const event380 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.offline',
   api_version: '1.0.0',
@@ -9627,7 +9675,7 @@ export const event376 = {
   },
 } satisfies DeviceOfflineEvent;
 // device.offline (minimal)
-export const event377 = {
+export const event381 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.offline',
   api_version: '1.0.0',
@@ -9674,7 +9722,7 @@ export const event377 = {
   },
 } satisfies DeviceOfflineEvent;
 // device.revoked (full)
-export const event378 = {
+export const event382 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.revoked',
   api_version: '1.0.0',
@@ -9737,7 +9785,7 @@ export const event378 = {
   },
 } satisfies DeviceRevokedEvent;
 // device.revoked (minimal)
-export const event379 = {
+export const event383 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'device.revoked',
   api_version: '1.0.0',
@@ -9784,7 +9832,7 @@ export const event379 = {
   },
 } satisfies DeviceRevokedEvent;
 // account.suspended (full)
-export const event380 = {
+export const event384 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'account.suspended',
   api_version: '1.0.0',
@@ -9834,7 +9882,7 @@ export const event380 = {
   },
 } satisfies AccountSuspendedEvent;
 // account.suspended (minimal)
-export const event381 = {
+export const event385 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'account.suspended',
   api_version: '1.0.0',
@@ -9863,7 +9911,7 @@ export const event381 = {
   },
 } satisfies AccountSuspendedEvent;
 // account.reactivated (full)
-export const event382 = {
+export const event386 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'account.reactivated',
   api_version: '1.0.0',
@@ -9913,7 +9961,7 @@ export const event382 = {
   },
 } satisfies AccountReactivatedEvent;
 // account.reactivated (minimal)
-export const event383 = {
+export const event387 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'account.reactivated',
   api_version: '1.0.0',
@@ -9942,7 +9990,7 @@ export const event383 = {
   },
 } satisfies AccountReactivatedEvent;
 // account.deletion_scheduled (full)
-export const event384 = {
+export const event388 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'account.deletion_scheduled',
   api_version: '1.0.0',
@@ -9992,7 +10040,7 @@ export const event384 = {
   },
 } satisfies AccountDeletionScheduledEvent;
 // account.deletion_scheduled (minimal)
-export const event385 = {
+export const event389 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'account.deletion_scheduled',
   api_version: '1.0.0',
@@ -10021,7 +10069,7 @@ export const event385 = {
   },
 } satisfies AccountDeletionScheduledEvent;
 // message.queued (full)
-export const event386 = {
+export const event390 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.queued',
   api_version: '1.0.0',
@@ -10097,7 +10145,7 @@ export const event386 = {
   },
 } satisfies MessageQueuedEvent;
 // message.queued (minimal)
-export const event387 = {
+export const event391 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.queued',
   api_version: '1.0.0',
@@ -10173,7 +10221,7 @@ export const event387 = {
   },
 } satisfies MessageQueuedEvent;
 // message.sent (full)
-export const event388 = {
+export const event392 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.sent',
   api_version: '1.0.0',
@@ -10249,7 +10297,7 @@ export const event388 = {
   },
 } satisfies MessageSentEvent;
 // message.sent (minimal)
-export const event389 = {
+export const event393 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.sent',
   api_version: '1.0.0',
@@ -10325,7 +10373,7 @@ export const event389 = {
   },
 } satisfies MessageSentEvent;
 // message.delivered (full)
-export const event390 = {
+export const event394 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.delivered',
   api_version: '1.0.0',
@@ -10401,7 +10449,7 @@ export const event390 = {
   },
 } satisfies MessageDeliveredEvent;
 // message.delivered (minimal)
-export const event391 = {
+export const event395 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.delivered',
   api_version: '1.0.0',
@@ -10477,7 +10525,7 @@ export const event391 = {
   },
 } satisfies MessageDeliveredEvent;
 // message.read (full)
-export const event392 = {
+export const event396 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.read',
   api_version: '1.0.0',
@@ -10553,7 +10601,7 @@ export const event392 = {
   },
 } satisfies MessageReadEvent;
 // message.read (minimal)
-export const event393 = {
+export const event397 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.read',
   api_version: '1.0.0',
@@ -10629,7 +10677,7 @@ export const event393 = {
   },
 } satisfies MessageReadEvent;
 // message.failed (full)
-export const event394 = {
+export const event398 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.failed',
   api_version: '1.0.0',
@@ -10705,7 +10753,7 @@ export const event394 = {
   },
 } satisfies MessageFailedEvent;
 // message.failed (minimal)
-export const event395 = {
+export const event399 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.failed',
   api_version: '1.0.0',
@@ -10781,7 +10829,7 @@ export const event395 = {
   },
 } satisfies MessageFailedEvent;
 // message.expired (full)
-export const event396 = {
+export const event400 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.expired',
   api_version: '1.0.0',
@@ -10857,7 +10905,7 @@ export const event396 = {
   },
 } satisfies MessageExpiredEvent;
 // message.expired (minimal)
-export const event397 = {
+export const event401 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.expired',
   api_version: '1.0.0',
@@ -10933,7 +10981,7 @@ export const event397 = {
   },
 } satisfies MessageExpiredEvent;
 // message.cancelled (full)
-export const event398 = {
+export const event402 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.cancelled',
   api_version: '1.0.0',
@@ -11010,7 +11058,7 @@ export const event398 = {
   },
 } satisfies MessageCancelledEvent;
 // message.cancelled (minimal)
-export const event399 = {
+export const event403 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.cancelled',
   api_version: '1.0.0',
@@ -11087,7 +11135,7 @@ export const event399 = {
   },
 } satisfies MessageCancelledEvent;
 // message.received (full)
-export const event400 = {
+export const event404 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.received',
   api_version: '1.0.0',
@@ -11165,7 +11213,7 @@ export const event400 = {
   },
 } satisfies MessageReceivedEvent;
 // message.received (minimal)
-export const event401 = {
+export const event405 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.received',
   api_version: '1.0.0',
@@ -11243,7 +11291,7 @@ export const event401 = {
   },
 } satisfies MessageReceivedEvent;
 // conversation.read (full)
-export const event402 = {
+export const event406 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.read',
   api_version: '1.0.0',
@@ -11278,7 +11326,7 @@ export const event402 = {
   },
 } satisfies ConversationReadEvent;
 // conversation.read (minimal)
-export const event403 = {
+export const event407 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.read',
   api_version: '1.0.0',
@@ -11313,7 +11361,7 @@ export const event403 = {
   },
 } satisfies ConversationReadEvent;
 // conversation.unread (full)
-export const event404 = {
+export const event408 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.unread',
   api_version: '1.0.0',
@@ -11348,7 +11396,7 @@ export const event404 = {
   },
 } satisfies ConversationUnreadEvent;
 // conversation.unread (minimal)
-export const event405 = {
+export const event409 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.unread',
   api_version: '1.0.0',
@@ -11383,7 +11431,7 @@ export const event405 = {
   },
 } satisfies ConversationUnreadEvent;
 // conversation.archived (full)
-export const event406 = {
+export const event410 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.archived',
   api_version: '1.0.0',
@@ -11418,7 +11466,7 @@ export const event406 = {
   },
 } satisfies ConversationArchivedEvent;
 // conversation.archived (minimal)
-export const event407 = {
+export const event411 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.archived',
   api_version: '1.0.0',
@@ -11453,7 +11501,7 @@ export const event407 = {
   },
 } satisfies ConversationArchivedEvent;
 // conversation.unarchived (full)
-export const event408 = {
+export const event412 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.unarchived',
   api_version: '1.0.0',
@@ -11488,7 +11536,7 @@ export const event408 = {
   },
 } satisfies ConversationUnarchivedEvent;
 // conversation.unarchived (minimal)
-export const event409 = {
+export const event413 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.unarchived',
   api_version: '1.0.0',
@@ -11523,7 +11571,7 @@ export const event409 = {
   },
 } satisfies ConversationUnarchivedEvent;
 // conversation.deleted (full)
-export const event410 = {
+export const event414 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.deleted',
   api_version: '1.0.0',
@@ -11539,7 +11587,7 @@ export const event410 = {
   },
 } satisfies ConversationDeletedEvent;
 // conversation.deleted (minimal)
-export const event411 = {
+export const event415 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'conversation.deleted',
   api_version: '1.0.0',
@@ -11555,7 +11603,7 @@ export const event411 = {
   },
 } satisfies ConversationDeletedEvent;
 // contact.opted_out (full)
-export const event412 = {
+export const event416 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.opted_out',
   api_version: '1.0.0',
@@ -11576,7 +11624,7 @@ export const event412 = {
   },
 } satisfies ContactOptedOutEvent;
 // contact.opted_out (minimal)
-export const event413 = {
+export const event417 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.opted_out',
   api_version: '1.0.0',
@@ -11597,7 +11645,7 @@ export const event413 = {
   },
 } satisfies ContactOptedOutEvent;
 // contact.opted_in (full)
-export const event414 = {
+export const event418 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.opted_in',
   api_version: '1.0.0',
@@ -11618,7 +11666,7 @@ export const event414 = {
   },
 } satisfies ContactOptedInEvent;
 // contact.opted_in (minimal)
-export const event415 = {
+export const event419 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'contact.opted_in',
   api_version: '1.0.0',
@@ -11639,7 +11687,7 @@ export const event415 = {
   },
 } satisfies ContactOptedInEvent;
 // ping (full)
-export const event416 = {
+export const event420 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'ping',
   api_version: '1.0.0',
@@ -11650,7 +11698,7 @@ export const event416 = {
   data: { endpoint_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', message: 'Example message' },
 } satisfies PingEvent;
 // ping (minimal)
-export const event417 = {
+export const event421 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'ping',
   api_version: '1.0.0',
@@ -11880,6 +11928,9 @@ export async function calls(client: MyComm): Promise<void> {
   await client.partner.lines.get('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c');
   await client.partner.lines.update('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', {});
   await client.partner.lines.detach('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c');
+  await client.partner.lines.vouch('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', {
+    recovery_request_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  });
   await client.partner.lines.links.create('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', { purpose: 'connect' });
   await client.partner.links.get('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c');
   await client.partner.links.revoke('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c');

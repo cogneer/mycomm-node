@@ -120,6 +120,19 @@ describe('the fake', () => {
     await expect(FakeWebhook.make('no.such.event')).rejects.toThrow('No webhook event is named no.such.event.');
   });
 
+  it('vouches_for_a_recovery_request_on_a_partner_line', async () => {
+    const fake = new MyCommFake({ apiKey: 'mc_partner_fake' });
+    const requestId = '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10';
+
+    const vouch = await fake.client.partner.lines.vouch('line-1', { recovery_request_id: requestId });
+
+    const [call] = fake.calls('partner.lines.vouch');
+    expect(call!.method).toBe('POST');
+    expect(call!.path).toBe('/partner/v1/lines/line-1/vouch');
+    expect(call!.json).toEqual({ recovery_request_id: requestId });
+    expect(vouch.vouched_at).toBe((examples.responses['partner.lines.vouch']!.body as { vouched_at: string }).vouched_at);
+  });
+
   it('creates_a_partner_line_and_a_connect_link', async () => {
     const fake = new MyCommFake({ apiKey: 'mc_partner_fake' });
     const partner = fake.client;

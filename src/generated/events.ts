@@ -29,6 +29,7 @@ import type {
   WebhookLineFailoverData,
   WebhookLineNoSenderData,
   WebhookLineQuotaData,
+  WebhookLineRecoveryRequestedData,
   WebhookLineSenderChangedData,
   WebhookLineStatusChangedData,
   WebhookLinkClickedData,
@@ -283,6 +284,17 @@ export interface LineQuotaExhaustedEvent extends WebhookEventBase {
 export interface LineAlarmEvent extends WebhookEventBase {
   type: 'line.alarm';
   data: WebhookLineAlarmData;
+}
+
+/**
+ * `line.recovery_requested`: Someone who says they lost their number asked to recover the account of this line;
+ * sent once per partner, on its oldest live line of the account. Nothing has changed on the account. If you know
+ * this person, answer with `POST /partner/v1/lines/{id}/vouch`. It is never required and never enough alone:
+ * MyComm staff decide, no earlier than `waiting_until`.
+ */
+export interface LineRecoveryRequestedEvent extends WebhookEventBase {
+  type: 'line.recovery_requested';
+  data: WebhookLineRecoveryRequestedData;
 }
 
 /**
@@ -564,6 +576,7 @@ export type WebhookEvent =
   | LineQuotaLowEvent
   | LineQuotaExhaustedEvent
   | LineAlarmEvent
+  | LineRecoveryRequestedEvent
   | ConversationHandedOverEvent
   | LinkClickedEvent
   | ChannelConnectedEvent
@@ -626,6 +639,7 @@ export const EVENT_TYPES: readonly WebhookEventType[] = [
   'line.quota_low',
   'line.quota_exhausted',
   'line.alarm',
+  'line.recovery_requested',
   'conversation.handed_over',
   'link.clicked',
   'channel.connected',
