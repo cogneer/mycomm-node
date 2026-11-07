@@ -49,9 +49,9 @@ export class ContactsResource {
    * Upsert a contact by phone number.
    *
    * Requires `contacts:write`. Finds the contact holding `identity` (the address is normalised to E.164 with the
-   * account country), including a soft-deleted one, which is restored. When found, the sent fields are merged as
-   * in `PATCH /v1/contacts/{id}` (top-level fields replace, `null` empties one; `custom_fields` merges key by key,
-   * a `null` value removes a key) and the answer is `200`; otherwise a contact is created with that identity as
+   * user's country), including a soft-deleted one, which is restored. When found, the sent fields are merged as in
+   * `PATCH /v1/contacts/{id}` (top-level fields replace, `null` empties one; `custom_fields` merges key by key, a
+   * `null` value removes a key) and the answer is `200`; otherwise a contact is created with that identity as
    * primary and the answer is `201`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `upsertContactByIdentity`
@@ -77,7 +77,7 @@ export class ContactsResource {
   /**
    * List contacts.
    *
-   * Requires `contacts:read`. Live (not soft-deleted) contacts of the account with cursor pagination. Comma lists
+   * Requires `contacts:read`. Live (not soft-deleted) contacts of the user with cursor pagination. Comma lists
    * match any of the values. `q` matches the name, email and any address (case-insensitive, at least 2 characters;
    * a phone-like search is also matched against the digits of the stored number, so `3451234` finds
    * `+923451234567`).
@@ -103,7 +103,7 @@ export class ContactsResource {
    * Create a contact.
    *
    * Requires `contacts:write`. At least one identity; `phone` is the only type in v1 (`422
-   * IDENTITY_TYPE_UNAVAILABLE` for the others) and the address is normalised to E.164 using the account country
+   * IDENTITY_TYPE_UNAVAILABLE` for the others) and the address is normalised to E.164 using the user's country
    * (`422 INVALID_NUMBER`). A number held by another contact answers `409 IDENTITY_TAKEN` with
    * `details.contact_id`.
    *
@@ -174,7 +174,7 @@ export class ContactsIdentitiesResource {
   /**
    * Add an identity to a contact.
    *
-   * Requires `contacts:write`. `type` is `phone` in v1 and the address is normalised to E.164 with the account
+   * Requires `contacts:write`. `type` is `phone` in v1 and the address is normalised to E.164 with the user's
    * country (`422 INVALID_NUMBER`); `whatsapp` and `telegram` identities are added with their channels (`422
    * IDENTITY_TYPE_UNAVAILABLE` before). `sender_id` identities are created by MyComm from inbound only (`422
    * INVALID_NUMBER`).
@@ -220,9 +220,9 @@ export class ContactsIdentitiesResource {
   }
 
   /**
-   * Block an identity account-wide.
+   * Block an identity user-wide.
    *
-   * Requires `contacts:write`. Sets `blocked_at` for every line and channel of the account. New outbound to the
+   * Requires `contacts:write`. Sets `blocked_at` for every line and channel of the user. New outbound to the
    * identity is refused (`CONTACT_BLOCKED`) and its `queued` outbound is cancelled (`message.cancelled`, reason
    * `contact_blocked`). Inbound is still stored but is not counted as unread, runs no automation, sends no
    * notification and emits no `message.received` webhook; opt-out and opt-in keywords still apply.
@@ -238,9 +238,9 @@ export class ContactsIdentitiesResource {
   /**
    * Unblock an identity.
    *
-   * Requires `contacts:write`. Clears `blocked_at`, account-wide. Nothing is replayed: messages received or
-   * cancelled while blocked stay as they are. Idempotent. Emits `contact.updated`. Send an empty JSON object `{}`
-   * as the body.
+   * Requires `contacts:write`. Clears `blocked_at`, user-wide. Nothing is replayed: messages received or cancelled
+   * while blocked stay as they are. Idempotent. Emits `contact.updated`. Send an empty JSON object `{}` as the
+   * body.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unblockContactIdentity`
    */

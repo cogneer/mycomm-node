@@ -14,7 +14,7 @@ export class ConsentEventsResource {
   /**
    * List consent events.
    *
-   * Requires `suppressions:read`. The account's consent audit trail, newest first, with cursor pagination: every
+   * Requires `suppressions:read`. The user's consent audit trail, newest first, with cursor pagination: every
    * `opt_out` and `opt_in` with its method, keyword, message, actor and note. The trail is append-only; it
    * outlives the suppression it records and the contact's erasure. Comma lists match any of the values.
    *

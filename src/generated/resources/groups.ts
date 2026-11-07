@@ -29,7 +29,7 @@ export class GroupsResource {
   /**
    * List groups.
    *
-   * Requires `contacts:read`. Groups of the account sorted by `name` (default) with cursor pagination. `q` matches
+   * Requires `contacts:read`. Groups of the user sorted by `name` (default) with cursor pagination. `q` matches
    * the name, case-insensitively.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listGroups`
@@ -52,7 +52,7 @@ export class GroupsResource {
   /**
    * Create a group.
    *
-   * Requires `groups:write`. The name is unique per account, ignoring case (`409 NAME_TAKEN`).
+   * Requires `groups:write`. The name is unique per user, ignoring case (`409 NAME_TAKEN`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createGroup`
    */

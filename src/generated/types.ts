@@ -175,7 +175,7 @@ export const ChannelStatus = {
 export type ChannelPauseReason =
   | 'owner'
   | 'admin'
-  | 'account_suspended'
+  | 'user_suspended'
   | 'auto:health_critical'
   | 'auto:quarantine'
   | 'auto:quota'
@@ -188,7 +188,7 @@ export type ChannelPauseReason =
 export const ChannelPauseReason = {
   Owner: 'owner',
   Admin: 'admin',
-  AccountSuspended: 'account_suspended',
+  UserSuspended: 'user_suspended',
   AutoHealthCritical: 'auto:health_critical',
   AutoQuarantine: 'auto:quarantine',
   AutoQuota: 'auto:quota',
@@ -204,7 +204,7 @@ export const ChannelPauseReason = {
 export type ChannelDisconnectReason =
   | 'owner'
   | 'admin_force_release'
-  | 'account_deleted'
+  | 'user_deleted'
   | 'declined_on_device'
   | 'sim_retired'
   | 'device_revoked'
@@ -216,7 +216,7 @@ export type ChannelDisconnectReason =
 export const ChannelDisconnectReason = {
   Owner: 'owner',
   AdminForceRelease: 'admin_force_release',
-  AccountDeleted: 'account_deleted',
+  UserDeleted: 'user_deleted',
   DeclinedOnDevice: 'declined_on_device',
   SimRetired: 'sim_retired',
   DeviceRevoked: 'device_revoked',
@@ -299,7 +299,7 @@ export type ChannelVerificationFailureReason =
   | 'device_sim_limit'
   | 'country_not_enabled'
   | 'number_disputed'
-  | 'number_has_account';
+  | 'number_has_user';
 export const ChannelVerificationFailureReason = {
   Timeout: 'timeout',
   DeviceOffline: 'device_offline',
@@ -314,7 +314,7 @@ export const ChannelVerificationFailureReason = {
   DeviceSimLimit: 'device_sim_limit',
   CountryNotEnabled: 'country_not_enabled',
   NumberDisputed: 'number_disputed',
-  NumberHasAccount: 'number_has_account',
+  NumberHasUser: 'number_has_user',
 } as const;
 
 export type ChannelConnectMethod = 'device_pairing' | 'qr_scan' | 'pairing_code' | 'bot_token';
@@ -476,8 +476,8 @@ export const MessageStatus = {
 
 /**
  * Why a queued message is waiting: the schedule (`scheduled`, `quiet_hours`, `bulk_hours`), a limit
- * (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `account_limit`, `carrier_cooldown`),
- * the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused
+ * (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `user_limit`, `carrier_cooldown`), the
+ * phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused
  * (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing
  * approval (`link_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored allowance
  * used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform hold
@@ -497,7 +497,7 @@ export type HoldReason =
   | 'new_recipient_cap'
   | 'link_restricted'
   | 'platform_hold'
-  | 'account_limit'
+  | 'user_limit'
   | 'bulk_hours'
   | 'carrier_cooldown'
   | 'device_hot'
@@ -518,7 +518,7 @@ export const HoldReason = {
   NewRecipientCap: 'new_recipient_cap',
   LinkRestricted: 'link_restricted',
   PlatformHold: 'platform_hold',
-  AccountLimit: 'account_limit',
+  UserLimit: 'user_limit',
   BulkHours: 'bulk_hours',
   CarrierCooldown: 'carrier_cooldown',
   DeviceHot: 'device_hot',
@@ -571,11 +571,11 @@ export const DeviceConnectionState = {
   Offline: 'offline',
 } as const;
 
-export type DevicePauseReason = 'owner' | 'admin' | 'account_suspended';
+export type DevicePauseReason = 'owner' | 'admin' | 'user_suspended';
 export const DevicePauseReason = {
   Owner: 'owner',
   Admin: 'admin',
-  AccountSuspended: 'account_suspended',
+  UserSuspended: 'user_suspended',
 } as const;
 
 export type DevicePowerMode = 'normal' | 'low';
@@ -600,24 +600,24 @@ export const DeviceSimServiceState = {
   PowerOff: 'power_off',
 } as const;
 
-export type DeviceRevokedReason = 'owner' | 'partner' | 'admin' | 'app_unpaired' | 'account_deleted' | 'replaced' | 'stolen';
+export type DeviceRevokedReason = 'owner' | 'partner' | 'admin' | 'app_unpaired' | 'user_deleted' | 'replaced' | 'stolen';
 export const DeviceRevokedReason = {
   Owner: 'owner',
   Partner: 'partner',
   Admin: 'admin',
   AppUnpaired: 'app_unpaired',
-  AccountDeleted: 'account_deleted',
+  UserDeleted: 'user_deleted',
   Replaced: 'replaced',
   Stolen: 'stolen',
 } as const;
 
-export type ExportType = 'messages_csv' | 'contacts_csv' | 'campaign_report' | 'contact_json' | 'account_zip';
+export type ExportType = 'messages_csv' | 'contacts_csv' | 'campaign_report' | 'contact_json' | 'user_zip';
 export const ExportType = {
   MessagesCsv: 'messages_csv',
   ContactsCsv: 'contacts_csv',
   CampaignReport: 'campaign_report',
   ContactJson: 'contact_json',
-  AccountZip: 'account_zip',
+  UserZip: 'user_zip',
 } as const;
 
 export type ExportStatus = 'queued' | 'running' | 'completed' | 'failed' | 'expired';
@@ -667,7 +667,7 @@ export const HostedLinkStatus = {
 } as const;
 
 /**
- * `direct`: the account's own line, where unclaimed replies land (one per account). `app`: a line an app or
+ * `direct`: the user's own line, where unclaimed replies land (one per user). `app`: a line an app or
  * integration sends through. `partner`: a line a partner created for a client.
  */
 export type LineKind = 'direct' | 'app' | 'partner';
@@ -903,8 +903,8 @@ export type ErrorCode =
   | 'IP_NOT_ALLOWED'
   | 'LINE_CONTEXT_INVALID'
   | 'PARTNER_ROUTE_NOT_ALLOWED'
-  | 'ACCOUNT_SUSPENDED'
-  | 'ACCOUNT_PENDING_DELETION'
+  | 'USER_SUSPENDED'
+  | 'USER_PENDING_DELETION'
   | 'PARTNER_ACCESS_REVOKED'
   | 'NOT_FOUND'
   | 'METHOD_NOT_ALLOWED'
@@ -967,8 +967,8 @@ export type ErrorCode =
   | 'CONSENT_ASSERTION_REQUIRED'
   | 'RISK_ACKNOWLEDGEMENT_REQUIRED'
   | 'ABOVE_PLATFORM_CEILING'
-  | 'NEW_ACCOUNT_LIMIT'
-  | 'ACCOUNT_THROTTLED'
+  | 'NEW_USER_LIMIT'
+  | 'USER_THROTTLED'
   | 'ADDRESS_REQUIRED'
   | 'COUNTRY_NOT_ENABLED'
   | 'DEVICE_SIM_LIMIT'
@@ -999,8 +999,8 @@ export const ErrorCode = {
   IpNotAllowed: 'IP_NOT_ALLOWED',
   LineContextInvalid: 'LINE_CONTEXT_INVALID',
   PartnerRouteNotAllowed: 'PARTNER_ROUTE_NOT_ALLOWED',
-  AccountSuspended: 'ACCOUNT_SUSPENDED',
-  AccountPendingDeletion: 'ACCOUNT_PENDING_DELETION',
+  UserSuspended: 'USER_SUSPENDED',
+  UserPendingDeletion: 'USER_PENDING_DELETION',
   PartnerAccessRevoked: 'PARTNER_ACCESS_REVOKED',
   NotFound: 'NOT_FOUND',
   MethodNotAllowed: 'METHOD_NOT_ALLOWED',
@@ -1063,8 +1063,8 @@ export const ErrorCode = {
   ConsentAssertionRequired: 'CONSENT_ASSERTION_REQUIRED',
   RiskAcknowledgementRequired: 'RISK_ACKNOWLEDGEMENT_REQUIRED',
   AbovePlatformCeiling: 'ABOVE_PLATFORM_CEILING',
-  NewAccountLimit: 'NEW_ACCOUNT_LIMIT',
-  AccountThrottled: 'ACCOUNT_THROTTLED',
+  NewUserLimit: 'NEW_USER_LIMIT',
+  UserThrottled: 'USER_THROTTLED',
   AddressRequired: 'ADDRESS_REQUIRED',
   CountryNotEnabled: 'COUNTRY_NOT_ENABLED',
   DeviceSimLimit: 'DEVICE_SIM_LIMIT',
@@ -1086,7 +1086,7 @@ export const ErrorCode = {
   ServiceUnavailable: 'SERVICE_UNAVAILABLE',
 } as const;
 
-/** `partner` with the partner key, `owner` by a person of the account, `system` by MyComm. */
+/** `partner` with the partner key, `owner` by a person of the user, `system` by MyComm. */
 export type LineDetachedBy = 'partner' | 'owner' | 'system';
 export const LineDetachedBy = {
   Partner: 'partner',
@@ -1106,48 +1106,12 @@ export const AlarmKind = {
   Unconfirmed: 'unconfirmed',
 } as const;
 
-export type AccountStatus = 'active' | 'suspended' | 'pending_deletion';
-export const AccountStatus = {
+export type UserStatus = 'active' | 'suspended' | 'pending_deletion';
+export const UserStatus = {
   Active: 'active',
   Suspended: 'suspended',
   PendingDeletion: 'pending_deletion',
 } as const;
-
-export interface Account {
-  id: string;
-  name: string;
-  /** `active`, `suspended` or `pending_deletion`. */
-  status: string;
-  country_iso: string;
-  timezone: string;
-  /** BCP 47, default `en-GB`. */
-  default_locale: string;
-  settings: AccountSettings;
-  created_at: string;
-}
-
-/**
- * The API-visible subset of the account settings: `opt_out`, `compliance`, `quiet_hours`, `frequency_cap`,
- * `links`, `default_expiry_minutes`, `sms`, `channels`, `whatsapp`, `retention`, `automation`, `alerts`,
- * `limits` and `support`. Unknown keys must be ignored.
- */
-export interface AccountSettings {
-  opt_out?: Record<string, unknown>;
-  compliance?: Record<string, unknown>;
-  quiet_hours?: Record<string, unknown>;
-  frequency_cap?: Record<string, unknown>;
-  links?: Record<string, unknown>;
-  default_expiry_minutes?: Record<string, unknown>;
-  sms?: Record<string, unknown>;
-  channels?: Record<string, unknown>;
-  whatsapp?: Record<string, unknown>;
-  retention?: Record<string, unknown>;
-  automation?: Record<string, unknown>;
-  alerts?: Record<string, unknown>;
-  /** Read-only for account keys; only the partner may set it. */
-  limits?: Record<string, unknown>;
-  support?: Record<string, unknown>;
-}
 
 export interface ApiKey {
   id: string;
@@ -1265,7 +1229,7 @@ export interface AutomationReplyAction {
   template_id?: string;
 }
 
-/** Adds the contact to, or removes it from, a group of the account. */
+/** Adds the contact to, or removes it from, a group of the user. */
 export interface AutomationGroupAction {
   type: Open<AutomationGroupActionType>;
   group_id: string;
@@ -1552,7 +1516,7 @@ export interface Channel {
   device_id: string | null;
   device_sim_id: string | null;
   /**
-   * The line unknown replies to this number land on (the account's Direct line unless the owner chose another);
+   * The line unknown replies to this number land on (the user's Direct line unless the owner chose another);
    * `null` until the number is connected.
    */
   default_line_id: string | null;
@@ -1862,7 +1826,7 @@ export interface ContactsDeleteResponse {
 
 /**
  * The conversation resource: one per line and contact identity. `address`, `contact_display_name`, `suppressed`
- * and `blocked_at` are denormalised from the identity; blocking is account-wide.
+ * and `blocked_at` are denormalised from the identity; blocking is user-wide.
  */
 export interface Conversation {
   id: string;
@@ -1902,7 +1866,7 @@ export interface ConversationsDeleteResponse {
 /** The message resource. Optional values are `null`, never omitted. Enum-like strings may gain values. */
 export interface Message {
   id: string;
-  account_id: string;
+  user_id: string;
   channel_id: string;
   /** The channel's type, `android_sim` in v1. */
   channel_type: string | null;
@@ -2036,7 +2000,7 @@ export interface SendMessageWarning {
 /** The message resource plus `warnings[]`. */
 export interface SendMessageResponse {
   id: string;
-  account_id: string;
+  user_id: string;
   channel_id: string;
   /** The channel's type, `android_sim` in v1. */
   channel_type: string | null;
@@ -2342,7 +2306,7 @@ export interface LineCrossTypeFallback {
 /**
  * When the line's alarms fire (`line.alarm`). `budget_percent` (50 to 100, default 80): a sender of the line
  * used this share of its hourly limit; for a sender on several lines the lowest value counts.
- * `self_loop_per_hour` (5 to 500, default 20): a sender of the line sent this many messages to the account's own
+ * `self_loop_per_hour` (5 to 500, default 20): a sender of the line sent this many messages to the user's own
  * numbers within an hour. A value above the default warns later than advised.
  */
 export interface LineAlarmThresholds {
@@ -2379,6 +2343,42 @@ export interface LineSettings {
 
 export interface LineSenderList {
   data: LineSender[];
+}
+
+export interface User {
+  id: string;
+  name: string;
+  /** `active`, `suspended` or `pending_deletion`. */
+  status: string;
+  country_iso: string;
+  timezone: string;
+  /** BCP 47, default `en-GB`. */
+  default_locale: string;
+  settings: UserSettings;
+  created_at: string;
+}
+
+/**
+ * The API-visible subset of the user's settings: `opt_out`, `compliance`, `quiet_hours`, `frequency_cap`,
+ * `links`, `default_expiry_minutes`, `sms`, `channels`, `whatsapp`, `retention`, `automation`, `alerts`,
+ * `limits` and `support`. Unknown keys must be ignored.
+ */
+export interface UserSettings {
+  opt_out?: Record<string, unknown>;
+  compliance?: Record<string, unknown>;
+  quiet_hours?: Record<string, unknown>;
+  frequency_cap?: Record<string, unknown>;
+  links?: Record<string, unknown>;
+  default_expiry_minutes?: Record<string, unknown>;
+  sms?: Record<string, unknown>;
+  channels?: Record<string, unknown>;
+  whatsapp?: Record<string, unknown>;
+  retention?: Record<string, unknown>;
+  automation?: Record<string, unknown>;
+  alerts?: Record<string, unknown>;
+  /** Read-only for user keys; only the partner may set it. */
+  limits?: Record<string, unknown>;
+  support?: Record<string, unknown>;
 }
 
 export interface Media {
@@ -2489,7 +2489,7 @@ export interface SmartList {
  * of nesting). At most 20 conditions and 5 groups. Fields are `first_name`, `last_name`, `display_name`,
  * `email`, `custom.<key>`, `group`, `identity.country`, `identity.type`, `source`, `created_at`,
  * `last_inbound_at`, `last_outbound_at`, `opted_out` and `campaign`, with the operators and values documented
- * for each field. Group and campaign ids must belong to the account.
+ * for each field. Group and campaign ids must belong to the user.
  */
 export interface SmartListFilter {
   match: Open<SmartListFilterMatch>;
@@ -2593,8 +2593,8 @@ export interface StatsSummaryDevices {
 }
 
 /**
- * A suppressed identity. It keeps the plain E.164 address, also after the contact is erased. `dnc` is an
- * account-uploaded do-not-contact list; `invalid` is two recipient-class failures in 30 days.
+ * A suppressed identity. It keeps the plain E.164 address, also after the contact is erased. `dnc` is a
+ * user-uploaded do-not-contact list; `invalid` is two recipient-class failures in 30 days.
  */
 export interface Suppression {
   id: string;
@@ -2839,13 +2839,13 @@ export interface PartnerLineStatusSponsorshipByType {
   used: number;
 }
 
-/** A line you made, in your user's account. */
+/** A line you made, owned by your user. */
 export interface PartnerLine {
   id: string;
   /** Your own reference for the line, unique among your live lines; a detached line frees it. */
   external_ref: string;
   name: string;
-  account_id: string;
+  user_id: string;
   /** The channel types the user may connect for this line; `null` for every available type. */
   allowed_channel_types: string[] | null;
   /** Whether the line can send. */
@@ -2923,7 +2923,7 @@ export interface UsageRow {
   opt_outs: number;
   opt_ins: number;
   line_id: string;
-  account_id: string;
+  user_id: string;
   /** Your own reference for the line. */
   external_ref: string;
   name: string;
@@ -3056,7 +3056,7 @@ export interface WebhookLineDetachedData {
   line_id: string;
   /** The partner's own reference for the line; free again for a new line. */
   external_ref: string | null;
-  /** `partner` with the partner key, `owner` by a person of the account, `system` by MyComm. */
+  /** `partner` with the partner key, `owner` by a person of the user, `system` by MyComm. */
   by: Open<LineDetachedBy>;
 }
 
@@ -3194,31 +3194,31 @@ export interface WebhookDeviceRevokedData {
   reason: Open<DeviceRevokedReason>;
 }
 
-export interface WebhookAccountData {
-  account: WebhookAccount;
+export interface WebhookUserData {
+  user: WebhookUser;
   actor: WebhookActor;
   /** The suspension reason, or `null`. */
   reason: string | null;
 }
 
-/** The account resource, with its `counts`. */
-export interface WebhookAccount {
+/** The user resource, with its `counts`. */
+export interface WebhookUser {
   id: string;
   name: string;
-  status: Open<AccountStatus>;
+  status: Open<UserStatus>;
   suspended_reason: string | null;
   country_iso: string;
   timezone: string;
   default_locale: string;
-  settings: AccountSettings;
-  counts: WebhookAccountCounts;
+  settings: UserSettings;
+  counts: WebhookUserCounts;
   deletion_requested_at: string | null;
   purge_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export interface WebhookAccountCounts {
+export interface WebhookUserCounts {
   devices_active: number;
   devices_online: number;
   channels_active: number;
@@ -3260,8 +3260,8 @@ export interface WebhookMessageCancelledData {
    */
   sender_attempt_count: number;
   /**
-   * `api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `account_deleted`,
-   * `cross_type_fallback` (may gain values).
+   * `api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `user_deleted`, `cross_type_fallback`
+   * (may gain values).
    */
   reason: string | null;
 }
@@ -3336,7 +3336,7 @@ export interface AutomationReplyActionInput {
   template_id?: string;
 }
 
-/** Adds the contact to, or removes it from, a group of the account. */
+/** Adds the contact to, or removes it from, a group of the user. */
 export interface AutomationGroupActionInput {
   type: AutomationGroupActionType;
   group_id: string;
@@ -3438,7 +3438,7 @@ export interface SendBatchItem {
   /** Seconds after which an unsent message is dropped, 60 to 604800 (7 days). */
   expires_in?: number;
   /**
-   * Your own id for this message, 1 to 100 characters without spaces. Unique per account forever
+   * Your own id for this message, 1 to 100 characters without spaces. Unique per user forever
    * (`REFERENCE_ID_EXISTS`).
    */
   reference_id?: string;
@@ -3454,7 +3454,7 @@ export interface SendBatchItem {
  * of nesting). At most 20 conditions and 5 groups. Fields are `first_name`, `last_name`, `display_name`,
  * `email`, `custom.<key>`, `group`, `identity.country`, `identity.type`, `source`, `created_at`,
  * `last_inbound_at`, `last_outbound_at`, `opted_out` and `campaign`, with the operators and values documented
- * for each field. Group and campaign ids must belong to the account.
+ * for each field. Group and campaign ids must belong to the user.
  */
 export interface SmartListFilterInput {
   match: SmartListFilterMatch;
@@ -3476,16 +3476,6 @@ export interface SponsorshipTermsInput {
   /** At least 1 message per named type; leave a type out to sponsor none of it. */
   message_allowance?: Record<string, number>;
   on_exhausted?: SponsorshipOnExhausted;
-}
-
-/** The parameters of `account.update()`. */
-export interface AccountUpdateParams {
-  name?: string;
-  country_iso?: string;
-  timezone?: string;
-  default_locale?: string;
-  /** Deep-merged into the account settings; `limits` is refused. */
-  settings?: Record<string, unknown>;
 }
 
 /** The parameters of `apiKeys.list()`. */
@@ -3556,7 +3546,7 @@ export interface AutomationRulesUpdateParams {
 export interface AutomationRulesTestParams {
   /** The text of the inbound message to test. */
   body: string;
-  /** The sender, a contact of the account; needs `contacts:read`. Omitted or `null` tests an unknown sender. */
+  /** The sender, a contact of the user; needs `contacts:read`. Omitted or `null` tests an unknown sender. */
   contact_id?: string | null;
   /** The instant the message would arrive, RFC 3339 with `Z` or an offset. Omitted or `null` is now. */
   at?: Date | string | null;
@@ -3722,7 +3712,7 @@ export interface ChannelsUpdateRatePolicyParams {
   caps?: { per_min?: number; per_15m?: number; per_hour?: number; per_day?: number; new_recipients_per_day?: number | null };
   interval_ms?: { min?: number; max?: number };
   warmup?: { enabled?: boolean };
-  /** The owner's sending window; `null` means any time. `timezone` `null` is the account time zone. */
+  /** The owner's sending window; `null` means any time. `timezone` `null` is the user's time zone. */
   active_hours?: { start: string; end: string; timezone?: string | null } | null;
   /**
    * The window of the `bulk` lane within 07:00 to 22:00 sender-local. `tz` `null` is the channel country's time
@@ -3803,7 +3793,7 @@ export interface ContactsListParams {
   identity_type?: string[] | string;
   /** Members of any of these groups (comma list). */
   group_id?: string[] | string;
-  /** Members of this smart list, evaluated live; an id that is not a smart list of the account answers `422`. */
+  /** Members of this smart list, evaluated live; an id that is not a smart list of the user answers `422`. */
   smart_list_id?: string;
   /** Comma list. */
   source?: string[] | string;
@@ -3948,7 +3938,7 @@ export interface ConversationsReplyParams {
   /** Seconds after which an unsent message is dropped, 60 to 604800 (7 days). */
   expires_in?: number;
   /**
-   * Your own id for this message, 1 to 100 characters without spaces. Unique per account forever
+   * Your own id for this message, 1 to 100 characters without spaces. Unique per user forever
    * (`REFERENCE_ID_EXISTS`).
    */
   reference_id?: string;
@@ -3997,7 +3987,7 @@ export interface ExportsCreateParams {
   /**
    * Per `type`. `messages_csv`: the `GET /v1/messages` filters, `created_after` and `created_before` required.
    * `contacts_csv`: optional `group_id`, `smart_list_id`, `filter.q`, `contact_ids`, `columns`, `excel_bom`.
-   * `contact_json`: `contact_id`. `campaign_report`: `campaign_id`. `account_zip`: none.
+   * `contact_json`: `contact_id`. `campaign_report`: `campaign_id`. `user_zip`: none.
    */
   params?: Record<string, unknown>;
 }
@@ -4100,9 +4090,9 @@ export interface LinesLinksCreateParams {
   allowed_origins?: string[] | null;
   /** Seconds until the link stops working. */
   ttl?: number | null;
-  /** BCP 47 tag of the page's language; defaults to the account's default locale. */
+  /** BCP 47 tag of the page's language; defaults to the user's default locale. */
   locale?: string | null;
-  /** Required for `replace_device`, refused for any other purpose. An active phone of the line's account. */
+  /** Required for `replace_device`, refused for any other purpose. An active phone of the line's user. */
   replaces_device_id?: string | null;
 }
 
@@ -4155,6 +4145,16 @@ export interface LinesUpdateParams {
 /** The parameters of `lines.setSenders()`. */
 export interface LinesSetSendersParams {
   senders: LineSenderInput[];
+}
+
+/** The parameters of `me.update()`. */
+export interface MeUpdateParams {
+  name?: string;
+  country_iso?: string;
+  timezone?: string;
+  default_locale?: string;
+  /** Deep-merged into the user's settings; `limits` is refused. */
+  settings?: Record<string, unknown>;
 }
 
 /** The parameters of `media.upload()`. */
@@ -4215,7 +4215,7 @@ export interface MessagesListParams {
   /**
    * One value or a comma list. Values: `scheduled`, `quiet_hours`, `frequency_cap`, `channel_paused`,
    * `device_offline`, `device_paused`, `campaign_paused`, `media_processing`, `content_cap`, `recipient_cap`,
-   * `new_recipient_cap`, `link_restricted`, `platform_hold`, `account_limit`, `bulk_hours`, `carrier_cooldown`,
+   * `new_recipient_cap`, `link_restricted`, `platform_hold`, `user_limit`, `bulk_hours`, `carrier_cooldown`,
    * `device_hot`, `no_sender_available`, `sponsor_quota_exhausted`, `unpaid`.
    */
   hold_reason?: string[] | string;
@@ -4285,7 +4285,7 @@ export interface MessagesSendParams {
   /** Seconds after which an unsent message is dropped, 60 to 604800 (7 days). */
   expires_in?: number;
   /**
-   * Your own id for this message, 1 to 100 characters without spaces. Unique per account forever
+   * Your own id for this message, 1 to 100 characters without spaces. Unique per user forever
    * (`REFERENCE_ID_EXISTS`).
    */
   reference_id?: string;
@@ -4405,7 +4405,7 @@ export interface SuppressionsListParams {
 /** The parameters of `suppressions.create()`. */
 export interface SuppressionsCreateParams {
   identity_type?: 'phone' | null;
-  /** E.164 number, e.g. `+923451234567`; a number without country code is read in the account country. */
+  /** E.164 number, e.g. `+923451234567`; a number without country code is read in the user's country. */
   address: string;
   reason?: SuppressionCreateReason | null;
   note?: string | null;
@@ -4476,7 +4476,7 @@ export interface TemplatesPreviewParams {
    * numbers.
    */
   variables?: Record<string, string | number | null> | null;
-  /** A contact of the account whose fields fill the variables; the key must also hold `contacts:read`. */
+  /** A contact of the user whose fields fill the variables; the key must also hold `contacts:read`. */
   contact_id?: string | null;
   shorten_links?: boolean;
   body: string;
@@ -4497,7 +4497,7 @@ export interface TemplatesRenderParams {
    * numbers.
    */
   variables?: Record<string, string | number | null> | null;
-  /** A contact of the account whose fields fill the variables; the key must also hold `contacts:read`. */
+  /** A contact of the user whose fields fill the variables; the key must also hold `contacts:read`. */
   contact_id?: string | null;
   shorten_links?: boolean;
 }
@@ -4540,8 +4540,8 @@ export interface WebhookEndpointsCreateParams {
   channel_types?: string[] | null;
   /**
    * Also receive the events of the lines you made for your users with the partner API (events whose `line_id` is
-   * one of your partner lines), and nothing else of their accounts. `line_ids` may then name partner lines too, to
-   * narrow it. Only on an approved partner's own account, never with a restricted key.
+   * one of your partner lines), and nothing else of those users. `line_ids` may then name partner lines too, to
+   * narrow it. Only on an approved partner's own endpoints, never with a restricted key.
    */
   partner_lines?: boolean;
 }
@@ -4554,8 +4554,8 @@ export interface WebhookEndpointsUpdateParams {
   line_ids?: string[] | null;
   channel_types?: string[] | null;
   /**
-   * Only on an approved partner's own account, never with a restricted key. Turning it off while `line_ids` names
-   * partner lines is refused.
+   * Only on an approved partner's own endpoints, never with a restricted key. Turning it off while `line_ids`
+   * names partner lines is refused.
    */
   partner_lines?: boolean;
   active?: boolean;
@@ -4616,9 +4616,9 @@ export interface PartnerLinesLinksCreateParams {
   allowed_origins?: string[] | null;
   /** Seconds until the link stops working. */
   ttl?: number | null;
-  /** BCP 47 tag of the page's language; defaults to the account's default locale. */
+  /** BCP 47 tag of the page's language; defaults to the user's default locale. */
   locale?: string | null;
-  /** Required for `replace_device`, refused for any other purpose. An active phone of the line's account. */
+  /** Required for `replace_device`, refused for any other purpose. An active phone of the line's user. */
   replaces_device_id?: string | null;
 }
 

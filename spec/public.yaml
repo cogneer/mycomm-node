@@ -6,7 +6,7 @@ info:
   contact:
     name: 'MyComm developer support'
     url: 'https://mycomm.cogneer.tech/docs'
-  description: "Send and receive messages through the phones and accounts you connect to MyComm: SMS through your own SIMs today,\nmore channels later. Everything is JSON over HTTPS under `/v1`.\n\n## Authentication\n\nCreate an API key in the portal (Developers, API keys) and send it as `Authorization: Bearer mc_live_...`. Keep it on\nyour server: the API has no CORS and a key in a browser is a leaked key. A key has abilities (`messages:send`,\n`contacts:write`, ...) and may be limited to some lines and some IP addresses. A partner key sends and reads through one of\nits partner lines with the `MyComm-Line` header (the line id); it may call only the message and conversation\nendpoints and `GET /v1/lines/{id}` of that line, and every other endpoint answers `403 PARTNER_ROUTE_NOT_ALLOWED`.\n\nA key is 54 characters (`mc_live_`) or 57 (`mc_partner_`); the last six are a checksum, so a mistyped key is refused\nat once with `401 UNAUTHENTICATED` and `details.reason: \"malformed_key\"`.\n\n## Conventions\n\n- Requests and responses are JSON, UTF-8, `snake_case`. Send `Content-Type: application/json`; the two upload\n  endpoints (`POST /v1/media`, `POST /v1/imports` with a CSV) take `multipart/form-data`. A request without a body\n  (pause, archive, cancel, ...) sends nothing and needs no `Content-Type`. Bodies over 1 MB answer `413`.\n- Ids are UUIDv7 strings, timestamps RFC 3339 in UTC, absent optional values `null`.\n- Lists are `{\"data\": [...], \"next_cursor\": \"...\" | null}`; pass `next_cursor` back as `cursor`.\n- Send `Idempotency-Key` (1 to 255 printable ASCII characters, a UUID is best) on a POST you may retry. A repeat within\n  24 hours returns the first response with `Idempotent-Replayed: true`; the same key on a different request answers\n  `409 IDEMPOTENCY_KEY_REUSED`.\n- Clients must ignore unknown response fields, unknown enum values and unknown error codes: the API only adds to\n  them within `v1`. Unknown request fields are ignored too.\n\n## Required fields\n\nEvery request schema lists its `required` fields. A rule that depends on other fields is written as JSON Schema\n(`oneOf`, `anyOf`, `dependentRequired`, `if`/`then`) and repeated in plain words in `x-required-when`, a list of\n`{field, when | rule, error}` entries: for example `category` is required when `lane` is `bulk`, and exactly one of\n`to` or `contact_id` is needed. The `error` names the code the API answers when the rule is broken.\n\n## Errors\n\nEvery non-2xx response is `{\"error\": {\"code\", \"message\", \"details\", \"request_id\", \"doc_url\"}}`. Branch on `code`,\nshow `message` to people, log `request_id`, and follow `doc_url` for what the code means and what to do. The\nstatus follows one rule: 400 the request cannot be read or a header is wrong, 401 no usable key, 403 the key may not,\n404 the resource is not yours or does not exist, 409 a conflict with current state, 413 too large, 415 wrong content\ntype, 422 well-formed but not acceptable (invalid fields, or a rule such as an opt-out), 429 slow down, 5xx retry.\n`422 VALIDATION_FAILED` lists every broken field in `details.fields`, each with all the rules it broke.\n\n## Verify your integration\n\n1. `GET /v1/account` with your key proves authentication and returns the account you are acting on.\n2. `POST /v1/messages` with `\"dry_run\": true` runs authentication, the key's abilities, request validation, sender and\n   recipient resolution, content checks, opt-outs and the safety rules, and answers `200` with the message it would\n   create. It stores, queues and sends nothing and does not use up the `Idempotency-Key`. It does not check that the\n   phone is online or that the carrier delivers.\n3. Send a real message to your own number and watch it move through `queued`, `sent` and `delivered`\n   (`GET /v1/messages/{id}`, or the `message.*` webhook events).\n\n## SDKs\n\n- PHP: `composer require mycomm/mycomm-php`\n- Laravel: `composer require mycomm/mycomm-laravel`\n- Connect widget (pair a phone from your own page): `npm install @mycomm/connect`\n"
+  description: "Send and receive messages through the phones and numbers you connect to MyComm: SMS through your own SIMs today,\nmore channels later. Everything is JSON over HTTPS under `/v1`.\n\n## Authentication\n\nCreate an API key in the portal (Developers, API keys) and send it as `Authorization: Bearer mc_live_...`. Keep it on\nyour server: the API has no CORS and a key in a browser is a leaked key. A key has abilities (`messages:send`,\n`contacts:write`, ...) and may be limited to some lines and some IP addresses. A partner key sends and reads through one of\nits partner lines with the `MyComm-Line` header (the line id); it may call only the message and conversation\nendpoints and `GET /v1/lines/{id}` of that line, and every other endpoint answers `403 PARTNER_ROUTE_NOT_ALLOWED`.\n\nA key is 54 characters (`mc_live_`) or 57 (`mc_partner_`); the last six are a checksum, so a mistyped key is refused\nat once with `401 UNAUTHENTICATED` and `details.reason: \"malformed_key\"`.\n\n## Conventions\n\n- Requests and responses are JSON, UTF-8, `snake_case`. Send `Content-Type: application/json`; the two upload\n  endpoints (`POST /v1/media`, `POST /v1/imports` with a CSV) take `multipart/form-data`. A request without a body\n  (pause, archive, cancel, ...) sends nothing and needs no `Content-Type`. Bodies over 1 MB answer `413`.\n- Ids are UUIDv7 strings, timestamps RFC 3339 in UTC, absent optional values `null`.\n- Lists are `{\"data\": [...], \"next_cursor\": \"...\" | null}`; pass `next_cursor` back as `cursor`.\n- Send `Idempotency-Key` (1 to 255 printable ASCII characters, a UUID is best) on a POST you may retry. A repeat within\n  24 hours returns the first response with `Idempotent-Replayed: true`; the same key on a different request answers\n  `409 IDEMPOTENCY_KEY_REUSED`.\n- Clients must ignore unknown response fields, unknown enum values and unknown error codes: the API only adds to\n  them within `v1`. Unknown request fields are ignored too.\n\n## Required fields\n\nEvery request schema lists its `required` fields. A rule that depends on other fields is written as JSON Schema\n(`oneOf`, `anyOf`, `dependentRequired`, `if`/`then`) and repeated in plain words in `x-required-when`, a list of\n`{field, when | rule, error}` entries: for example `category` is required when `lane` is `bulk`, and exactly one of\n`to` or `contact_id` is needed. The `error` names the code the API answers when the rule is broken.\n\n## Errors\n\nEvery non-2xx response is `{\"error\": {\"code\", \"message\", \"details\", \"request_id\", \"doc_url\"}}`. Branch on `code`,\nshow `message` to people, log `request_id`, and follow `doc_url` for what the code means and what to do. The\nstatus follows one rule: 400 the request cannot be read or a header is wrong, 401 no usable key, 403 the key may not,\n404 the resource is not yours or does not exist, 409 a conflict with current state, 413 too large, 415 wrong content\ntype, 422 well-formed but not acceptable (invalid fields, or a rule such as an opt-out), 429 slow down, 5xx retry.\n`422 VALIDATION_FAILED` lists every broken field in `details.fields`, each with all the rules it broke.\n\n## Verify your integration\n\n1. `GET /v1/me` with your key proves authentication and returns the user you are acting on.\n2. `POST /v1/messages` with `\"dry_run\": true` runs authentication, the key's abilities, request validation, sender and\n   recipient resolution, content checks, opt-outs and the safety rules, and answers `200` with the message it would\n   create. It stores, queues and sends nothing and does not use up the `Idempotency-Key`. It does not check that the\n   phone is online or that the carrier delivers.\n3. Send a real message to your own number and watch it move through `queued`, `sent` and `delivered`\n   (`GET /v1/messages/{id}`, or the `message.*` webhook events).\n\n## SDKs\n\n- PHP: `composer require mycomm/mycomm-php`\n- Laravel: `composer require mycomm/mycomm-laravel`\n- Connect widget (pair a phone from your own page): `npm install @mycomm/connect`\n"
 servers:
   -
     url: 'https://mycomm.cogneer.tech/v1'
@@ -50,7 +50,7 @@ tags:
     description: 'Keyword rules and business hours that answer inbound messages.'
   -
     name: Channels
-    description: 'The connected numbers and accounts messages are sent from.'
+    description: 'The connected numbers messages are sent from.'
   -
     name: Lines
     description: 'What you send from and receive into; one or more per channel.'
@@ -76,8 +76,8 @@ tags:
     name: 'API keys'
     description: 'Create, list and revoke keys.'
   -
-    name: Account
-    description: 'The account the key acts on.'
+    name: Me
+    description: 'The user the key acts on.'
 components:
   securitySchemes:
     bearerAuth:
@@ -150,7 +150,7 @@ components:
       name: Idempotency-Key
       in: header
       required: false
-      description: "Makes a POST safe to retry: 1 to 255 printable ASCII characters, a UUID is recommended. The first response (any 2xx\nor 4xx; a 5xx is not kept) is stored for 24 hours per account and returned again, with `Idempotent-Replayed: true`,\nfor the same method, path and body. The same key with a different request answers `409 IDEMPOTENCY_KEY_REUSED`;\nwhile the first request still runs, `409 IDEMPOTENCY_IN_PROGRESS`. A key that is empty, longer than 255 characters or\nnot printable ASCII answers `400 INVALID_HEADER`, also on a dry run.\n"
+      description: "Makes a POST safe to retry: 1 to 255 printable ASCII characters, a UUID is recommended. The first response (any 2xx\nor 4xx; a 5xx is not kept) is stored for 24 hours per user and returned again, with `Idempotent-Replayed: true`,\nfor the same method, path and body. The same key with a different request answers `409 IDEMPOTENCY_KEY_REUSED`;\nwhile the first request still runs, `409 IDEMPOTENCY_IN_PROGRESS`. A key that is empty, longer than 255 characters or\nnot printable ASCII answers `400 INVALID_HEADER`, also on a dry run.\n"
       schema:
         type: string
         minLength: 1
@@ -160,7 +160,7 @@ components:
       name: MyComm-Line
       in: header
       required: false
-      description: 'The partner line a partner key acts on (the line id). Required with a partner key: missing answers `400 LINE_CONTEXT_REQUIRED`, a value that is not a UUID `400 INVALID_HEADER`, and anything but an unarchived line of that partner `403 LINE_CONTEXT_INVALID`. The call then sees exactly that line. An account key never sends it (`400 INVALID_HEADER`).'
+      description: 'The partner line a partner key acts on (the line id). Required with a partner key: missing answers `400 LINE_CONTEXT_REQUIRED`, a value that is not a UUID `400 INVALID_HEADER`, and anything but an unarchived line of that partner `403 LINE_CONTEXT_INVALID`. The call then sees exactly that line. A user key never sends it (`400 INVALID_HEADER`).'
       schema:
         type: string
         format: uuid
@@ -189,8 +189,8 @@ components:
         - IP_NOT_ALLOWED
         - LINE_CONTEXT_INVALID
         - PARTNER_ROUTE_NOT_ALLOWED
-        - ACCOUNT_SUSPENDED
-        - ACCOUNT_PENDING_DELETION
+        - USER_SUSPENDED
+        - USER_PENDING_DELETION
         - PARTNER_ACCESS_REVOKED
         - NOT_FOUND
         - METHOD_NOT_ALLOWED
@@ -253,8 +253,8 @@ components:
         - CONSENT_ASSERTION_REQUIRED
         - RISK_ACKNOWLEDGEMENT_REQUIRED
         - ABOVE_PLATFORM_CEILING
-        - NEW_ACCOUNT_LIMIT
-        - ACCOUNT_THROTTLED
+        - NEW_USER_LIMIT
+        - USER_THROTTLED
         - ADDRESS_REQUIRED
         - COUNTRY_NOT_ENABLED
         - DEVICE_SIM_LIMIT
@@ -334,7 +334,7 @@ components:
         OUT_OF_RANGE: 'The number is outside the allowed range.'
         TOO_LONG: 'The text or list is longer than allowed.'
         TOO_SHORT: 'The text or list is shorter than allowed.'
-        NOT_FOUND: 'The id refers to something that does not exist in this account.'
+        NOT_FOUND: 'The id refers to something that does not exist in this user.'
         NOT_UNIQUE: 'The value is already used where it must be unique.'
         INVALID: 'Any other rule; see the message.'
     ValidationError:
@@ -434,83 +434,6 @@ components:
             - string
             - 'null'
           description: 'Field path the warning is about, when there is one.'
-    Account:
-      type: object
-      required:
-        - id
-        - name
-        - status
-        - country_iso
-        - timezone
-        - default_locale
-        - settings
-        - created_at
-      properties:
-        id:
-          $ref: '#/components/schemas/Uuid'
-        name:
-          type: string
-        status:
-          type: string
-          description: '`active`, `suspended` or `pending_deletion`.'
-        country_iso:
-          type: string
-        timezone:
-          type: string
-        default_locale:
-          type: string
-          description: 'BCP 47, default `en-GB`.'
-        settings:
-          $ref: '#/components/schemas/AccountSettings'
-        created_at:
-          $ref: '#/components/schemas/Timestamp'
-    AccountSettings:
-      type: object
-      description: "The API-visible subset of the account settings: `opt_out`, `compliance`,\n`quiet_hours`, `frequency_cap`, `links`, `default_expiry_minutes`, `sms`, `channels`,\n`whatsapp`, `retention`, `automation`, `alerts`, `limits` and `support`. Unknown keys must be\nignored.\n"
-      properties:
-        opt_out:
-          type: object
-        compliance:
-          type: object
-        quiet_hours:
-          type: object
-        frequency_cap:
-          type: object
-        links:
-          type: object
-        default_expiry_minutes:
-          type: object
-        sms:
-          type: object
-        channels:
-          type: object
-        whatsapp:
-          type: object
-        retention:
-          type: object
-        automation:
-          type: object
-        alerts:
-          type: object
-        limits:
-          type: object
-          description: 'Read-only for account keys; only the partner may set it.'
-        support:
-          type: object
-    AccountUpdate:
-      type: object
-      properties:
-        name:
-          type: string
-        country_iso:
-          type: string
-        timezone:
-          type: string
-        default_locale:
-          type: string
-        settings:
-          type: object
-          description: 'Deep-merged into the account settings; `limits` is refused.'
     ApiKey:
       type: object
       required:
@@ -533,7 +456,7 @@ components:
         kind:
           type: string
           enum:
-            - account
+            - user
         name:
           type: string
         prefix:
@@ -752,7 +675,7 @@ components:
             - template_id
     AutomationGroupAction:
       type: object
-      description: 'Adds the contact to, or removes it from, a group of the account.'
+      description: 'Adds the contact to, or removes it from, a group of the user.'
       required:
         - type
         - group_id
@@ -925,7 +848,7 @@ components:
           maxLength: 1600
           description: 'The text of the inbound message to test.'
         contact_id:
-          description: 'The sender, a contact of the account; needs `contacts:read`. Omitted or `null` tests an unknown sender.'
+          description: 'The sender, a contact of the user; needs `contacts:read`. Omitted or `null` tests an unknown sender.'
           oneOf:
             -
               $ref: '#/components/schemas/Uuid'
@@ -1797,7 +1720,7 @@ components:
                     - ADDRESS_REQUIRED
                     - SIM_NOT_PRESENT
                     - DEVICE_NOT_ACTIVE
-                    - ACCOUNT_THROTTLED
+                    - USER_THROTTLED
     ChannelConnectErrorDeviceSimLimit:
       description: '`422 DEVICE_SIM_LIMIT`: connecting a further SIM on a phone that breaks the UK SIM-farm rule. `details.reason` says which rule fired and `details.sims_30_days` is the number of SIMs the phone showed in the last 30 days.'
       allOf:
@@ -1830,7 +1753,7 @@ components:
                       minimum: 1
                       description: 'SIMs the phone has had present or seen in the last 30 days. 5 or more when `reason` is `DEVICE_SIM_LIMIT`.'
     ChannelConnectErrorSimAlreadyConnected:
-      description: '`409 SIM_ALREADY_CONNECTED`: the SIM already backs a pending, active or paused channel of the account. `details.channel_id` names that channel; a restricted key whose scope does not include it gets no `channel_id`.'
+      description: '`409 SIM_ALREADY_CONNECTED`: the SIM already backs a pending, active or paused channel of the user. `details.channel_id` names that channel; a restricted key whose scope does not include it gets no `channel_id`.'
       allOf:
         -
           $ref: '#/components/schemas/Error'
@@ -1932,7 +1855,7 @@ components:
                       type: string
                       description: "ISO 3166-1 alpha-2 code of the number's country."
     ChannelConnectErrorVerificationLimit:
-      description: '`422 VERIFICATION_LIMIT_REACHED`: more than 3 attempts per channel per hour, 10 per account per day, or less than 10 minutes after a failed verification.'
+      description: '`422 VERIFICATION_LIMIT_REACHED`: more than 3 attempts per channel per hour, 10 per user per day, or less than 10 minutes after a failed verification.'
       allOf:
         -
           $ref: '#/components/schemas/Error'
@@ -1955,7 +1878,7 @@ components:
                       type: integer
                       minimum: 1
     ChannelConnectErrorTypeNotAllowed:
-      description: "`422 CHANNEL_TYPE_NOT_ALLOWED`: the channel type is not enabled (v1: push channels), or `android_sim` is not in the account's `settings.channels.allowed_types`."
+      description: "`422 CHANNEL_TYPE_NOT_ALLOWED`: the channel type is not enabled (v1: push channels), or `android_sim` is not in the user's `settings.channels.allowed_types`."
       allOf:
         -
           $ref: '#/components/schemas/Error'
@@ -2048,7 +1971,7 @@ components:
           type:
             - object
             - 'null'
-          description: "The owner's sending window; `null` means any time. `timezone` `null` is the account time zone."
+          description: "The owner's sending window; `null` means any time. `timezone` `null` is the user's time zone."
           required:
             - start
             - end
@@ -2089,7 +2012,7 @@ components:
           type: boolean
           description: '`true` restores the suggestion and clears the acknowledgement; not allowed together with policy fields.'
     ChannelRatePolicyErrorAboveCeiling:
-      description: "`422 ABOVE_PLATFORM_CEILING`: a cap above what this channel may be set to now, or a wait shorter than the suggestion's during the first 14 days of the account."
+      description: "`422 ABOVE_PLATFORM_CEILING`: a cap above what this channel may be set to now, or a wait shorter than the suggestion's during the first 14 days of the user."
       allOf:
         -
           $ref: '#/components/schemas/Error'
@@ -2119,14 +2042,14 @@ components:
                       description: 'The value that was sent, or that the merge produced. A wait in milliseconds for `interval_ms.min` and `interval_ms.max`.'
                     ceiling:
                       type: integer
-                      description: 'The most this field may be set to for this channel now. For `interval_ms.min` and `interval_ms.max` (reason `new_account`) it is the shortest wait allowed, in milliseconds.'
+                      description: 'The most this field may be set to for this channel now. For `interval_ms.min` and `interval_ms.max` (reason `new_user`) it is the shortest wait allowed, in milliseconds.'
                     reason:
                       type: string
                       enum:
                         - platform
                         - country
                         - override_limit
-                        - new_account
+                        - new_user
                         - restricted_country
     ChannelRatePolicyErrorRiskAcknowledgement:
       description: '`422 RISK_ACKNOWLEDGEMENT_REQUIRED`: an `amber` or `red` policy without `acknowledge_risk: true`.'
@@ -2369,7 +2292,7 @@ components:
           enum:
             - owner
             - admin
-            - account_suspended
+            - user_suspended
             - 'auto:health_critical'
             - 'auto:quarantine'
             - 'auto:quota'
@@ -2395,7 +2318,7 @@ components:
           enum:
             - owner
             - admin_force_release
-            - account_deleted
+            - user_deleted
             - declined_on_device
             - sim_retired
             - device_revoked
@@ -2418,7 +2341,7 @@ components:
             -
               type: 'null'
         default_line_id:
-          description: "The line unknown replies to this number land on (the account's Direct line unless the owner chose another); `null` until the number is connected."
+          description: "The line unknown replies to this number land on (the user's Direct line unless the owner chose another); `null` until the number is connected."
           oneOf:
             -
               $ref: '#/components/schemas/Uuid'
@@ -2878,7 +2801,7 @@ components:
             - device_sim_limit
             - country_not_enabled
             - number_disputed
-            - number_has_account
+            - number_has_user
             - null
         expires_at:
           oneOf:
@@ -3463,7 +3386,7 @@ components:
           description: 'Validate, render and compute segments and holds without creating anything (answers `200`).'
     Conversation:
       type: object
-      description: 'The conversation resource: one per line and contact identity. `address`, `contact_display_name`, `suppressed` and `blocked_at` are denormalised from the identity; blocking is account-wide.'
+      description: 'The conversation resource: one per line and contact identity. `address`, `contact_display_name`, `suppressed` and `blocked_at` are denormalised from the identity; blocking is user-wide.'
       required:
         - id
         - line_id
@@ -3686,7 +3609,7 @@ components:
           enum:
             - owner
             - admin
-            - account_suspended
+            - user_suspended
             - null
         os_limit_raised:
           type: boolean
@@ -3745,7 +3668,7 @@ components:
             - partner
             - admin
             - app_unpaired
-            - account_deleted
+            - user_deleted
             - replaced
             - stolen
             - null
@@ -3897,7 +3820,7 @@ components:
         - contacts_csv
         - campaign_report
         - contact_json
-        - account_zip
+        - user_zip
     ExportStatus:
       type: string
       enum:
@@ -4165,13 +4088,13 @@ components:
             - string
             - 'null'
           maxLength: 35
-          description: "BCP 47 tag of the page's language; defaults to the account's default locale."
+          description: "BCP 47 tag of the page's language; defaults to the user's default locale."
         replaces_device_id:
           type:
             - string
             - 'null'
           format: uuid
-          description: "Required for `replace_device`, refused for any other purpose. An active phone of the line's account."
+          description: "Required for `replace_device`, refused for any other purpose. An active phone of the line's user."
     HostedLink:
       type: object
       required:
@@ -4283,7 +4206,7 @@ components:
           description: 'How long the first type has to deliver (default 120).'
     LineKind:
       type: string
-      description: "`direct`: the account's own line, where unclaimed replies land (one per account). `app`: a line an app or integration sends through. `partner`: a line a partner created for a client."
+      description: "`direct`: the user's own line, where unclaimed replies land (one per user). `app`: a line an app or integration sends through. `partner`: a line a partner created for a client."
       enum:
         - direct
         - app
@@ -4374,7 +4297,7 @@ components:
         - pool
     LineAlarmThresholds:
       type: object
-      description: "When the line's alarms fire (`line.alarm`). `budget_percent` (50 to 100, default 80): a sender of the line used this share of its hourly limit; for a sender on several lines the lowest value counts. `self_loop_per_hour` (5 to 500, default 20): a sender of the line sent this many messages to the account's own numbers within an hour. A value above the default warns later than advised."
+      description: "When the line's alarms fire (`line.alarm`). `budget_percent` (50 to 100, default 80): a sender of the line used this share of its hourly limit; for a sender on several lines the lowest value counts. `self_loop_per_hour` (5 to 500, default 20): a sender of the line sent this many messages to the user's own numbers within an hour. A value above the default warns later than advised."
       additionalProperties: false
       required:
         - budget_percent
@@ -4565,6 +4488,83 @@ components:
         settings:
           type: object
           description: 'Merged key by key into the line settings; `null` removes a key. The hold times change through `failover_seconds` and the alarm thresholds through `alarm_thresholds`, not here.'
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - country_iso
+        - timezone
+        - default_locale
+        - settings
+        - created_at
+      properties:
+        id:
+          $ref: '#/components/schemas/Uuid'
+        name:
+          type: string
+        status:
+          type: string
+          description: '`active`, `suspended` or `pending_deletion`.'
+        country_iso:
+          type: string
+        timezone:
+          type: string
+        default_locale:
+          type: string
+          description: 'BCP 47, default `en-GB`.'
+        settings:
+          $ref: '#/components/schemas/UserSettings'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+    UserSettings:
+      type: object
+      description: "The API-visible subset of the user's settings: `opt_out`, `compliance`,\n`quiet_hours`, `frequency_cap`, `links`, `default_expiry_minutes`, `sms`, `channels`,\n`whatsapp`, `retention`, `automation`, `alerts`, `limits` and `support`. Unknown keys must be\nignored.\n"
+      properties:
+        opt_out:
+          type: object
+        compliance:
+          type: object
+        quiet_hours:
+          type: object
+        frequency_cap:
+          type: object
+        links:
+          type: object
+        default_expiry_minutes:
+          type: object
+        sms:
+          type: object
+        channels:
+          type: object
+        whatsapp:
+          type: object
+        retention:
+          type: object
+        automation:
+          type: object
+        alerts:
+          type: object
+        limits:
+          type: object
+          description: 'Read-only for user keys; only the partner may set it.'
+        support:
+          type: object
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        country_iso:
+          type: string
+        timezone:
+          type: string
+        default_locale:
+          type: string
+        settings:
+          type: object
+          description: "Deep-merged into the user's settings; `limits` is refused."
     Media:
       type: object
       required:
@@ -4885,7 +4885,7 @@ components:
           minLength: 1
           maxLength: 100
           pattern: ^\S+$
-          description: 'Your own id for this message, 1 to 100 characters without spaces. Unique per account forever (`REFERENCE_ID_EXISTS`).'
+          description: 'Your own id for this message, 1 to 100 characters without spaces. Unique per user forever (`REFERENCE_ID_EXISTS`).'
         metadata:
           type: object
           maxProperties: 50
@@ -5114,7 +5114,7 @@ components:
         - received
     HoldReason:
       type: string
-      description: "Why a queued message is waiting: the schedule (`scheduled`, `quiet_hours`, `bulk_hours`), a limit (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `account_limit`, `carrier_cooldown`), the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing approval (`link_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored allowance used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform hold (`platform_hold`). A new value may appear."
+      description: "Why a queued message is waiting: the schedule (`scheduled`, `quiet_hours`, `bulk_hours`), a limit (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `user_limit`, `carrier_cooldown`), the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing approval (`link_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored allowance used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform hold (`platform_hold`). A new value may appear."
       enum:
         - scheduled
         - quiet_hours
@@ -5129,7 +5129,7 @@ components:
         - new_recipient_cap
         - link_restricted
         - platform_hold
-        - account_limit
+        - user_limit
         - bulk_hours
         - carrier_cooldown
         - device_hot
@@ -5309,7 +5309,7 @@ components:
       examples:
         -
           id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-          account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+          user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
           channel_type: android_sim
           line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -5372,7 +5372,7 @@ components:
           phone_timestamp: null
       required:
         - id
-        - account_id
+        - user_id
         - channel_id
         - channel_type
         - line_id
@@ -5421,7 +5421,7 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/Uuid'
-        account_id:
+        user_id:
           $ref: '#/components/schemas/Uuid'
         channel_id:
           $ref: '#/components/schemas/Uuid'
@@ -5707,7 +5707,7 @@ components:
           $ref: '#/components/schemas/Timestamp'
     SmartListFilter:
       type: object
-      description: "The filter language: `match` (`all` or `any`) over `conditions`, each a condition\n`{field, op, value}` (`value` absent for operators that take none) or a group `{match, conditions}` of plain\nconditions (one level of nesting). At most 20 conditions and 5 groups. Fields are `first_name`, `last_name`,\n`display_name`, `email`, `custom.<key>`, `group`, `identity.country`, `identity.type`, `source`, `created_at`,\n`last_inbound_at`, `last_outbound_at`, `opted_out` and `campaign`, with the operators and values documented for each field.\nGroup and campaign ids must belong to the account.\n"
+      description: "The filter language: `match` (`all` or `any`) over `conditions`, each a condition\n`{field, op, value}` (`value` absent for operators that take none) or a group `{match, conditions}` of plain\nconditions (one level of nesting). At most 20 conditions and 5 groups. Fields are `first_name`, `last_name`,\n`display_name`, `email`, `custom.<key>`, `group`, `identity.country`, `identity.type`, `source`, `created_at`,\n`last_inbound_at`, `last_outbound_at`, `opted_out` and `campaign`, with the operators and values documented for each field.\nGroup and campaign ids must belong to the user.\n"
       required:
         - match
         - conditions
@@ -5944,7 +5944,7 @@ components:
               type: integer
     Suppression:
       type: object
-      description: "A suppressed identity. It keeps the plain E.164 address, also after the contact is erased.\n`dnc` is an account-uploaded do-not-contact list; `invalid` is two recipient-class failures in 30 days.\n"
+      description: "A suppressed identity. It keeps the plain E.164 address, also after the contact is erased.\n`dnc` is a user-uploaded do-not-contact list; `invalid` is two recipient-class failures in 30 days.\n"
       required:
         - id
         - identity_type
@@ -6021,7 +6021,7 @@ components:
         address:
           type: string
           maxLength: 64
-          description: 'E.164 number, e.g. `+923451234567`; a number without country code is read in the account country.'
+          description: "E.164 number, e.g. `+923451234567`; a number without country code is read in the user's country."
         reason:
           type:
             - string
@@ -6245,7 +6245,7 @@ components:
               - 'null'
             maxLength: 1000
         contact_id:
-          description: 'A contact of the account whose fields fill the variables; the key must also hold `contacts:read`.'
+          description: 'A contact of the user whose fields fill the variables; the key must also hold `contacts:read`.'
           oneOf:
             -
               $ref: '#/components/schemas/Uuid'
@@ -6837,7 +6837,7 @@ components:
             - partner
             - owner
             - system
-          description: '`partner` with the partner key, `owner` by a person of the account, `system` by MyComm.'
+          description: '`partner` with the partner key, `owner` by a person of the user, `system` by MyComm.'
     WebhookLineQuota:
       allOf:
         -
@@ -7268,7 +7268,7 @@ components:
               const: device.revoked
             data:
               $ref: '#/components/schemas/WebhookDeviceRevokedData'
-    WebhookAccountSuspended:
+    WebhookUserSuspended:
       allOf:
         -
           $ref: '#/components/schemas/WebhookEnvelope'
@@ -7276,10 +7276,10 @@ components:
           type: object
           properties:
             type:
-              const: account.suspended
+              const: user.suspended
             data:
-              $ref: '#/components/schemas/WebhookAccountData'
-    WebhookAccountReactivated:
+              $ref: '#/components/schemas/WebhookUserData'
+    WebhookUserReactivated:
       allOf:
         -
           $ref: '#/components/schemas/WebhookEnvelope'
@@ -7287,10 +7287,10 @@ components:
           type: object
           properties:
             type:
-              const: account.reactivated
+              const: user.reactivated
             data:
-              $ref: '#/components/schemas/WebhookAccountData'
-    WebhookAccountDeletionScheduled:
+              $ref: '#/components/schemas/WebhookUserData'
+    WebhookUserDeletionScheduled:
       allOf:
         -
           $ref: '#/components/schemas/WebhookEnvelope'
@@ -7298,9 +7298,9 @@ components:
           type: object
           properties:
             type:
-              const: account.deletion_scheduled
+              const: user.deletion_scheduled
             data:
-              $ref: '#/components/schemas/WebhookAccountData'
+              $ref: '#/components/schemas/WebhookUserData'
     WebhookChannelData:
       type: object
       required:
@@ -7333,7 +7333,7 @@ components:
             - device_sim_limit
             - country_not_enabled
             - number_disputed
-            - number_has_account
+            - number_has_user
     WebhookChannelDisconnectedData:
       type: object
       required:
@@ -7348,7 +7348,7 @@ components:
           enum:
             - owner
             - admin_force_release
-            - account_deleted
+            - user_deleted
             - declined_on_device
             - sim_retired
             - device_revoked
@@ -7373,7 +7373,7 @@ components:
           enum:
             - owner
             - admin
-            - account_suspended
+            - user_suspended
             - 'auto:health_critical'
             - 'auto:quarantine'
             - 'auto:quota'
@@ -7499,18 +7499,18 @@ components:
             - partner
             - admin
             - app_unpaired
-            - account_deleted
+            - user_deleted
             - replaced
             - stolen
-    WebhookAccountData:
+    WebhookUserData:
       type: object
       required:
-        - account
+        - user
         - actor
         - reason
       properties:
-        account:
-          $ref: '#/components/schemas/WebhookAccount'
+        user:
+          $ref: '#/components/schemas/WebhookUser'
         actor:
           $ref: '#/components/schemas/WebhookActor'
         reason:
@@ -7518,9 +7518,9 @@ components:
             - string
             - 'null'
           description: 'The suspension reason, or `null`.'
-    WebhookAccount:
+    WebhookUser:
       type: object
-      description: 'The account resource, with its `counts`.'
+      description: 'The user resource, with its `counts`.'
       required:
         - id
         - name
@@ -7557,7 +7557,7 @@ components:
         default_locale:
           type: string
         settings:
-          $ref: '#/components/schemas/AccountSettings'
+          $ref: '#/components/schemas/UserSettings'
         counts:
           type: object
           required:
@@ -7609,7 +7609,7 @@ components:
         - type
         - api_version
         - created_at
-        - account_id
+        - user_id
         - line_id
         - channel
         - data
@@ -7626,7 +7626,7 @@ components:
             - 1.0.0
         created_at:
           $ref: '#/components/schemas/Timestamp'
-        account_id:
+        user_id:
           $ref: '#/components/schemas/Uuid'
         line_id:
           oneOf:
@@ -7710,7 +7710,7 @@ components:
               type:
                 - string
                 - 'null'
-              description: '`api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `account_deleted`, `cross_type_fallback` (may gain values).'
+              description: '`api`, `portal`, `campaign_cancelled`, `opted_out`, `contact_blocked`, `user_deleted`, `cross_type_fallback` (may gain values).'
     WebhookMessageQueued:
       allOf:
         -
@@ -8402,20 +8402,20 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountSuspended:
+    ErrUserSuspended:
       type: object
-      description: 'This account is suspended and cannot use the API. Contact support to have it restored.'
+      description: 'This user is suspended and cannot use the API. Contact support to have it restored.'
       x-http-status: 403
       examples:
         -
           error:
-            code: ACCOUNT_SUSPENDED
-            message: 'This account is suspended and cannot use the API. Contact support to have it restored.'
+            code: USER_SUSPENDED
+            message: 'This user is suspended and cannot use the API. Contact support to have it restored.'
             details:
               reason: 'Example text.'
               status: queued
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-suspended'
+            doc_url: 'https://api.mycomm.example/docs/errors#user-suspended'
       required:
         - error
       properties:
@@ -8430,7 +8430,7 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_SUSPENDED
+              const: USER_SUSPENDED
             message:
               type: string
             details:
@@ -8449,19 +8449,19 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountPendingDeletion:
+    ErrUserPendingDeletion:
       type: object
-      description: 'This account is scheduled for deletion and cannot use the API.'
+      description: 'This user is scheduled for deletion and cannot use the API.'
       x-http-status: 403
       examples:
         -
           error:
-            code: ACCOUNT_PENDING_DELETION
-            message: 'This account is scheduled for deletion and cannot use the API.'
+            code: USER_PENDING_DELETION
+            message: 'This user is scheduled for deletion and cannot use the API.'
             details:
               purge_at: '2026-10-01T09:15:02Z'
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-pending-deletion'
+            doc_url: 'https://api.mycomm.example/docs/errors#user-pending-deletion'
       required:
         - error
       properties:
@@ -8476,7 +8476,7 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_PENDING_DELETION
+              const: USER_PENDING_DELETION
             message:
               type: string
             details:
@@ -8535,13 +8535,13 @@ components:
               format: uri
     ErrNotFound:
       type: object
-      description: "The resource does not exist, belongs to another account or is outside this key's scope. Check the id."
+      description: "The resource does not exist, belongs to another user or is outside this key's scope. Check the id."
       x-http-status: 404
       examples:
         -
           error:
             code: NOT_FOUND
-            message: "The resource does not exist, belongs to another account or is outside this key's scope. Check the id."
+            message: "The resource does not exist, belongs to another user or is outside this key's scope. Check the id."
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
             doc_url: 'https://api.mycomm.example/docs/errors#not-found'
@@ -8922,13 +8922,13 @@ components:
               format: uri
     ErrNameTaken:
       type: object
-      description: 'That name is already used in this account. Choose another one.'
+      description: 'You already use that name. Choose another one.'
       x-http-status: 409
       examples:
         -
           error:
             code: NAME_TAKEN
-            message: 'That name is already used in this account. Choose another one.'
+            message: 'You already use that name. Choose another one.'
             details:
               field: category
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -8964,13 +8964,13 @@ components:
               format: uri
     ErrIdentityTaken:
       type: object
-      description: 'That address already belongs to another contact in this account. Update that contact instead.'
+      description: 'That address already belongs to another of your contacts. Update that contact instead.'
       x-http-status: 409
       examples:
         -
           error:
             code: IDENTITY_TAKEN
-            message: 'That address already belongs to another contact in this account. Update that contact instead.'
+            message: 'That address already belongs to another of your contacts. Update that contact instead.'
             details:
               contact_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -9006,13 +9006,13 @@ components:
               format: uri
     ErrChannelAddressInUse:
       type: object
-      description: 'This number is already connected to another MyComm account. Disconnect it there first.'
+      description: 'This number is already connected to another MyComm user. Disconnect it there first.'
       x-http-status: 409
       examples:
         -
           error:
             code: CHANNEL_ADDRESS_IN_USE
-            message: 'This number is already connected to another MyComm account. Disconnect it there first.'
+            message: 'This number is already connected to another MyComm user. Disconnect it there first.'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
             doc_url: 'https://api.mycomm.example/docs/errors#channel-address-in-use'
@@ -9044,13 +9044,13 @@ components:
               format: uri
     ErrDeviceInUse:
       type: object
-      description: 'This phone is connected to another MyComm account or platform. Disconnect it there first, or contact support.'
+      description: 'This phone is connected to another MyComm user or platform. Disconnect it there first, or contact support.'
       x-http-status: 409
       examples:
         -
           error:
             code: DEVICE_IN_USE
-            message: 'This phone is connected to another MyComm account or platform. Disconnect it there first, or contact support.'
+            message: 'This phone is connected to another MyComm user or platform. Disconnect it there first, or contact support.'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
             doc_url: 'https://api.mycomm.example/docs/errors#device-in-use'
@@ -9120,13 +9120,13 @@ components:
               format: uri
     ErrSimAlreadyConnected:
       type: object
-      description: 'This SIM is already connected to a channel in this account.'
+      description: 'This SIM is already connected to one of your channels.'
       x-http-status: 409
       examples:
         -
           error:
             code: SIM_ALREADY_CONNECTED
-            message: 'This SIM is already connected to a channel in this account.'
+            message: 'This SIM is already connected to one of your channels.'
             details:
               channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -9982,13 +9982,13 @@ components:
               format: uri
     ErrContactBlocked:
       type: object
-      description: "This contact's address is blocked in your account, so nothing can be sent to it. Unblock it first."
+      description: "This contact's address is blocked, so nothing can be sent to it. Unblock it first."
       x-http-status: 422
       examples:
         -
           error:
             code: CONTACT_BLOCKED
-            message: "This contact's address is blocked in your account, so nothing can be sent to it. Unblock it first."
+            message: "This contact's address is blocked, so nothing can be sent to it. Unblock it first."
             details:
               contact_identity_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -10200,13 +10200,13 @@ components:
               format: uri
     ErrLineIsDirect:
       type: object
-      description: 'Line :line_id is the Direct line of the account. It holds every conversation no other line claims, so it cannot be archived.'
+      description: 'Line :line_id is your Direct line. It holds every conversation no other line claims, so it cannot be archived.'
       x-http-status: 422
       examples:
         -
           error:
             code: LINE_IS_DIRECT
-            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is the Direct line of the account. It holds every conversation no other line claims, so it cannot be archived.'
+            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is your Direct line. It holds every conversation no other line claims, so it cannot be archived.'
             details:
               line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -10615,13 +10615,13 @@ components:
               format: uri
     ErrChannelTypeNotAllowed:
       type: object
-      description: 'That channel type is not enabled for this account.'
+      description: 'That channel type is not enabled for you.'
       x-http-status: 422
       examples:
         -
           error:
             code: CHANNEL_TYPE_NOT_ALLOWED
-            message: 'That channel type is not enabled for this account.'
+            message: 'That channel type is not enabled for you.'
             details:
               type: example
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -11186,21 +11186,21 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrNewAccountLimit:
+    ErrNewUserLimit:
       type: object
-      description: 'New accounts are limited during their first 14 days (limit :limit). Stay under the limit or wait.'
+      description: 'New users are limited during their first 14 days (limit :limit). Stay under the limit or wait.'
       x-http-status: 422
       examples:
         -
           error:
-            code: NEW_ACCOUNT_LIMIT
-            message: 'New accounts are limited during their first 14 days (limit 1). Stay under the limit or wait.'
+            code: NEW_USER_LIMIT
+            message: 'New users are limited during their first 14 days (limit 1). Stay under the limit or wait.'
             details:
               limit: 1
               recipients: 1
               devices: 1
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#new-account-limit'
+            doc_url: 'https://api.mycomm.example/docs/errors#new-user-limit'
       required:
         - error
       properties:
@@ -11215,7 +11215,7 @@ components:
           properties:
             code:
               type: string
-              const: NEW_ACCOUNT_LIMIT
+              const: NEW_USER_LIMIT
             message:
               type: string
             details:
@@ -11236,19 +11236,19 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountThrottled:
+    ErrUserThrottled:
       type: object
-      description: 'This account is throttled while MyComm reviews its sending. Marketing and new numbers are paused; contact support.'
+      description: 'This user is throttled while MyComm reviews their sending. Marketing and new numbers are paused; contact support.'
       x-http-status: 422
       examples:
         -
           error:
-            code: ACCOUNT_THROTTLED
-            message: 'This account is throttled while MyComm reviews its sending. Marketing and new numbers are paused; contact support.'
+            code: USER_THROTTLED
+            message: 'This user is throttled while MyComm reviews their sending. Marketing and new numbers are paused; contact support.'
             details:
               risk_state: example
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-throttled'
+            doc_url: 'https://api.mycomm.example/docs/errors#user-throttled'
       required:
         - error
       properties:
@@ -11263,7 +11263,7 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_THROTTLED
+              const: USER_THROTTLED
             message:
               type: string
             details:
@@ -11638,13 +11638,13 @@ components:
               format: uri
     ErrConnectSessionLimitReached:
       type: object
-      description: 'Too many open connect sessions for this account. Finish or let some expire, then try again.'
+      description: 'Too many open connect sessions for this user. Finish or let some expire, then try again.'
       x-http-status: 422
       examples:
         -
           error:
             code: CONNECT_SESSION_LIMIT_REACHED
-            message: 'Too many open connect sessions for this account. Finish or let some expire, then try again.'
+            message: 'Too many open connect sessions for this user. Finish or let some expire, then try again.'
             details:
               max: 1
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -11718,13 +11718,13 @@ components:
               format: uri
     ErrSecondFactorRequired:
       type: object
-      description: 'This action needs the account owner to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
+      description: 'This action needs you to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
       x-http-status: 403
       examples:
         -
           error:
             code: SECOND_FACTOR_REQUIRED
-            message: 'This action needs the account owner to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
+            message: 'This action needs you to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
             details:
               reason: 'Example text.'
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -12105,9 +12105,9 @@ components:
         - device.degraded
         - device.offline
         - device.revoked
-        - account.suspended
-        - account.reactivated
-        - account.deletion_scheduled
+        - user.suspended
+        - user.reactivated
+        - user.deletion_scheduled
         - message.queued
         - message.sent
         - message.delivered
@@ -12156,7 +12156,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
     Forbidden:
-      description: '403 WRONG_KEY_KIND, ABILITY_MISSING, IP_NOT_ALLOWED, LINE_CONTEXT_INVALID, PARTNER_ROUTE_NOT_ALLOWED, ACCOUNT_SUSPENDED, ACCOUNT_PENDING_DELETION or PARTNER_ACCESS_REVOKED.'
+      description: '403 WRONG_KEY_KIND, ABILITY_MISSING, IP_NOT_ALLOWED, LINE_CONTEXT_INVALID, PARTNER_ROUTE_NOT_ALLOWED, USER_SUSPENDED, USER_PENDING_DELETION or PARTNER_ACCESS_REVOKED.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -12171,7 +12171,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
     NotFound:
-      description: "404 NOT_FOUND: the resource is absent, in another account, or outside the key's scope."
+      description: "404 NOT_FOUND: the resource is absent, of another user, or outside the key's scope."
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -12318,7 +12318,7 @@ components:
               -
                 $ref: '#/components/schemas/ChannelActionErrorIdempotency'
     SimConnectConflict:
-      description: '409 CHANNEL_ADDRESS_IN_USE (the number is active on another account; no SMS is sent and no channel is created) or SIM_ALREADY_CONNECTED `{channel_id}`.'
+      description: '409 CHANNEL_ADDRESS_IN_USE (the number is active on another user; no SMS is sent and no channel is created) or SIM_ALREADY_CONNECTED `{channel_id}`.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -12337,7 +12337,7 @@ components:
               -
                 $ref: '#/components/schemas/ChannelConnectErrorSimAlreadyConnected'
     SimConnectUnprocessable:
-      description: '422 VALIDATION_FAILED, ADDRESS_REQUIRED, SIM_NOT_PRESENT, DEVICE_NOT_ACTIVE, INVALID_NUMBER `{input}`, VERIFICATION_LIMIT_REACHED `{retry_after_seconds}`, COUNTRY_NOT_ENABLED `{country_iso}`, DEVICE_SIM_LIMIT `{reason, sims_30_days}`, CHANNEL_TYPE_NOT_ALLOWED `{type}` or ACCOUNT_THROTTLED.'
+      description: '422 VALIDATION_FAILED, ADDRESS_REQUIRED, SIM_NOT_PRESENT, DEVICE_NOT_ACTIVE, INVALID_NUMBER `{input}`, VERIFICATION_LIMIT_REACHED `{retry_after_seconds}`, COUNTRY_NOT_ENABLED `{country_iso}`, DEVICE_SIM_LIMIT `{reason, sims_30_days}`, CHANNEL_TYPE_NOT_ALLOWED `{type}` or USER_THROTTLED.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -12387,7 +12387,7 @@ components:
               -
                 $ref: '#/components/schemas/ChannelConnectErrorInvalidState'
     ChannelVerifyUnprocessable:
-      description: '422 VALIDATION_FAILED, SIM_NOT_PRESENT, INVALID_NUMBER `{input}`, VERIFICATION_LIMIT_REACHED `{retry_after_seconds}`, COUNTRY_NOT_ENABLED `{country_iso}`, DEVICE_SIM_LIMIT `{reason, sims_30_days}` or ACCOUNT_THROTTLED.'
+      description: '422 VALIDATION_FAILED, SIM_NOT_PRESENT, INVALID_NUMBER `{input}`, VERIFICATION_LIMIT_REACHED `{retry_after_seconds}`, COUNTRY_NOT_ENABLED `{country_iso}`, DEVICE_SIM_LIMIT `{reason, sims_30_days}` or USER_THROTTLED.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -12450,92 +12450,6 @@ components:
           schema:
             $ref: '#/components/schemas/ErrUnsupportedMediaType'
 paths:
-  /account:
-    get:
-      operationId: getAccount
-      tags:
-        - Account
-      summary: 'Get the account'
-      description: "The account the key belongs to. Needs no ability and also works for a\nsuspended account. `settings` is `accounts.settings` without `notifications` and\n`onboarding`, which concern portal users only.\n"
-      responses:
-        200:
-          description: 'The account.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Account'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
-      x-codeSamples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl -X GET \"$MYCOMM_URL/v1/account\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
-    patch:
-      operationId: updateAccount
-      tags:
-        - Account
-      summary: 'Update the account'
-      description: "Requires `account:write`. `settings` is deep-merged: arrays are replaced whole, language\nmaps merge key by key and `null` removes a language. `settings.limits` is read-only for\naccount keys (`422 VALIDATION_FAILED`). Changes are audit-logged.\n"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountUpdate'
-      responses:
-        200:
-          description: 'The updated account.'
-          headers:
-            MyComm-Request-Id:
-              $ref: '#/components/headers/MyComm-Request-Id'
-            RateLimit-Limit:
-              $ref: '#/components/headers/RateLimit-Limit'
-            RateLimit-Remaining:
-              $ref: '#/components/headers/RateLimit-Remaining'
-            RateLimit-Reset:
-              $ref: '#/components/headers/RateLimit-Reset'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Account'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        413:
-          $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          $ref: '#/components/responses/UnsupportedMediaType'
-        422:
-          $ref: '#/components/responses/Unprocessable'
-        429:
-          $ref: '#/components/responses/RateLimited'
-        500:
-          $ref: '#/components/responses/InternalError'
-        503:
-          $ref: '#/components/responses/ServiceUnavailable'
   /api-keys:
     get:
       operationId: listApiKeys
@@ -12886,7 +12800,7 @@ paths:
       tags:
         - Automation
       summary: 'List the automation rules of a line'
-      description: "Requires `automation:read`. All rules of the line ordered by `position`, not paginated: the\naway message first (position 0), then the keyword rules from 1; rules are evaluated by ascending position and\nthe first matching keyword rule wins. A key restricted to lines reads only its own lines; another line,\nor one of another account, is `404`.\n"
+      description: "Requires `automation:read`. All rules of the line ordered by `position`, not paginated: the\naway message first (position 0), then the keyword rules from 1; rules are evaluated by ascending position and\nthe first matching keyword rule wins. A key restricted to lines reads only its own lines; another line,\nor one of another user, is `404`.\n"
       responses:
         200:
           description: 'The rules of the line.'
@@ -12927,7 +12841,7 @@ paths:
       tags:
         - Automation
       summary: 'Create an automation rule'
-      description: "Requires `automation:write`, which a key restricted to lines never holds (`403 ABILITY_MISSING`). A keyword\nrule goes to the end of the line's keyword rules unless `position` (1 to the number of keyword rules plus\none) says otherwise; an `away` rule has no `match`, sits at position 0 and fires outside the line's business\nhours. A line holds at most 200 keyword rules and one away rule: a second one is `409 INVALID_STATE`.\n`422 TEMPLATE_ARCHIVED` and `LINK_PUBLIC_SHORTENER` (`details.url`) come from the `reply` actions;\n`422 VALIDATION_FAILED` covers every field, an unknown group or template (also one of another account), a\nreserved opt-out or opt-in keyword, and any field that is not listed here. Strings, lists and objects have\ntheir size limits checked first, so oversized values are `422`, never an error. The body is JSON, at most\n128 KB (`413 PAYLOAD_TOO_LARGE`, `details.max_bytes`); anything else is `400 MALFORMED_REQUEST`.\n"
+      description: "Requires `automation:write`, which a key restricted to lines never holds (`403 ABILITY_MISSING`). A keyword\nrule goes to the end of the line's keyword rules unless `position` (1 to the number of keyword rules plus\none) says otherwise; an `away` rule has no `match`, sits at position 0 and fires outside the line's business\nhours. A line holds at most 200 keyword rules and one away rule: a second one is `409 INVALID_STATE`.\n`422 TEMPLATE_ARCHIVED` and `LINK_PUBLIC_SHORTENER` (`details.url`) come from the `reply` actions;\n`422 VALIDATION_FAILED` covers every field, an unknown group or template (also one of another user), a\nreserved opt-out or opt-in keyword, and any field that is not listed here. Strings, lists and objects have\ntheir size limits checked first, so oversized values are `422`, never an error. The body is JSON, at most\n128 KB (`413 PAYLOAD_TOO_LARGE`, `details.max_bytes`); anything else is `400 MALFORMED_REQUEST`.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -13057,7 +12971,7 @@ paths:
       tags:
         - Automation
       summary: 'Get an automation rule'
-      description: "Requires `automation:read`. `404` for a rule of another line or account and for a line outside the key's scope."
+      description: "Requires `automation:read`. `404` for a rule of another line or user and for a line outside the key's scope."
       responses:
         200:
           description: 'The rule.'
@@ -13191,7 +13105,7 @@ paths:
       tags:
         - Automation
       summary: 'Test a message against the automation of a line'
-      description: "Requires `automation:read`. A dry run: the line's rules and guards decide what an inbound\nmessage with this `body` would do, and nothing is sent, written or logged. `at` (default now) is the instant\nused for business hours and the guard windows. With `contact_id` the per-conversation guards (loop guard,\ncooldown) read that contact's conversation in the line; without it only the channel cap applies. A guard\noutcome (`skipped:*`) still names the rule and lists its actions and reply preview, and `outcome` says why\nnothing would be sent. `no_match` means no rule fits or the message runs no automation at all (an opt-out\nkeyword, for example): no rule, no actions and no preview. A key restricted to lines tests only its own\nlines; another line, or one of another account, is `404`. The reply preview renders the contact's fields,\nso a `contact_id` also needs `contacts:read` (`403 ABILITY_MISSING`, checked before the contact is looked\nup). A `contact_id` that is not a contact of the account is `422 VALIDATION_FAILED`, as is any field not\nlisted here. The body is JSON, at most 128 KB (`413 PAYLOAD_TOO_LARGE`); anything else is\n`400 MALFORMED_REQUEST`.\n"
+      description: "Requires `automation:read`. A dry run: the line's rules and guards decide what an inbound\nmessage with this `body` would do, and nothing is sent, written or logged. `at` (default now) is the instant\nused for business hours and the guard windows. With `contact_id` the per-conversation guards (loop guard,\ncooldown) read that contact's conversation in the line; without it only the channel cap applies. A guard\noutcome (`skipped:*`) still names the rule and lists its actions and reply preview, and `outcome` says why\nnothing would be sent. `no_match` means no rule fits or the message runs no automation at all (an opt-out\nkeyword, for example): no rule, no actions and no preview. A key restricted to lines tests only its own\nlines; another line, or one of another user, is `404`. The reply preview renders the contact's fields,\nso a `contact_id` also needs `contacts:read` (`403 ABILITY_MISSING`, checked before the contact is looked\nup). A `contact_id` that is not a contact of the user is `422 VALIDATION_FAILED`, as is any field not\nlisted here. The body is JSON, at most 128 KB (`413 PAYLOAD_TOO_LARGE`); anything else is\n`400 MALFORMED_REQUEST`.\n"
       requestBody:
         required: true
         content:
@@ -13363,7 +13277,7 @@ paths:
       tags:
         - Campaigns
       summary: 'List the recipients of a campaign'
-      description: "Requires `campaigns:read`. The per-recipient results of a campaign, oldest first\n(`sort=created_at`), with cursor pagination. Each filter takes one value. A campaign of another\naccount answers `404`. A key limited to some lines never holds `campaigns:read` and answers\n`403 ABILITY_MISSING`.\n"
+      description: "Requires `campaigns:read`. The per-recipient results of a campaign, oldest first\n(`sort=created_at`), with cursor pagination. Each filter takes one value. A campaign of another\nuser answers `404`. A key limited to some lines never holds `campaigns:read` and answers\n`403 ABILITY_MISSING`.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -13504,7 +13418,7 @@ paths:
       tags:
         - Campaigns
       summary: 'List campaigns'
-      description: "Requires `campaigns:read`. Campaigns of the account, newest first (`sort=-created_at`, the only sort), with cursor\npagination. An item carries no `audience.addresses`; read the campaign for them. A key\nlimited to some lines never holds `campaigns:read` and answers `403 ABILITY_MISSING`.\n"
+      description: "Requires `campaigns:read`. Campaigns of the user, newest first (`sort=-created_at`, the only sort), with cursor\npagination. An item carries no `audience.addresses`; read the campaign for them. A key\nlimited to some lines never holds `campaigns:read` and answers `403 ABILITY_MISSING`.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -13598,7 +13512,7 @@ paths:
       tags:
         - Campaigns
       summary: 'Create a draft campaign'
-      description: "Requires `campaigns:write`. Creates a `draft`: `body` or `template_id` (a copy), the audience\n(`group_ids`, `smart_list_ids`, `import_id` of a contacts CSV import, and at most 10,000 `addresses`), defaults for\n`category` (`marketing`), `append_opt_out_text` (`true` for marketing), `shorten_links` and `track_clicks` (`true`).\n`compliance.consent_asserted: true` stamps the assertion with the caller. `channel_id` is read-only. The save-time\nstart checks answer `422` with their own code (`CHANNEL_INACTIVE`, `LINE_ARCHIVED`, `BODY_EMPTY`,\n`TEMPLATE_INVALID`, `TEMPLATE_ARCHIVED`, `CHANNEL_CAPABILITY_UNSUPPORTED`, `MEDIA_TYPE_UNSUPPORTED`,\n`AUDIENCE_EMPTY`, `LINK_BLOCKED`, `LINK_PUBLIC_SHORTENER`, `TOO_MANY_LINKS`, `CONTENT_PROHIBITED`,\n`CATEGORY_MISMATCH`); a malformed body or an over-long list answers `VALIDATION_FAILED`.\n`audience.import_id` names a `contacts_csv` import uploaded through `/imports`: the campaign gets its own campaign\nCSV import over the same file, queued at once, whose rows become the campaign's recipients, and\n`audience.import_id` then holds that import's id. An import of another account, of another type, `failed` or\n`cancelled`, or a second CSV answers `422 VALIDATION_FAILED`; an import already the CSV of another campaign\nanswers `409 INVALID_STATE`.\n"
+      description: "Requires `campaigns:write`. Creates a `draft`: `body` or `template_id` (a copy), the audience\n(`group_ids`, `smart_list_ids`, `import_id` of a contacts CSV import, and at most 10,000 `addresses`), defaults for\n`category` (`marketing`), `append_opt_out_text` (`true` for marketing), `shorten_links` and `track_clicks` (`true`).\n`compliance.consent_asserted: true` stamps the assertion with the caller. `channel_id` is read-only. The save-time\nstart checks answer `422` with their own code (`CHANNEL_INACTIVE`, `LINE_ARCHIVED`, `BODY_EMPTY`,\n`TEMPLATE_INVALID`, `TEMPLATE_ARCHIVED`, `CHANNEL_CAPABILITY_UNSUPPORTED`, `MEDIA_TYPE_UNSUPPORTED`,\n`AUDIENCE_EMPTY`, `LINK_BLOCKED`, `LINK_PUBLIC_SHORTENER`, `TOO_MANY_LINKS`, `CONTENT_PROHIBITED`,\n`CATEGORY_MISMATCH`); a malformed body or an over-long list answers `VALIDATION_FAILED`.\n`audience.import_id` names a `contacts_csv` import uploaded through `/imports`: the campaign gets its own campaign\nCSV import over the same file, queued at once, whose rows become the campaign's recipients, and\n`audience.import_id` then holds that import's id. An import of another user, of another type, `failed` or\n`cancelled`, or a second CSV answers `422 VALIDATION_FAILED`; an import already the CSV of another campaign\nanswers `409 INVALID_STATE`.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -13859,7 +13773,7 @@ paths:
       tags:
         - Campaigns
       summary: 'Start or schedule a campaign'
-      description: "Requires `campaigns:write`. From `draft`: `scheduled` when `scheduled_at` is in the future (`campaign.scheduled`), else\n`running` (the audience is expanded then, `campaign.started`). From `scheduled`: no `scheduled_at` (or a past one) runs it now,\na new future time reschedules it. The start checks run again and answer `422`:\n`CHANNEL_INACTIVE`, `BODY_EMPTY`, `TEMPLATE_INVALID`, `CHANNEL_CAPABILITY_UNSUPPORTED`, `MEDIA_TYPE_UNSUPPORTED`,\n`SEND_AFTER_TOO_FAR`, `AUDIENCE_EMPTY`, `LINK_BLOCKED`, `LINK_PUBLIC_SHORTENER`, `TOO_MANY_LINKS`, `CONTENT_PROHIBITED`,\n`CONSENT_ASSERTION_REQUIRED`, `CONSENT_PROVENANCE_MISSING`, `MARKETING_NOT_ALLOWED`, `CATEGORY_MISMATCH`,\n`ACCOUNT_THROTTLED`, `NEW_ACCOUNT_LIMIT` or `VALIDATION_FAILED`. Any other status answers `409 INVALID_STATE`.\n"
+      description: "Requires `campaigns:write`. From `draft`: `scheduled` when `scheduled_at` is in the future (`campaign.scheduled`), else\n`running` (the audience is expanded then, `campaign.started`). From `scheduled`: no `scheduled_at` (or a past one) runs it now,\na new future time reschedules it. The start checks run again and answer `422`:\n`CHANNEL_INACTIVE`, `BODY_EMPTY`, `TEMPLATE_INVALID`, `CHANNEL_CAPABILITY_UNSUPPORTED`, `MEDIA_TYPE_UNSUPPORTED`,\n`SEND_AFTER_TOO_FAR`, `AUDIENCE_EMPTY`, `LINK_BLOCKED`, `LINK_PUBLIC_SHORTENER`, `TOO_MANY_LINKS`, `CONTENT_PROHIBITED`,\n`CONSENT_ASSERTION_REQUIRED`, `CONSENT_PROVENANCE_MISSING`, `MARKETING_NOT_ALLOWED`, `CATEGORY_MISMATCH`,\n`USER_THROTTLED`, `NEW_USER_LIMIT` or `VALIDATION_FAILED`. Any other status answers `409 INVALID_STATE`.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -14059,7 +13973,7 @@ paths:
       tags:
         - Campaigns
       summary: 'Resume a campaign'
-      description: "Requires `campaigns:write`. `paused` to `running`; held messages are released. `409 INVALID_STATE` from any other\nstatus. While the account is frozen the campaign stays paused and the call answers `422 ACCOUNT_THROTTLED` with\n`details.risk_state: frozen`.\n"
+      description: "Requires `campaigns:write`. `paused` to `running`; held messages are released. `409 INVALID_STATE` from any other\nstatus. While the user is frozen the campaign stays paused and the call answers `422 USER_THROTTLED` with\n`details.risk_state: frozen`.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -14103,7 +14017,7 @@ paths:
         415:
           $ref: '#/components/responses/UnsupportedMediaType'
         422:
-          description: '422 ACCOUNT_THROTTLED: the account is frozen (`details.risk_state` is `frozen`), so the campaign cannot be resumed yet.'
+          description: '422 USER_THROTTLED: the user is frozen (`details.risk_state` is `frozen`), so the campaign cannot be resumed yet.'
           headers:
             MyComm-Request-Id:
               $ref: '#/components/headers/MyComm-Request-Id'
@@ -14193,7 +14107,7 @@ paths:
       tags:
         - Channels
       summary: 'Update the settings of a channel'
-      description: "Requires `channels:write`; a key restricted to lines never holds it. Changes only the keys\nsent. `allowed_destination_countries` is `null` (the channel's own country only, the default) or a list of\nISO 3166-1 alpha-2 codes that must contain the channel's own country, else `422 VALIDATION_FAILED`; codes are\nstored upper case. Adding another country is an explicit opt-in on the number and is audited as\n`channel.destinations.updated`. `skip_business_senders: true` makes the phone stop uploading inbound from short\ncodes and alphanumeric senders (operator-notice senders are always uploaded). `404` when the channel is not\nfound in the account.\n"
+      description: "Requires `channels:write`; a key restricted to lines never holds it. Changes only the keys\nsent. `allowed_destination_countries` is `null` (the channel's own country only, the default) or a list of\nISO 3166-1 alpha-2 codes that must contain the channel's own country, else `422 VALIDATION_FAILED`; codes are\nstored upper case. Adding another country is an explicit opt-in on the number and is audited as\n`channel.destinations.updated`. `skip_business_senders: true` makes the phone stop uploading inbound from short\ncodes and alphanumeric senders (operator-notice senders are always uploaded). `404` when the channel is not\nfound in the user.\n"
       parameters:
         -
           name: id
@@ -14352,7 +14266,7 @@ paths:
       tags:
         - Channels
       summary: 'Resume a paused channel'
-      description: "Requires `channels:write`. `paused` → `active` for `pause_reason` `owner`, `auto:failure_streak` and `auto:quota`\n(after the SIM was recharged); `auto:health_critical` also once the SIM safety band is back to `fair` or better.\n`auto:sim_missing` and `device_revoked` resume through the SIM returning or re-verification, `auto:quarantine`\nthrough a successful test message or MyComm support, `admin` and `account_suspended` only through MyComm: these\nanswer `409 INVALID_STATE` with the channel's `status`, as does a channel that is not paused. Emits\n`channel.resumed`.\n"
+      description: "Requires `channels:write`. `paused` → `active` for `pause_reason` `owner`, `auto:failure_streak` and `auto:quota`\n(after the SIM was recharged); `auto:health_critical` also once the SIM safety band is back to `fair` or better.\n`auto:sim_missing` and `device_revoked` resume through the SIM returning or re-verification, `auto:quarantine`\nthrough a successful test message or MyComm support, `admin` and `user_suspended` only through MyComm: these\nanswer `409 INVALID_STATE` with the channel's `status`, as does a channel that is not paused. Emits\n`channel.resumed`.\n"
       parameters:
         -
           name: id
@@ -14407,7 +14321,7 @@ paths:
       tags:
         - Channels
       summary: 'Disconnect a channel'
-      description: "Requires `channels:write`. → `disconnected` with `disconnect_reason: owner`; the number is released for use\nelsewhere and it leaves every line's senders. Its queued outbound messages move to another sender of their line\nof the same type (`line.failover`, reason `sender_removed`); pinned ones, and those whose line has no such\nsender left, fail with `CHANNEL_DISCONNECTED`. Lines and history stay readable and sends naming it get\n`CHANNEL_INACTIVE`. Emits `channel.disconnected`. A `pending_verification` channel that never\nconnected is deleted instead (`204`). An already disconnected channel is `409 INVALID_STATE`. The last\nactive or paused channel of a number the account verified as its own is `403 SECOND_FACTOR_REQUIRED`\n(`reason: not_a_user`): only the owner can let that number go, in the portal, with a second factor.\n"
+      description: "Requires `channels:write`. → `disconnected` with `disconnect_reason: owner`; the number is released for use\nelsewhere and it leaves every line's senders. Its queued outbound messages move to another sender of their line\nof the same type (`line.failover`, reason `sender_removed`); pinned ones, and those whose line has no such\nsender left, fail with `CHANNEL_DISCONNECTED`. Lines and history stay readable and sends naming it get\n`CHANNEL_INACTIVE`. Emits `channel.disconnected`. A `pending_verification` channel that never\nconnected is deleted instead (`204`). An already disconnected channel is `409 INVALID_STATE`. The last\nactive or paused channel of a number the user verified as its own is `403 SECOND_FACTOR_REQUIRED`\n(`reason: not_a_user`): only the owner can let that number go, in the portal, with a second factor.\n"
       parameters:
         -
           name: id
@@ -14475,7 +14389,7 @@ paths:
       tags:
         - Channels
       summary: 'Connect a SIM'
-      description: "Requires `channels:write`. Creates a channel in `pending_verification` for the SIM and asks\nthe person holding the phone to confirm the connection; while the prompt is open `verification.step` is\n`awaiting_confirmation` and `verification.confirmation.status` is `pending`. After the tap the phone texts a\n6-digit code to the number and catches it. The outcome arrives as `channel.connected` or\n`channel.verification_failed` and on `GET /v1/channels/{id}`. `address` is optional when the SIM reports its\nnumber or the platform's inbound probe is configured; otherwise `422 ADDRESS_REQUIRED`. A number already active\non a channel of the same account is moved to this SIM when verification succeeds. `404` when the phone or SIM is\nnot found in the account or outside the key's scope.\n"
+      description: "Requires `channels:write`. Creates a channel in `pending_verification` for the SIM and asks\nthe person holding the phone to confirm the connection; while the prompt is open `verification.step` is\n`awaiting_confirmation` and `verification.confirmation.status` is `pending`. After the tap the phone texts a\n6-digit code to the number and catches it. The outcome arrives as `channel.connected` or\n`channel.verification_failed` and on `GET /v1/channels/{id}`. `address` is optional when the SIM reports its\nnumber or the platform's inbound probe is configured; otherwise `422 ADDRESS_REQUIRED`. A number already active\non a channel of the same user is moved to this SIM when verification succeeds. `404` when the phone or SIM is\nnot found in the user or outside the key's scope.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -14684,7 +14598,7 @@ paths:
       tags:
         - Channels
       summary: 'List channels'
-      description: "Requires `channels:read`. Every channel of the account whatever its status, oldest first, unless a filter\nnarrows the list. `health_band` filters on the stored SIM safety band, so a number that was never evaluated\nmatches no band. A key restricted to lines sees only the channels of those lines.\n"
+      description: "Requires `channels:read`. Every channel of the user whatever its status, oldest first, unless a filter\nnarrows the list. `health_band` filters on the stored SIM safety band, so a number that was never evaluated\nmatches no band. A key restricted to lines sees only the channels of those lines.\n"
       parameters:
         -
           name: status
@@ -14808,7 +14722,7 @@ paths:
       tags:
         - Channels
       summary: 'Update the rate policy of a channel'
-      description: "Requires `channels:write`; a key restricted to lines never holds it. Sent keys are merged\ninto the current policy (nested objects key by key; a key sent as `null` clears it where the field allows\n`null`) and `rate_policy_source` becomes `custom`. `{\"reset_to_suggested\": true}` restores the suggestion\n(`rate_policy_source: suggested`) and clears the acknowledgement; it cannot be combined with policy fields.\nA body that changes nothing is `422 VALIDATION_FAILED`.\n\nChecks run in this order and the first failure answers:\n\n1. Shape and field bounds, `422 VALIDATION_FAILED`: every cap at least 1 and\n   `per_min <= per_15m <= per_hour <= per_day`, `interval_ms.min >= 60000 / ceiling.per_min`,\n   `interval_ms.max` between `min` and 600000, `bulk_hours` within 07:00 to 22:00 sender-local.\n2. Every cap at or below the channel's `rate_policy_ceiling`, else `422 ABOVE_PLATFORM_CEILING` with\n   `{field, value, ceiling, reason}` (`platform`, `country`, `override_limit`, `new_account` or\n   `restricted_country`). During the first 14 days of the account the suggestion is also the shortest wait\n   allowed: `interval_ms.min` below the suggested shortest wait, or `interval_ms.max` below the suggested\n   longest wait, answers `422 ABOVE_PLATFORM_CEILING` with `reason: new_account`; for these two fields `value`\n   and `ceiling` are waits in milliseconds and `ceiling` is the shortest wait allowed. A cap above its\n   ceiling is answered first. Acknowledging the risk never lifts a ceiling. After day 14 only step 1 limits a\n   wait. `rate_policy_ceiling` itself holds caps only.\n3. The risk of the result: saving `amber` or `red` needs `acknowledge_risk: true`, again\n   whenever the risk rises above the acknowledged level, else `422 RISK_ACKNOWLEDGEMENT_REQUIRED` with\n   `{risk, exceeds}`.\n\nSaving sets `acknowledged_risk_at` and is audited as `channel.rate_policy.updated`. While the SIM safety band is\n`poor` or `critical` a custom policy is also capped at the suggestion times the band factor; the\nstored policy is unchanged and applies again when the band recovers. `404` when the channel is not found in the\naccount.\n"
+      description: "Requires `channels:write`; a key restricted to lines never holds it. Sent keys are merged\ninto the current policy (nested objects key by key; a key sent as `null` clears it where the field allows\n`null`) and `rate_policy_source` becomes `custom`. `{\"reset_to_suggested\": true}` restores the suggestion\n(`rate_policy_source: suggested`) and clears the acknowledgement; it cannot be combined with policy fields.\nA body that changes nothing is `422 VALIDATION_FAILED`.\n\nChecks run in this order and the first failure answers:\n\n1. Shape and field bounds, `422 VALIDATION_FAILED`: every cap at least 1 and\n   `per_min <= per_15m <= per_hour <= per_day`, `interval_ms.min >= 60000 / ceiling.per_min`,\n   `interval_ms.max` between `min` and 600000, `bulk_hours` within 07:00 to 22:00 sender-local.\n2. Every cap at or below the channel's `rate_policy_ceiling`, else `422 ABOVE_PLATFORM_CEILING` with\n   `{field, value, ceiling, reason}` (`platform`, `country`, `override_limit`, `new_user` or\n   `restricted_country`). During the first 14 days of the user the suggestion is also the shortest wait\n   allowed: `interval_ms.min` below the suggested shortest wait, or `interval_ms.max` below the suggested\n   longest wait, answers `422 ABOVE_PLATFORM_CEILING` with `reason: new_user`; for these two fields `value`\n   and `ceiling` are waits in milliseconds and `ceiling` is the shortest wait allowed. A cap above its\n   ceiling is answered first. Acknowledging the risk never lifts a ceiling. After day 14 only step 1 limits a\n   wait. `rate_policy_ceiling` itself holds caps only.\n3. The risk of the result: saving `amber` or `red` needs `acknowledge_risk: true`, again\n   whenever the risk rises above the acknowledged level, else `422 RISK_ACKNOWLEDGEMENT_REQUIRED` with\n   `{risk, exceeds}`.\n\nSaving sets `acknowledged_risk_at` and is audited as `channel.rate_policy.updated`. While the SIM safety band is\n`poor` or `critical` a custom policy is also capped at the suggestion times the band factor; the\nstored policy is unchanged and applies again when the band recovers. `404` when the channel is not found in the\nuser.\n"
       parameters:
         -
           name: id
@@ -14864,7 +14778,7 @@ paths:
       tags:
         - Channels
       summary: 'List channel types'
-      description: "Requires `channels:read`. Every channel type with what this account can\nconnect and what each type can do, so a partner UI adapts without hard-coding SMS. `available` is `true` when\nthe type is enabled on the platform and allowed by the account's `settings.channels.allowed_types`; a type that\nhas not shipped yet carries `available_from`. In v1 only `android_sim` is available. The list is about the\naccount, not a line, so a key restricted to lines gets the full answer. Not paginated.\n"
+      description: "Requires `channels:read`. Every channel type with what this user can\nconnect and what each type can do, so a partner UI adapts without hard-coding SMS. `available` is `true` when\nthe type is enabled on the platform and allowed by the user's `settings.channels.allowed_types`; a type that\nhas not shipped yet carries `available_from`. In v1 only `android_sim` is available. The list is about the\nuser, not a line, so a key restricted to lines gets the full answer. Not paginated.\n"
       responses:
         200:
           description: 'Every channel type.'
@@ -14911,7 +14825,7 @@ paths:
       tags:
         - 'Contact fields'
       summary: 'List custom contact field definitions'
-      description: "Requires `contacts:read`. All definitions of the account ordered by `position`; not paginated.\n"
+      description: "Requires `contacts:read`. All definitions of the user ordered by `position`; not paginated.\n"
       responses:
         200:
           description: 'Every definition, ordered by `position`.'
@@ -14957,7 +14871,7 @@ paths:
       tags:
         - 'Contact fields'
       summary: 'Create a custom contact field'
-      description: "Requires `contacts:write`. `key` matches `^[a-z][a-z0-9_]{0,39}$` and is not reserved\n(`first_name`, `last_name`, `full_name`, `email`, `phone`, `language`, `group`); `key` and `type`\ncannot change later. `options` is required for `select` and refused for other types. An account has\nat most 100 fields. `position` defaults to after the last field.\n"
+      description: "Requires `contacts:write`. `key` matches `^[a-z][a-z0-9_]{0,39}$` and is not reserved\n(`first_name`, `last_name`, `full_name`, `email`, `phone`, `language`, `group`); `key` and `type`\ncannot change later. `options` is required for `select` and refused for other types. A user has\nat most 100 fields. `position` defaults to after the last field.\n"
       requestBody:
         required: true
         content:
@@ -15182,7 +15096,7 @@ paths:
       tags:
         - Contacts
       summary: 'Add an identity to a contact'
-      description: "Requires `contacts:write`. `type` is `phone` in v1 and the address is normalised to E.164\nwith the account country (`422 INVALID_NUMBER`); `whatsapp` and `telegram` identities are added with their\nchannels (`422 IDENTITY_TYPE_UNAVAILABLE` before). `sender_id` identities are created by MyComm from inbound\nonly (`422 INVALID_NUMBER`). A number another contact holds answers `409 IDENTITY_TAKEN` with\n`details.contact_id`; one this contact already holds answers `200` and creates nothing. A contact has at most\n10 identities. `is_primary: true` makes it the primary (the previous primary is unset and an automatic\n`display_name` follows it). Emits `contact.updated`. An opt-out of the number is never cleared.\n"
+      description: "Requires `contacts:write`. `type` is `phone` in v1 and the address is normalised to E.164\nwith the user's country (`422 INVALID_NUMBER`); `whatsapp` and `telegram` identities are added with their\nchannels (`422 IDENTITY_TYPE_UNAVAILABLE` before). `sender_id` identities are created by MyComm from inbound\nonly (`422 INVALID_NUMBER`). A number another contact holds answers `409 IDENTITY_TAKEN` with\n`details.contact_id`; one this contact already holds answers `200` and creates nothing. A contact has at most\n10 identities. `is_primary: true` makes it the primary (the previous primary is unset and an automatic\n`display_name` follows it). Emits `contact.updated`. An opt-out of the number is never cleared.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -15385,8 +15299,8 @@ paths:
       operationId: blockContactIdentity
       tags:
         - Contacts
-      summary: 'Block an identity account-wide'
-      description: "Requires `contacts:write`. Sets `blocked_at` for every line and channel of\nthe account. New outbound to the identity is refused (`CONTACT_BLOCKED`) and its `queued` outbound is cancelled\n(`message.cancelled`, reason `contact_blocked`). Inbound is still stored but is not counted as unread, runs no\nautomation, sends no notification and emits no `message.received` webhook; opt-out and opt-in keywords still\napply. Campaign recipients are skipped (`blocked`). Any identity can be blocked, a `sender_id` one included.\nIdempotent: blocking a blocked identity changes nothing. Emits `contact.updated`. An opt-out is neither set nor\ncleared.\n"
+      summary: 'Block an identity user-wide'
+      description: "Requires `contacts:write`. Sets `blocked_at` for every line and channel of\nthe user. New outbound to the identity is refused (`CONTACT_BLOCKED`) and its `queued` outbound is cancelled\n(`message.cancelled`, reason `contact_blocked`). Inbound is still stored but is not counted as unread, runs no\nautomation, sends no notification and emits no `message.received` webhook; opt-out and opt-in keywords still\napply. Campaign recipients are skipped (`blocked`). Any identity can be blocked, a `sender_id` one included.\nIdempotent: blocking a blocked identity changes nothing. Emits `contact.updated`. An opt-out is neither set nor\ncleared.\n"
       requestBody:
         required: false
         content:
@@ -15456,7 +15370,7 @@ paths:
       tags:
         - Contacts
       summary: 'Unblock an identity'
-      description: "Requires `contacts:write`. Clears `blocked_at`, account-wide. Nothing is replayed: messages\nreceived or cancelled while blocked stay as they are. Idempotent. Emits `contact.updated`. Send an empty JSON\nobject `{}` as the body.\n"
+      description: "Requires `contacts:write`. Clears `blocked_at`, user-wide. Nothing is replayed: messages\nreceived or cancelled while blocked stay as they are. Idempotent. Emits `contact.updated`. Send an empty JSON\nobject `{}` as the body.\n"
       requestBody:
         required: false
         content:
@@ -15519,7 +15433,7 @@ paths:
       tags:
         - Contacts
       summary: 'Opt a contact out everywhere'
-      description: "Requires `suppressions:write` (never held by a restricted key). Suppresses every identity of the\ncontact, on every channel, that is not suppressed yet: each gets a suppression with reason `api` and the\noptional `note`, a `consent_events` `opt_out` (method `api`) and a `contact.opted_out`, and its queued marketing\nis cancelled. Identities already suppressed, for any reason, are left unchanged and counted in\n`already_suppressed`, so repeating the call writes nothing new. All identities are suppressed in one\ntransaction. Undo is per identity with `POST /v1/suppressions/{id}/remove`. A contact that is deleted, unknown\nor in another account is `404`.\n"
+      description: "Requires `suppressions:write` (never held by a restricted key). Suppresses every identity of the\ncontact, on every channel, that is not suppressed yet: each gets a suppression with reason `api` and the\noptional `note`, a `consent_events` `opt_out` (method `api`) and a `contact.opted_out`, and its queued marketing\nis cancelled. Identities already suppressed, for any reason, are left unchanged and counted in\n`already_suppressed`, so repeating the call writes nothing new. All identities are suppressed in one\ntransaction. Undo is per identity with `POST /v1/suppressions/{id}/remove`. A contact that is deleted, unknown\nor of another user is `404`.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -15576,7 +15490,7 @@ paths:
       tags:
         - Contacts
       summary: 'Upsert a contact by phone number'
-      description: "Requires `contacts:write`. Finds the contact holding `identity` (the address is normalised to\nE.164 with the account country), including a soft-deleted one, which is restored. When found, the sent fields\nare merged as in `PATCH /v1/contacts/{id}` (top-level fields replace, `null` empties one; `custom_fields` merges\nkey by key, a `null` value removes a key) and the answer is `200`; otherwise a contact is created with that\nidentity as primary and the answer is `201`. `add_to_group_ids` only adds memberships. An opt-out of the number\nis never cleared. Emits `contact.created` or `contact.updated`. This is the call integrations use to keep MyComm\ncontacts in sync with their own customer records.\n"
+      description: "Requires `contacts:write`. Finds the contact holding `identity` (the address is normalised to\nE.164 with the user's country), including a soft-deleted one, which is restored. When found, the sent fields\nare merged as in `PATCH /v1/contacts/{id}` (top-level fields replace, `null` empties one; `custom_fields` merges\nkey by key, a `null` value removes a key) and the answer is `200`; otherwise a contact is created with that\nidentity as primary and the answer is `201`. `add_to_group_ids` only adds memberships. An opt-out of the number\nis never cleared. Emits `contact.created` or `contact.updated`. This is the call integrations use to keep MyComm\ncontacts in sync with their own customer records.\n"
       requestBody:
         required: true
         content:
@@ -15814,7 +15728,7 @@ paths:
       tags:
         - Contacts
       summary: 'List contacts'
-      description: "Requires `contacts:read`. Live (not soft-deleted) contacts of the account with cursor pagination. Comma lists match any of the values. `q` matches the name, email and any address\n(case-insensitive, at least 2 characters; a phone-like search is also matched against the digits of the\nstored number, so `3451234` finds `+923451234567`). `display_name` sorts with ICU collation; contacts without\na name sort first and ties break on `id`.\n"
+      description: "Requires `contacts:read`. Live (not soft-deleted) contacts of the user with cursor pagination. Comma lists match any of the values. `q` matches the name, email and any address\n(case-insensitive, at least 2 characters; a phone-like search is also matched against the digits of the\nstored number, so `3451234` finds `+923451234567`). `display_name` sorts with ICU collation; contacts without\na name sort first and ties break on `id`.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -15860,7 +15774,7 @@ paths:
         -
           name: smart_list_id
           in: query
-          description: 'Members of this smart list, evaluated live; an id that is not a smart list of the account answers `422`.'
+          description: 'Members of this smart list, evaluated live; an id that is not a smart list of the user answers `422`.'
           schema:
             $ref: '#/components/schemas/Uuid'
         -
@@ -15969,7 +15883,7 @@ paths:
       tags:
         - Contacts
       summary: 'Create a contact'
-      description: "Requires `contacts:write`. At least one identity; `phone` is the only type in v1 (`422 IDENTITY_TYPE_UNAVAILABLE`\nfor the others) and the address is normalised to E.164 using the account country (`422 INVALID_NUMBER`). A\nnumber held by another contact answers `409 IDENTITY_TAKEN` with `details.contact_id`. `custom_fields` keys must\nbe defined contact fields. `group_ids` adds the memberships. Emits `contact.created`.\n"
+      description: "Requires `contacts:write`. At least one identity; `phone` is the only type in v1 (`422 IDENTITY_TYPE_UNAVAILABLE`\nfor the others) and the address is normalised to E.164 using the user's country (`422 INVALID_NUMBER`). A\nnumber held by another contact answers `409 IDENTITY_TAKEN` with `details.contact_id`. `custom_fields` keys must\nbe defined contact fields. `group_ids` adds the memberships. Emits `contact.created`.\n"
       requestBody:
         required: true
         content:
@@ -16506,7 +16420,7 @@ paths:
       tags:
         - Conversations
       summary: "Block the conversation's contact identity"
-      description: "Convenience route: blocks the conversation's contact identity account-wide (every line and channel), exactly like `POST /v1/contacts/{id}/identities/{identity_id}/block`. Idempotent. Every conversation of that identity shows the same `blocked_at`. Requires `conversations:write`. A conversation outside the key's line scope answers 404.\n"
+      description: "Convenience route: blocks the conversation's contact identity user-wide (every line and channel), exactly like `POST /v1/contacts/{id}/identities/{identity_id}/block`. Idempotent. Every conversation of that identity shows the same `blocked_at`. Requires `conversations:write`. A conversation outside the key's line scope answers 404.\n"
       parameters:
         -
           name: id
@@ -16567,7 +16481,7 @@ paths:
       tags:
         - Conversations
       summary: "Unblock the conversation's contact identity"
-      description: "Clears `blocked_at` of the conversation's contact identity, account-wide. Nothing is replayed. Requires `conversations:write`. A conversation outside the key's line scope answers 404.\n"
+      description: "Clears `blocked_at` of the conversation's contact identity, user-wide. Nothing is replayed. Requires `conversations:write`. A conversation outside the key's line scope answers 404.\n"
       parameters:
         -
           name: id
@@ -16628,7 +16542,7 @@ paths:
       tags:
         - Conversations
       summary: 'Hand a conversation over to another line'
-      description: "Moves the conversation and its messages to another line of the account; the contact's next replies land on that\nline, also when it does not send through the conversation's channel. When the target line already has a\nconversation with the same contact, the two merge into it and the answer is that conversation. Emits\n`conversation.handed_over`. Requires `conversations:write`. The conversation and the target line must both be\nin the key's line scope (else 404). An archived target answers 422 `LINE_ARCHIVED`; the conversation's own line\nanswers 422 `VALIDATION_FAILED`. Queued outbound messages move with the conversation: an unpinned one then\nsends from the target line's senders (when its channel is not one of them, the next failover run hands it to\nthe target line's first healthy sender, `line.failover` with reason `sender_removed`); a `sender_pinned` one\nkeeps its channel.\n"
+      description: "Moves the conversation and its messages to another line of the user; the contact's next replies land on that\nline, also when it does not send through the conversation's channel. When the target line already has a\nconversation with the same contact, the two merge into it and the answer is that conversation. Emits\n`conversation.handed_over`. Requires `conversations:write`. The conversation and the target line must both be\nin the key's line scope (else 404). An archived target answers 422 `LINE_ARCHIVED`; the conversation's own line\nanswers 422 `VALIDATION_FAILED`. Queued outbound messages move with the conversation: an unpinned one then\nsends from the target line's senders (when its channel is not one of them, the next failover run hands it to\nthe target line's first healthy sender, `line.failover` with reason `sender_removed`); a `sender_pinned` one\nkeeps its channel.\n"
       parameters:
         -
           name: id
@@ -16800,7 +16714,7 @@ paths:
       tags:
         - Conversations
       summary: 'List conversations'
-      description: "Conversations of the account, newest `last_message_at` first, with cursor pagination.\nRequires `conversations:read`. A restricted key lists only the conversations of its lines. A conversation without\nmessages is not listed. Comma lists match any of the values. `q` matches the contact name, address and last message\npreview (case-insensitive, at least 2 characters).\n"
+      description: "Conversations of the user, newest `last_message_at` first, with cursor pagination.\nRequires `conversations:read`. A restricted key lists only the conversations of its lines. A conversation without\nmessages is not listed. Comma lists match any of the values. `q` matches the contact name, address and last message\npreview (case-insensitive, at least 2 characters).\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -17367,7 +17281,7 @@ paths:
       tags:
         - Devices
       summary: 'Resume a paused device'
-      description: "Requires `channels:write`. Ends a pause with `pause_reason: owner`; an `admin` pause ends only through MyComm\nand an `account_suspended` pause only when the account is reactivated (`409 INVALID_STATE`). A device that is not\npaused is returned unchanged.\n"
+      description: "Requires `channels:write`. Ends a pause with `pause_reason: owner`; an `admin` pause ends only through MyComm\nand an `user_suspended` pause only when the user is reactivated (`409 INVALID_STATE`). A device that is not\npaused is returned unchanged.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -17423,7 +17337,7 @@ paths:
       tags:
         - Devices
       summary: 'Revoke (unpair) a device'
-      description: "Requires `channels:write`. `status: revoked` with `revoked_reason: owner` (`partner` when a partner key calls\nit). Its channels become `paused` with `pause_reason: device_revoked`. Messages the phone holds are not\nre-queued: their leases are orphaned and the phone may still report them until `drain_until` (= `revoked_at` +\n24 h); any still unresolved then fail with `UNCONFIRMED`. The phone gets no further leases, its next heartbeat\ncarries an `unpair` action, and after `drain_until` every device call gets `410 DEVICE_REVOKED`. Emits\n`device.revoked`. Revoking a revoked device returns it unchanged. A device that carries the last active or\npaused channel of a number the account verified as its own is `403 SECOND_FACTOR_REQUIRED`\n(`reason: not_a_user`): only the owner can let that number go, in the portal, with a second factor.\n`revoked_reason` is also `replaced` (the numbers moved to a phone paired with a Replace code) or `stolen`\n(removed as stolen in the portal); both skip the drain, so `drain_until` is null.\n"
+      description: "Requires `channels:write`. `status: revoked` with `revoked_reason: owner` (`partner` when a partner key calls\nit). Its channels become `paused` with `pause_reason: device_revoked`. Messages the phone holds are not\nre-queued: their leases are orphaned and the phone may still report them until `drain_until` (= `revoked_at` +\n24 h); any still unresolved then fail with `UNCONFIRMED`. The phone gets no further leases, its next heartbeat\ncarries an `unpair` action, and after `drain_until` every device call gets `410 DEVICE_REVOKED`. Emits\n`device.revoked`. Revoking a revoked device returns it unchanged. A device that carries the last active or\npaused channel of a number the user verified as its own is `403 SECOND_FACTOR_REQUIRED`\n(`reason: not_a_user`): only the owner can let that number go, in the portal, with a second factor.\n`revoked_reason` is also `replaced` (the numbers moved to a phone paired with a Replace code) or `stolen`\n(removed as stolen in the portal); both skip the drain, so `drain_until` is null.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -17528,7 +17442,7 @@ paths:
       tags:
         - Exports
       summary: 'Request an export'
-      description: "The required ability depends on `type`: `messages_csv` needs `reports:read`, `contacts_csv` and\n`contact_json` need `contacts:read`, `campaign_report` needs `campaigns:read`, `account_zip` needs `account:write`.\n`messages_csv` takes the `GET /v1/messages` filters as `params`; `created_after` and `created_before` are required\nand at most 366 days apart. A key restricted to lines exports only its lines. The export is built\nasynchronously: poll `GET /v1/exports/{id}` or wait for the `export.completed` webhook.\n\nErrors: `422 VALIDATION_FAILED` (unknown `type` or invalid `params`), `403 ABILITY_MISSING`.\n"
+      description: "The required ability depends on `type`: `messages_csv` needs `reports:read`, `contacts_csv` and\n`contact_json` need `contacts:read`, `campaign_report` needs `campaigns:read`, `user_zip` needs `me:write`.\n`messages_csv` takes the `GET /v1/messages` filters as `params`; `created_after` and `created_before` are required\nand at most 366 days apart. A key restricted to lines exports only its lines. The export is built\nasynchronously: poll `GET /v1/exports/{id}` or wait for the `export.completed` webhook.\n\nErrors: `422 VALIDATION_FAILED` (unknown `type` or invalid `params`), `403 ABILITY_MISSING`.\n"
       requestBody:
         required: true
         content:
@@ -17618,7 +17532,7 @@ paths:
                 params:
                   type: object
                   additionalProperties: true
-                  description: "Per `type`. `messages_csv`: the `GET /v1/messages` filters, `created_after` and `created_before`\nrequired. `contacts_csv`: optional `group_id`, `smart_list_id`, `filter.q`, `contact_ids`,\n`columns`, `excel_bom`. `contact_json`: `contact_id`. `campaign_report`: `campaign_id`.\n`account_zip`: none.\n"
+                  description: "Per `type`. `messages_csv`: the `GET /v1/messages` filters, `created_after` and `created_before`\nrequired. `contacts_csv`: optional `group_id`, `smart_list_id`, `filter.q`, `contact_ids`,\n`columns`, `excel_bom`. `contact_json`: `contact_id`. `campaign_report`: `campaign_id`.\n`user_zip`: none.\n"
       responses:
         202:
           description: 'The export, `queued`.'
@@ -17736,7 +17650,7 @@ paths:
       tags:
         - Exports
       summary: 'Get an export with a fresh signed URL'
-      description: "Requires the ability of the export's type. A `completed` export carries a `url` signed for 15 minutes, refreshed on\nevery call; the URL is a secret. An export of another account answers `404 NOT_FOUND`.\n"
+      description: "Requires the ability of the export's type. A `completed` export carries a `url` signed for 15 minutes, refreshed on\nevery call; the URL is a secret. An export of another user answers `404 NOT_FOUND`.\n"
       responses:
         200:
           description: 'The export.'
@@ -17778,7 +17692,7 @@ paths:
       tags:
         - Groups
       summary: 'List groups'
-      description: "Requires `contacts:read`. Groups of the account sorted by `name` (default) with cursor pagination. `q` matches the name, case-insensitively.\n"
+      description: "Requires `contacts:read`. Groups of the user sorted by `name` (default) with cursor pagination. `q` matches the name, case-insensitively.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -17849,7 +17763,7 @@ paths:
       tags:
         - Groups
       summary: 'Create a group'
-      description: 'Requires `groups:write`. The name is unique per account, ignoring case (`409 NAME_TAKEN`).'
+      description: 'Requires `groups:write`. The name is unique per user, ignoring case (`409 NAME_TAKEN`).'
       requestBody:
         required: true
         content:
@@ -18521,7 +18435,7 @@ paths:
       tags:
         - Imports
       summary: 'Get an import'
-      description: "Requires `contacts:read`. Carries the totals and, once an error report exists, `error_report_url` signed for\n15 minutes and refreshed on every call (the URL is a secret). An import of another account answers `404 NOT_FOUND`.\n"
+      description: "Requires `contacts:read`. Carries the totals and, once an error report exists, `error_report_url` signed for\n15 minutes and refreshed on every call (the URL is a secret). An import of another user answers `404 NOT_FOUND`.\n"
       responses:
         200:
           description: 'The import.'
@@ -18626,7 +18540,7 @@ paths:
       tags:
         - Lines
       summary: 'Create a hosted link for a line'
-      description: "Requires `links:write`. A short-lived link to MyComm's hosted page for one of your lines: send your user's browser to\n`url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and joins\nan account that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the\nline as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's account),\n`manage` and `claim`. `url` is returned only here and is a bearer credential: treat it like a password. At most\n20 links of a line are open at once (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are created\nper line per hour (`429 RATE_LIMITED`). A detached line takes no new link (`422`), and detaching a line ends its\nopen links. A line this key does not see is `404 NOT_FOUND`. Partner keys use `POST /partner/v1/lines/{id}/links`.\n"
+      description: "Requires `links:write`. A short-lived link to MyComm's hosted page for one of your lines: send your user's browser to\n`url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and joins\na user that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the\nline as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's user),\n`manage` and `claim`. `url` is returned only here and is a bearer credential: treat it like a password. At most\n20 links of a line are open at once (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are created\nper line per hour (`429 RATE_LIMITED`). A detached line takes no new link (`422`), and detaching a line ends its\nopen links. A line this key does not see is `404 NOT_FOUND`. Partner keys use `POST /partner/v1/lines/{id}/links`.\n"
       requestBody:
         required: true
         content:
@@ -18860,7 +18774,7 @@ paths:
       tags:
         - Lines
       summary: 'Create an app line'
-      description: "Requires `channels:write`, which a key restricted to lines never holds. Adds an `app` line that sends through\n`senders` in order: the first entry is the primary unless one is marked `primary`, which is then placed first\n(the others keep their order), so the primary always sends first; the others are backups.\nEvery channel must be one of the account's, connected and verified, and appear once (`422 VALIDATION_FAILED`\non `senders`; a channel still pending verification or disconnected answers `422 CHANNEL_INACTIVE`).\n`409 NAME_TAKEN` `{field: \"name\"}` when another line of the account has the name (case-insensitive, the Direct\nline's included). A line without senders is allowed; it can send once it has one.\n"
+      description: "Requires `channels:write`, which a key restricted to lines never holds. Adds an `app` line that sends through\n`senders` in order: the first entry is the primary unless one is marked `primary`, which is then placed first\n(the others keep their order), so the primary always sends first; the others are backups.\nEvery channel must be one of the user's, connected and verified, and appear once (`422 VALIDATION_FAILED`\non `senders`; a channel still pending verification or disconnected answers `422 CHANNEL_INACTIVE`).\n`409 NAME_TAKEN` `{field: \"name\"}` when another line of the user has the name (case-insensitive, the Direct\nline's included). A line without senders is allowed; it can send once it has one.\n"
       x-error-codes:
         - VALIDATION_FAILED
         - CHANNEL_INACTIVE
@@ -19017,7 +18931,7 @@ paths:
       tags:
         - Lines
       summary: 'Update a line'
-      description: "Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a\nchannel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a\nkey set to `null` is removed). `409 NAME_TAKEN` `{field: \"name\"}` when another line of the account has the\nname (case-insensitive). The Direct line keeps its name: a different `name` answers `422 LINE_IS_DIRECT`\n`{line_id}`, while its other fields change as usual. `send_mode`, `sticky_sender` and `failover_seconds` set how\nthe line picks its sender; `failover_seconds` is merged lane by lane into the stored hold times (`null` restores\nthe defaults). `prefer` sets the channel type the line sends with first and `cross_type_fallback` (merged into the\nstored value) resends an undelivered message through the next type; a fallback may double the cost of a message.\n`on_unconfirmed` decides what happens to a message an unpaired phone never confirmed, and `alarm_thresholds`\n(merged into the stored values, `null` restores the defaults) when the line's `line.alarm` fires.\nThe sender list changes with `PUT /lines/{id}/senders`.\n"
+      description: "Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a\nchannel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a\nkey set to `null` is removed). `409 NAME_TAKEN` `{field: \"name\"}` when another line of the user has the\nname (case-insensitive). The Direct line keeps its name: a different `name` answers `422 LINE_IS_DIRECT`\n`{line_id}`, while its other fields change as usual. `send_mode`, `sticky_sender` and `failover_seconds` set how\nthe line picks its sender; `failover_seconds` is merged lane by lane into the stored hold times (`null` restores\nthe defaults). `prefer` sets the channel type the line sends with first and `cross_type_fallback` (merged into the\nstored value) resends an undelivered message through the next type; a fallback may double the cost of a message.\n`on_unconfirmed` decides what happens to a message an unpaired phone never confirmed, and `alarm_thresholds`\n(merged into the stored values, `null` restores the defaults) when the line's `line.alarm` fires.\nThe sender list changes with `PUT /lines/{id}/senders`.\n"
       x-error-codes:
         - VALIDATION_FAILED
         - NAME_TAKEN
@@ -19293,7 +19207,7 @@ paths:
       tags:
         - Lines
       summary: "Replace a line's senders"
-      description: "Requires `channels:write`. Replaces the whole list; the order is the position (0 first). At most one entry is\n`primary`; with none marked the first entry is. A marked primary is placed first and the others keep their\norder, so role and position always agree. An entry without a role is a `backup`. Every channel must be\none of the account's, not disconnected, and appear once (`422 VALIDATION_FAILED` on `senders`). An empty list\nleaves the line without senders: sends from it are held (`no_sender_available`). Fires\n`line.sender_changed`. Queued messages on a sender that left the list move to the next healthy sender.\n"
+      description: "Requires `channels:write`. Replaces the whole list; the order is the position (0 first). At most one entry is\n`primary`; with none marked the first entry is. A marked primary is placed first and the others keep their\norder, so role and position always agree. An entry without a role is a `backup`. Every channel must be\none of the user's, not disconnected, and appear once (`422 VALIDATION_FAILED` on `senders`). An empty list\nleaves the line without senders: sends from it are held (`no_sender_available`). Fires\n`line.sender_changed`. Queued messages on a sender that left the list move to the next healthy sender.\n"
       x-error-codes:
         - VALIDATION_FAILED
       requestBody:
@@ -19363,13 +19277,99 @@ paths:
           $ref: '#/components/responses/InternalError'
         503:
           $ref: '#/components/responses/ServiceUnavailable'
+  /me:
+    get:
+      operationId: getMe
+      tags:
+        - Me
+      summary: 'Get the user'
+      description: "The user the key belongs to. Needs no ability and also works for a\nsuspended user. `settings` is the user's settings without `notifications` and\n`onboarding`, which concern the portal only.\n"
+      responses:
+        200:
+          description: 'The user.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+      x-codeSamples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl -X GET \"$MYCOMM_URL/v1/me\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+    patch:
+      operationId: updateMe
+      tags:
+        - Me
+      summary: 'Update the user'
+      description: "Requires `me:write`. `settings` is deep-merged: arrays are replaced whole, language\nmaps merge key by key and `null` removes a language. `settings.limits` is read-only for\nuser keys (`422 VALIDATION_FAILED`). Changes are audit-logged.\n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        200:
+          description: 'The updated user.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          $ref: '#/components/responses/Unprocessable'
+        429:
+          $ref: '#/components/responses/RateLimited'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
   /media:
     post:
       operationId: uploadMedia
       tags:
         - Media
       summary: 'Upload an image'
-      description: "Requires `media:write`. `multipart/form-data` with one part `file` of at most 10 MB. The type is\nsniffed from the content (`image/jpeg`, `image/png`, `image/gif`, `image/webp`), never taken from the header or\nthe file name. The upload is stored with `purpose: message`; reference its `id` from a message. An upload still\nunattached after 24 hours is deleted. Rate limit: 60 requests per minute per account.\n\nErrors: `413 PAYLOAD_TOO_LARGE` (over 10 MB), `422 MEDIA_TYPE_UNSUPPORTED`, `422 VALIDATION_FAILED` (no `file` part).\n"
+      description: "Requires `media:write`. `multipart/form-data` with one part `file` of at most 10 MB. The type is\nsniffed from the content (`image/jpeg`, `image/png`, `image/gif`, `image/webp`), never taken from the header or\nthe file name. The upload is stored with `purpose: message`; reference its `id` from a message. An upload still\nunattached after 24 hours is deleted. Rate limit: 60 requests per minute per user.\n\nErrors: `413 PAYLOAD_TOO_LARGE` (over 10 MB), `422 MEDIA_TYPE_UNSUPPORTED`, `422 VALIDATION_FAILED` (no `file` part).\n"
       requestBody:
         required: true
         content:
@@ -19558,7 +19558,7 @@ paths:
       tags:
         - Messages
       summary: 'Retry a message'
-      description: "Re-queues the same message (same id, `reference_id` and conversation position) from `failed` or `expired`. Requires `messages:send`. `attempts` is reset, the failure fields are cleared and\n`expires_at` is set to now plus the lane default. Compliance and channel and account state are checked again.\n`acknowledge_possible_duplicate` must be `true` to retry a message whose `failure.code` is `UNCONFIRMED`; it is ignored otherwise.\nErrors: `409 NOT_RETRYABLE` (`details.status`, `details.failure_code`; not `failed` or `expired`, inbound, or `UNCONFIRMED`\nwithout acknowledgement), `409 RETRY_LIMIT_REACHED` (5 manual retries), and `422` `RECIPIENT_OPTED_OUT`, `CONTACT_BLOCKED`,\n`CHANNEL_INACTIVE` or `LINE_ARCHIVED`. A message outside the key's line scope answers 404.\n"
+      description: "Re-queues the same message (same id, `reference_id` and conversation position) from `failed` or `expired`. Requires `messages:send`. `attempts` is reset, the failure fields are cleared and\n`expires_at` is set to now plus the lane default. Compliance and channel and user state are checked again.\n`acknowledge_possible_duplicate` must be `true` to retry a message whose `failure.code` is `UNCONFIRMED`; it is ignored otherwise.\nErrors: `409 NOT_RETRYABLE` (`details.status`, `details.failure_code`; not `failed` or `expired`, inbound, or `UNCONFIRMED`\nwithout acknowledgement), `409 RETRY_LIMIT_REACHED` (5 manual retries), and `422` `RECIPIENT_OPTED_OUT`, `CONTACT_BLOCKED`,\n`CHANNEL_INACTIVE` or `LINE_ARCHIVED`. A message outside the key's line scope answers 404.\n"
       parameters:
         -
           name: id
@@ -19624,7 +19624,7 @@ paths:
       tags:
         - Messages
       summary: 'Send up to 1,000 messages'
-      description: "Sends 1-1,000 messages in one call. Requires `messages:send`. Each item has the fields of\n`POST /v1/messages` except `dry_run`; `defaults` supplies any field an item omits and the item's value wins.\n`category` is required on every item, in the item or in `defaults` (there is no implicit `transactional` here).\n\nItems are accepted or rejected independently, in order: the answer is always `200` with a `summary` and one\n`results[]` entry per item, also when every item was rejected. An item error carries the code of the matching single\nsend (`INVALID_NUMBER`, `CATEGORY_REQUIRED`, `RECIPIENT_OPTED_OUT`, ...). A `reference_id` already used by the\naccount, or earlier in the same batch, rejects that item with `REFERENCE_ID_EXISTS`.\n\n`Idempotency-Key` covers the whole batch: a repeat replays the stored `200`. `dry_run: true` runs every item through\nthe same checks and stores nothing; accepted entries then carry a message preview with `id` and `status` null.\n\nEnvelope problems answer `422` and nothing is processed: `BATCH_TOO_LARGE` (`details.max`, 1,000) or\n`VALIDATION_FAILED`.\n"
+      description: "Sends 1-1,000 messages in one call. Requires `messages:send`. Each item has the fields of\n`POST /v1/messages` except `dry_run`; `defaults` supplies any field an item omits and the item's value wins.\n`category` is required on every item, in the item or in `defaults` (there is no implicit `transactional` here).\n\nItems are accepted or rejected independently, in order: the answer is always `200` with a `summary` and one\n`results[]` entry per item, also when every item was rejected. An item error carries the code of the matching single\nsend (`INVALID_NUMBER`, `CATEGORY_REQUIRED`, `RECIPIENT_OPTED_OUT`, ...). A `reference_id` already used by the\nuser, or earlier in the same batch, rejects that item with `REFERENCE_ID_EXISTS`.\n\n`Idempotency-Key` covers the whole batch: a repeat replays the stored `200`. `dry_run: true` runs every item through\nthe same checks and stores nothing; accepted entries then carry a message preview with `id` and `status` null.\n\nEnvelope problems answer `422` and nothing is processed: `BATCH_TOO_LARGE` (`details.max`, 1,000) or\n`VALIDATION_FAILED`.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -19682,7 +19682,7 @@ paths:
                         status: accepted
                         message:
                           id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                          account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                          user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                           channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                           channel_type: android_sim
                           line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -19812,7 +19812,7 @@ paths:
       tags:
         - Messages
       summary: 'Send one message'
-      description: "Queues one message. Requires `messages:send`. The line decides the channel: give\n`line_id`, `channel_id` or `from` (the key's single line is used when it is restricted to exactly one).\nThe recipient is `to` or `contact_id`. The content is the `content` union or one of the shorthand fields\n(`body`, `media_ids`).\n\nAnswers `202` with the message resource (`status: queued`) plus `warnings[]` (empty when none; for example\n`CHANNEL_OPTIONS_IGNORED`). A message is accepted while the phone is offline or the channel is paused; it waits\nwith `hold_reason` `device_offline`, `device_paused` or `channel_paused`.\n\n`Idempotency-Key` replays the stored `202` for the same request. A `reference_id` already used by the account\nwithout a matching key answers `409 REFERENCE_ID_EXISTS` with `details.message_id` and the existing message in\n`details.message`; nothing is created. Every acceptance rejection answers `422` with its own code\n(`CATEGORY_REQUIRED`, `SEND_AFTER_TOO_FAR`, `INVALID_NUMBER`, `RECIPIENT_OPTED_OUT`, `CHANNEL_INACTIVE`, ...) and the\n`details` listed per code in the error reference. Shape errors (including `metadata` over 2 KB or 50 keys, or non-scalar values) answer\n`422 VALIDATION_FAILED` with `details.fields`. A line, channel or contact outside the key's scope answers 404.\n\nWith `dry_run: true` the same validation and acceptance errors apply, but nothing is stored,\nqueued or sent and the answer is `200` with the would-be message: `dry_run: true`, `id`, `conversation_id`,\n`status` and the timestamps `null`, `contact_id` `null` for a new number, and the computed `encoding`,\n`segments`, `type`, `hold_reason` and `expires_at`. `hold_reason` predicts compliance and scheduling holds only.\n`Idempotency-Key` and `reference_id` are checked but not consumed.\n"
+      description: "Queues one message. Requires `messages:send`. The line decides the channel: give\n`line_id`, `channel_id` or `from` (the key's single line is used when it is restricted to exactly one).\nThe recipient is `to` or `contact_id`. The content is the `content` union or one of the shorthand fields\n(`body`, `media_ids`).\n\nAnswers `202` with the message resource (`status: queued`) plus `warnings[]` (empty when none; for example\n`CHANNEL_OPTIONS_IGNORED`). A message is accepted while the phone is offline or the channel is paused; it waits\nwith `hold_reason` `device_offline`, `device_paused` or `channel_paused`.\n\n`Idempotency-Key` replays the stored `202` for the same request. A `reference_id` already used by the user\nwithout a matching key answers `409 REFERENCE_ID_EXISTS` with `details.message_id` and the existing message in\n`details.message`; nothing is created. Every acceptance rejection answers `422` with its own code\n(`CATEGORY_REQUIRED`, `SEND_AFTER_TOO_FAR`, `INVALID_NUMBER`, `RECIPIENT_OPTED_OUT`, `CHANNEL_INACTIVE`, ...) and the\n`details` listed per code in the error reference. Shape errors (including `metadata` over 2 KB or 50 keys, or non-scalar values) answer\n`422 VALIDATION_FAILED` with `details.fields`. A line, channel or contact outside the key's scope answers 404.\n\nWith `dry_run: true` the same validation and acceptance errors apply, but nothing is stored,\nqueued or sent and the answer is `200` with the would-be message: `dry_run: true`, `id`, `conversation_id`,\n`status` and the timestamps `null`, `contact_id` `null` for a new number, and the computed `encoding`,\n`segments`, `type`, `hold_reason` and `expires_at`. `hold_reason` predicts compliance and scheduling holds only.\n`Idempotency-Key` and `reference_id` are checked but not consumed.\n"
       x-error-codes:
         - VALIDATION_FAILED
         - LINE_REQUIRED
@@ -19953,7 +19953,7 @@ paths:
                   summary: 'Accepted and queued'
                   value:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                    account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                    user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                     channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                     channel_type: android_sim
                     line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -20019,7 +20019,7 @@ paths:
                   summary: 'Accepted with a warning'
                   value:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                    account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                    user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                     channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                     channel_type: android_sim
                     line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -20090,7 +20090,7 @@ paths:
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
-          description: '403 WRONG_KEY_KIND, ABILITY_MISSING, IP_NOT_ALLOWED, LINE_CONTEXT_INVALID, PARTNER_ROUTE_NOT_ALLOWED, ACCOUNT_SUSPENDED, ACCOUNT_PENDING_DELETION or PARTNER_ACCESS_REVOKED.'
+          description: '403 WRONG_KEY_KIND, ABILITY_MISSING, IP_NOT_ALLOWED, LINE_CONTEXT_INVALID, PARTNER_ROUTE_NOT_ALLOWED, USER_SUSPENDED, USER_PENDING_DELETION or PARTNER_ACCESS_REVOKED.'
           headers:
             MyComm-Request-Id:
               $ref: '#/components/headers/MyComm-Request-Id'
@@ -20358,7 +20358,7 @@ paths:
       tags:
         - Messages
       summary: 'List and search messages'
-      description: "Messages of the account, newest first, with cursor pagination. Requires `messages:read`.\nA restricted key lists only the messages of its lines. Comma lists match any of the values.\n`q` is a full-text search on `body` (at least 2 characters, Postgres `simple` configuration, so Urdu and Roman Urdu\nmatch word by word) and always sorts newest first.\n"
+      description: "Messages of the user, newest first, with cursor pagination. Requires `messages:read`.\nA restricted key lists only the messages of its lines. Comma lists match any of the values.\n`q` is a full-text search on `body` (at least 2 characters, Postgres `simple` configuration, so Urdu and Roman Urdu\nmatch word by word) and always sorts newest first.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -20690,7 +20690,7 @@ paths:
       tags:
         - Devices
       summary: 'Create a pairing code'
-      description: "Requires `channels:write`. The code is 8 Crockford base32 characters, single\nuse and valid for 10 minutes. At most 20 codes are pending and 60 are created per account per hour\n(`429 PAIRING_CODE_LIMIT_REACHED` with `retry_after_seconds` and a `Retry-After` header). Render `qr_payload` as-is as a QR code.\n"
+      description: "Requires `channels:write`. The code is 8 Crockford base32 characters, single\nuse and valid for 10 minutes. At most 20 codes are pending and 60 are created per user per hour\n(`429 PAIRING_CODE_LIMIT_REACHED` with `retry_after_seconds` and a `Retry-After` header). Render `qr_payload` as-is as a QR code.\n"
       requestBody:
         required: false
         content:
@@ -20837,7 +20837,7 @@ paths:
       tags:
         - 'Smart lists'
       summary: 'List smart lists'
-      description: "Requires `contacts:read`. Smart lists of the account sorted by `name` (default) with cursor pagination. `q` matches the name, case-insensitively.\n"
+      description: "Requires `contacts:read`. Smart lists of the user sorted by `name` (default) with cursor pagination. `q` matches the name, case-insensitively.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -20908,7 +20908,7 @@ paths:
       tags:
         - 'Smart lists'
       summary: 'Create a smart list'
-      description: "Requires `groups:write`. `filter` is the smart list filter language; a filter that breaks it answers\n`422 FILTER_INVALID` with `details.pointer`, a JSON pointer to the bad node. The name is unique per account,\nignoring case (`409 NAME_TAKEN`).\n"
+      description: "Requires `groups:write`. `filter` is the smart list filter language; a filter that breaks it answers\n`422 FILTER_INVALID` with `details.pointer`, a JSON pointer to the bad node. The name is unique per user,\nignoring case (`409 NAME_TAKEN`).\n"
       requestBody:
         required: true
         content:
@@ -21390,7 +21390,7 @@ paths:
       tags:
         - Reports
       summary: 'Daily counters'
-      description: "Requires `reports:read`. Counters per calendar day in the account time zone, from\n`usage_daily`. `from` and `to` are inclusive and span at most 366 days (`422 RANGE_TOO_LARGE`, details\n`{max_days: 366}`). With `group_by=none` every day is present, zeros included, and the response is not\npaginated. Grouped results contain rows only where there was traffic, ordered by `date` then the group key,\nand are paginated with `cursor`. A key restricted to lines sees its lines only and may group by `none` or\n`line`; other values give `VALIDATION_FAILED`.\n"
+      description: "Requires `reports:read`. Counters per calendar day in the user's time zone, from\n`usage_daily`. `from` and `to` are inclusive and span at most 366 days (`422 RANGE_TOO_LARGE`, details\n`{max_days: 366}`). With `group_by=none` every day is present, zeros included, and the response is not\npaginated. Grouped results contain rows only where there was traffic, ordered by `date` then the group key,\nand are paginated with `cursor`. A key restricted to lines sees its lines only and may group by `none` or\n`line`; other values give `VALIDATION_FAILED`.\n"
       parameters:
         -
           name: from
@@ -21519,7 +21519,7 @@ paths:
       tags:
         - Reports
       summary: 'Period summary and live state'
-      description: "Requires `reports:read`. One call for a dashboard header. `totals` are sums of\n`usage_daily` over the inclusive range (calendar days in the account time zone, at most 366 days:\n`422 RANGE_TOO_LARGE`, details `{max_days: 366}`). `delivery_rate` is delivered over sent on channels with\ndelivery reports; `read_rate` is `null` when the account has no read-capable channel; a rate is `null`\nwhen there is nothing to divide by. `failures_by_code` counts outbound messages whose `failed_at` falls in\nthe range. `queue_now`, `channels` and `devices` are current counts. A key restricted to lines gets\nfigures for its lines, channels and devices only.\n"
+      description: "Requires `reports:read`. One call for a dashboard header. `totals` are sums of\n`usage_daily` over the inclusive range (calendar days in the user's time zone, at most 366 days:\n`422 RANGE_TOO_LARGE`, details `{max_days: 366}`). `delivery_rate` is delivered over sent on channels with\ndelivery reports; `read_rate` is `null` when the user has no read-capable channel; a rate is `null`\nwhen there is nothing to divide by. `failures_by_code` counts outbound messages whose `failed_at` falls in\nthe range. `queue_now`, `channels` and `devices` are current counts. A key restricted to lines gets\nfigures for its lines, channels and devices only.\n"
       parameters:
         -
           name: from
@@ -21576,7 +21576,7 @@ paths:
       tags:
         - Suppressions
       summary: 'List suppressions'
-      description: "Requires `suppressions:read`. The account's suppressed identities, newest first, with cursor pagination. Suppressions belong to the account, not to a line: a restricted key sees the\nwhole list. Comma lists match any of the values. A phone number in `address` written without country code is\nread in the account country. Only `marketing` traffic is blocked by a suppression.\n"
+      description: "Requires `suppressions:read`. The user's suppressed identities, newest first, with cursor pagination. Suppressions belong to the user, not to a line: a restricted key sees the\nwhole list. Comma lists match any of the values. A phone number in `address` written without country code is\nread in the user's country. Only `marketing` traffic is blocked by a suppression.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -21672,7 +21672,7 @@ paths:
       tags:
         - Suppressions
       summary: 'Suppress a number'
-      description: "Requires `suppressions:write` (never held by a restricted key). `identity_type` defaults to\n`phone` (the only type in v1) and `reason` to `api`; the API may write `api`, `complaint` or `dnc`. The address\nis stored in E.164 (a number without country code is read in the account country; one that is not a valid\nnumber is `422 VALIDATION_FAILED` with `INVALID_NUMBER` on `address`). A new suppression answers `201`, writes\na `consent_events` `opt_out` (method `api`) and emits `contact.opted_out`; the identity's queued marketing is\ncancelled. A number that is already suppressed, for any reason, answers `200` with the existing row unchanged.\nWith the account setting `opt_out.scope: contact`, a number that belongs to a contact suppresses every identity\nof that contact not suppressed yet, each with its own consent event and `contact.opted_out`, as a STOP reply\ndoes; the answer is still the row of the number given.\n"
+      description: "Requires `suppressions:write` (never held by a restricted key). `identity_type` defaults to\n`phone` (the only type in v1) and `reason` to `api`; the API may write `api`, `complaint` or `dnc`. The address\nis stored in E.164 (a number without country code is read in the user's country; one that is not a valid\nnumber is `422 VALIDATION_FAILED` with `INVALID_NUMBER` on `address`). A new suppression answers `201`, writes\na `consent_events` `opt_out` (method `api`) and emits `contact.opted_out`; the identity's queued marketing is\ncancelled. A number that is already suppressed, for any reason, answers `200` with the existing row unchanged.\nWith the user's setting `opt_out.scope: contact`, a number that belongs to a contact suppresses every identity\nof that contact not suppressed yet, each with its own consent event and `contact.opted_out`, as a STOP reply\ndoes; the answer is still the row of the number given.\n"
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
@@ -21743,7 +21743,7 @@ paths:
       tags:
         - Suppressions
       summary: 'Remove a suppression'
-      description: "Requires `suppressions:write`. Deletes the suppression, writes a `consent_events` `opt_in` (method `api`, the\nnote) and emits `contact.opted_in`; the `opt_out` consent event stays (the consent trail is append-only).\n`consent_note` is required when the suppression's `reason` is `keyword`: without it the answer is\n`422 CONSENT_NOTE_REQUIRED` and the number stays suppressed. `204`. A suppression that is\nabsent or in another account is `404`.\n"
+      description: "Requires `suppressions:write`. Deletes the suppression, writes a `consent_events` `opt_in` (method `api`, the\nnote) and emits `contact.opted_in`; the `opt_out` consent event stays (the consent trail is append-only).\n`consent_note` is required when the suppression's `reason` is `keyword`: without it the answer is\n`422 CONSENT_NOTE_REQUIRED` and the number stays suppressed. `204`. A suppression that is\nabsent or of another user is `404`.\n"
       parameters:
         -
           name: id
@@ -21801,7 +21801,7 @@ paths:
       tags:
         - Suppressions
       summary: 'Check whether an address is suppressed'
-      description: "Requires `suppressions:read`. `address` is the E.164 number (a number without country code is read in the\naccount country; one that is not a valid number is `422 VALIDATION_FAILED` with `INVALID_NUMBER` on\n`address`). `identity_type` defaults to `phone`. The answer echoes the normalised address.\n"
+      description: "Requires `suppressions:read`. `address` is the E.164 number (a number without country code is read in the\nuser's country; one that is not a valid number is `422 VALIDATION_FAILED` with `INVALID_NUMBER` on\n`address`). `identity_type` defaults to `phone`. The answer echoes the normalised address.\n"
       parameters:
         -
           name: address
@@ -21862,7 +21862,7 @@ paths:
       tags:
         - Suppressions
       summary: 'List consent events'
-      description: "Requires `suppressions:read`. The account's consent audit trail, newest first, with cursor pagination: every `opt_out` and `opt_in` with its method, keyword, message, actor and note. The trail\nis append-only; it outlives the suppression it records and the contact's erasure. Comma lists match any of\nthe values. A phone number in `address` written without country code is read in the account country.\n"
+      description: "Requires `suppressions:read`. The user's consent audit trail, newest first, with cursor pagination: every `opt_out` and `opt_in` with its method, keyword, message, actor and note. The trail\nis append-only; it outlives the suppression it records and the contact's erasure. Comma lists match any of\nthe values. A phone number in `address` written without country code is read in the user's country.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -21969,7 +21969,7 @@ paths:
       tags:
         - Templates
       summary: 'List templates'
-      description: "Requires `templates:read`. Templates of the account sorted by `name` (default) with cursor pagination. Archived templates are hidden unless `archived=true`, which lists only them.\n"
+      description: "Requires `templates:read`. Templates of the user sorted by `name` (default) with cursor pagination. Archived templates are hidden unless `archived=true`, which lists only them.\n"
       parameters:
         -
           $ref: '#/components/parameters/limit'
@@ -22054,7 +22054,7 @@ paths:
       tags:
         - Templates
       summary: 'Create a template'
-      description: "Requires `templates:write`. `body` uses the variable syntax (`{{ name }}`,\n`{{ name | \"fallback\" }}`); a syntax error answers `422 TEMPLATE_INVALID` with `details.position`. Names are\nunique among non-archived templates, ignoring case (`409 NAME_TAKEN`). A body linking through a public URL\nshortener answers `422 LINK_PUBLIC_SHORTENER`, one estimated over 10 SMS parts `422 BODY_TOO_LONG`. Variables\nthat are neither contact nor custom fields are allowed (they must be supplied at send) and listed in\n`warnings`. `media_id` must be a media item of the account.\n"
+      description: "Requires `templates:write`. `body` uses the variable syntax (`{{ name }}`,\n`{{ name | \"fallback\" }}`); a syntax error answers `422 TEMPLATE_INVALID` with `details.position`. Names are\nunique among non-archived templates, ignoring case (`409 NAME_TAKEN`). A body linking through a public URL\nshortener answers `422 LINK_PUBLIC_SHORTENER`, one estimated over 10 SMS parts `422 BODY_TOO_LONG`. Variables\nthat are neither contact nor custom fields are allowed (they must be supplied at send) and listed in\n`warnings`. `media_id` must be a media item of the user.\n"
       requestBody:
         required: true
         content:
@@ -22439,7 +22439,7 @@ paths:
       tags:
         - Templates
       summary: 'Render a template'
-      description: "Requires `templates:read`, and `contacts:read` when `contact_id` is given (`403 ABILITY_MISSING` otherwise).\nRenders the saved body exactly as a send renders it for one recipient:\n`variables` first, then the fields of `contact_id` (a contact of the account), then account\nfields, then each variable's fallback. A variable without value or fallback renders empty and is listed in\n`missing_variables`, as a send does. Values are plain text and are never evaluated as template syntax; values\nover 500 characters are cut to 500. With `shorten_links`, each URL a send would shorten shows as a placeholder\nlink on the active short domain (`https://{domain}/l/xxxxxxx`, the length of a real short link) and counts at\nthat length; with no active short domain links stay as written, as in a send. Smart character replacement\nfollows the account setting `sms.smart_replace`. `non_gsm_characters` lists the characters\nthat force UCS-2. Nothing is written.\n"
+      description: "Requires `templates:read`, and `contacts:read` when `contact_id` is given (`403 ABILITY_MISSING` otherwise).\nRenders the saved body exactly as a send renders it for one recipient:\n`variables` first, then the fields of `contact_id` (a contact of the user), then user\nfields, then each variable's fallback. A variable without value or fallback renders empty and is listed in\n`missing_variables`, as a send does. Values are plain text and are never evaluated as template syntax; values\nover 500 characters are cut to 500. With `shorten_links`, each URL a send would shorten shows as a placeholder\nlink on the active short domain (`https://{domain}/l/xxxxxxx`, the length of a real short link) and counts at\nthat length; with no active short domain links stay as written, as in a send. Smart character replacement\nfollows the user's setting `sms.smart_replace`. `non_gsm_characters` lists the characters\nthat force UCS-2. Nothing is written.\n"
       requestBody:
         required: true
         content:
@@ -22837,7 +22837,7 @@ paths:
       tags:
         - Webhooks
       summary: 'Create a webhook endpoint'
-      description: "Requires `webhooks:write`. The `url` must be `https`, carry no credentials and resolve only to public\naddresses. `events` empty or omitted means every event except the opt-in ones. `line_ids` and\n`channel_types` `null` mean all. At most 20 endpoints per account. A restricted key's endpoint defaults to\n(and must stay inside) its lines, takes the key's channel types and cannot set `partner_lines`.\nThe `secret` is shown once, in this response.\n"
+      description: "Requires `webhooks:write`. The `url` must be `https`, carry no credentials and resolve only to public\naddresses. `events` empty or omitted means every event except the opt-in ones. `line_ids` and\n`channel_types` `null` mean all. At most 20 endpoints per user. A restricted key's endpoint defaults to\n(and must stay inside) its lines, takes the key's channel types and cannot set `partner_lines`.\nThe `secret` is shown once, in this response.\n"
       requestBody:
         required: true
         content:
@@ -22885,7 +22885,7 @@ paths:
                 partner_lines:
                   type: boolean
                   default: false
-                  description: "Also receive the events of the lines you made for your users with the partner API (events\nwhose `line_id` is one of your partner lines), and nothing else of their accounts. `line_ids`\nmay then name partner lines too, to narrow it. Only on an approved partner's own account,\nnever with a restricted key.\n"
+                  description: "Also receive the events of the lines you made for your users with the partner API (events\nwhose `line_id` is one of your partner lines), and nothing else of those users. `line_ids`\nmay then name partner lines too, to narrow it. Only on an approved partner's own endpoints,\nnever with a restricted key.\n"
       responses:
         201:
           description: 'The new endpoint, including its `secret`.'
@@ -23034,7 +23034,7 @@ paths:
                       type: 'null'
                 partner_lines:
                   type: boolean
-                  description: "Only on an approved partner's own account, never with a restricted key. Turning it off while\n`line_ids` names partner lines is refused.\n"
+                  description: "Only on an approved partner's own endpoints, never with a restricted key. Turning it off while\n`line_ids` names partner lines is refused.\n"
                 active:
                   type: boolean
       responses:
@@ -23283,7 +23283,7 @@ webhooks:
                   type: campaign.scheduled
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23366,7 +23366,7 @@ webhooks:
                   type: campaign.unscheduled
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23449,7 +23449,7 @@ webhooks:
                   type: campaign.started
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23529,7 +23529,7 @@ webhooks:
                   type: campaign.paused
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23612,7 +23612,7 @@ webhooks:
                   type: campaign.resumed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23695,7 +23695,7 @@ webhooks:
                   type: campaign.completed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23775,7 +23775,7 @@ webhooks:
                   type: campaign.cancelled
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23858,7 +23858,7 @@ webhooks:
                   type: contact.created
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23918,7 +23918,7 @@ webhooks:
                   type: contact.updated
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23980,7 +23980,7 @@ webhooks:
                   type: contact.deleted
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24013,7 +24013,7 @@ webhooks:
                   type: import.completed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24062,7 +24062,7 @@ webhooks:
                   type: import.failed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24111,7 +24111,7 @@ webhooks:
                   type: export.completed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24151,7 +24151,7 @@ webhooks:
                   type: line.sender_changed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24189,7 +24189,7 @@ webhooks:
                   type: line.failover
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24226,7 +24226,7 @@ webhooks:
                   type: line.no_sender
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24243,7 +24243,7 @@ webhooks:
       tags:
         - Webhooks
       summary: line.connected
-      description: "A partner line left `not_connected`: the user connected a phone and its first number was verified. Sent once per line, whatever the line's state then is: `state` says it, and when it is `needs_attention` a `line.needs_attention` follows. Later recoveries send `line.recovered`. Partner lines only (`partner_lines` endpoints and the account's own endpoints)."
+      description: "A partner line left `not_connected`: the user connected a phone and its first number was verified. Sent once per line, whatever the line's state then is: `state` says it, and when it is `needs_attention` a `line.needs_attention` follows. Later recoveries send `line.recovered`. Partner lines only (`partner_lines` endpoints and the user's own endpoints)."
       requestBody:
         required: true
         content:
@@ -24258,7 +24258,7 @@ webhooks:
                   type: line.connected
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24294,7 +24294,7 @@ webhooks:
                   type: line.needs_attention
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24330,7 +24330,7 @@ webhooks:
                   type: line.recovered
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24351,7 +24351,7 @@ webhooks:
       tags:
         - Webhooks
       summary: line.detached
-      description: "A partner line was detached and archived, by the partner (`DELETE /partner/v1/lines/{id}`), by the account's owner, or by MyComm. The account keeps its numbers and history; the line sends no more. Sent once."
+      description: "A partner line was detached and archived, by the partner (`DELETE /partner/v1/lines/{id}`), by the user's owner, or by MyComm. The user keeps its numbers and history; the line sends no more. Sent once."
       requestBody:
         required: true
         content:
@@ -24366,7 +24366,7 @@ webhooks:
                   type: line.detached
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24399,7 +24399,7 @@ webhooks:
                   type: line.quota_low
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24435,7 +24435,7 @@ webhooks:
                   type: line.quota_exhausted
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24456,7 +24456,7 @@ webhooks:
       tags:
         - Webhooks
       summary: line.alarm
-      description: "Something about the line needs attention, sent once per episode: while the condition lasts it only counts, and once it has cleared the next occurrence is a new episode. `kind`: `failover` (messages moved to another sender; ends after an hour without another move), `no_sender` (no sender can send; ends after 15 minutes with one that can, and a new loss within those minutes only counts), `pool_member_blocked` (a pool member was paused or disconnected; ends when it is resumed), `budget_80` (a sender used `alarm_thresholds.budget_percent` of its hourly limit; ends below 60 % of that limit, or 20 points under `alarm_thresholds.budget_percent` when that is lower), `self_loop` (a sender sent `alarm_thresholds.self_loop_per_hour` messages to the account's own numbers within an hour; ends after an hour without one), `sponsor_quota_low` (80 % of the sponsored allowance is used; ends with the next cycle or when the line has no active sponsorship) or `unconfirmed` (messages an unpaired phone never confirmed were failed or sent again, per `on_unconfirmed`; ends after 24 hours without one). Archiving or detaching a line ends its open alarms. An alarm about a sender (`channel_id` set, as for `pool_member_blocked` and `budget_80`) is sent once for each line holding it. The events that already tell of a change (`line.failover`, `line.no_sender`, `line.quota_low`) are still sent."
+      description: "Something about the line needs attention, sent once per episode: while the condition lasts it only counts, and once it has cleared the next occurrence is a new episode. `kind`: `failover` (messages moved to another sender; ends after an hour without another move), `no_sender` (no sender can send; ends after 15 minutes with one that can, and a new loss within those minutes only counts), `pool_member_blocked` (a pool member was paused or disconnected; ends when it is resumed), `budget_80` (a sender used `alarm_thresholds.budget_percent` of its hourly limit; ends below 60 % of that limit, or 20 points under `alarm_thresholds.budget_percent` when that is lower), `self_loop` (a sender sent `alarm_thresholds.self_loop_per_hour` messages to the user's own numbers within an hour; ends after an hour without one), `sponsor_quota_low` (80 % of the sponsored allowance is used; ends with the next cycle or when the line has no active sponsorship) or `unconfirmed` (messages an unpaired phone never confirmed were failed or sent again, per `on_unconfirmed`; ends after 24 hours without one). Archiving or detaching a line ends its open alarms. An alarm about a sender (`channel_id` set, as for `pool_member_blocked` and `budget_80`) is sent once for each line holding it. The events that already tell of a change (`line.failover`, `line.no_sender`, `line.quota_low`) are still sent."
       requestBody:
         required: true
         content:
@@ -24471,7 +24471,7 @@ webhooks:
                   type: line.alarm
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24493,7 +24493,7 @@ webhooks:
       tags:
         - Webhooks
       summary: line.recovery_requested
-      description: 'Someone who says they lost their number asked to recover the account of this line; sent once per partner, on its oldest live line of the account. Nothing has changed on the account. If you know this person, answer with `POST /partner/v1/lines/{id}/vouch`. It is never required and never enough alone: MyComm staff decide, no earlier than `waiting_until`.'
+      description: 'Someone who says they lost their number asked to recover the user of this line; sent once per partner, on its oldest live line of the user. Nothing has changed on the user. If you know this person, answer with `POST /partner/v1/lines/{id}/vouch`. It is never required and never enough alone: MyComm staff decide, no earlier than `waiting_until`.'
       requestBody:
         required: true
         content:
@@ -24508,7 +24508,7 @@ webhooks:
                   type: line.recovery_requested
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24544,7 +24544,7 @@ webhooks:
                   type: conversation.handed_over
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24577,7 +24577,7 @@ webhooks:
                   type: link.clicked
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24616,7 +24616,7 @@ webhooks:
                   type: channel.connected
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24768,7 +24768,7 @@ webhooks:
                   type: channel.verification_failed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24906,7 +24906,7 @@ webhooks:
       tags:
         - Webhooks
       summary: channel.disconnected
-      description: 'The number was disconnected (owner disconnect, SIM retirement, ops force-release, account deletion or a stale release). `data.reason` is the `disconnect_reason`.'
+      description: 'The number was disconnected (owner disconnect, SIM retirement, ops force-release, user deletion or a stale release). `data.reason` is the `disconnect_reason`.'
       requestBody:
         required: true
         content:
@@ -24921,7 +24921,7 @@ webhooks:
                   type: channel.disconnected
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25074,7 +25074,7 @@ webhooks:
                   type: channel.paused
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25229,7 +25229,7 @@ webhooks:
                   type: channel.resumed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25381,7 +25381,7 @@ webhooks:
                   type: channel.health_changed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25419,7 +25419,7 @@ webhooks:
                   type: channel.volume_warning
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25454,7 +25454,7 @@ webhooks:
                   type: channel.qr_updated
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25487,7 +25487,7 @@ webhooks:
                   type: device.paired
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25573,7 +25573,7 @@ webhooks:
                   type: device.online
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25659,7 +25659,7 @@ webhooks:
                   type: device.degraded
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25730,7 +25730,7 @@ webhooks:
       tags:
         - Webhooks
       summary: device.offline
-      description: "The device has been offline longer than the account's offline threshold; `data.previous_state` is the state it was in before it went offline."
+      description: "The device has been offline longer than the user's offline threshold; `data.previous_state` is the state it was in before it went offline."
       requestBody:
         required: true
         content:
@@ -25745,7 +25745,7 @@ webhooks:
                   type: device.offline
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25831,7 +25831,7 @@ webhooks:
                   type: device.revoked
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25896,34 +25896,34 @@ webhooks:
       responses:
         2XX:
           description: 'Any 2xx response acknowledges the delivery.'
-  account.suspended:
+  user.suspended:
     post:
-      operationId: onAccountSuspended
+      operationId: onUserSuspended
       tags:
         - Webhooks
-      summary: account.suspended
-      description: 'The account was suspended by the partner, the owner or ops. An ops-initiated suspension carries the actor `admin` with a `null` id.'
+      summary: user.suspended
+      description: 'The user was suspended by the partner, the owner or ops. An ops-initiated suspension carries the actor `admin` with a `null` id.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WebhookAccountSuspended'
+              $ref: '#/components/schemas/WebhookUserSuspended'
             examples:
               sample:
                 summary: 'Sample payload'
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  type: account.suspended
+                  type: user.suspended
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                     type: example
                   data:
-                    account:
+                    user:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       name: Example
                       status: active
@@ -25963,34 +25963,34 @@ webhooks:
       responses:
         2XX:
           description: 'Any 2xx response acknowledges the delivery.'
-  account.reactivated:
+  user.reactivated:
     post:
-      operationId: onAccountReactivated
+      operationId: onUserReactivated
       tags:
         - Webhooks
-      summary: account.reactivated
-      description: 'A suspended account is `active` again.'
+      summary: user.reactivated
+      description: 'A suspended user is `active` again.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WebhookAccountReactivated'
+              $ref: '#/components/schemas/WebhookUserReactivated'
             examples:
               sample:
                 summary: 'Sample payload'
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  type: account.reactivated
+                  type: user.reactivated
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                     type: example
                   data:
-                    account:
+                    user:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       name: Example
                       status: active
@@ -26030,34 +26030,34 @@ webhooks:
       responses:
         2XX:
           description: 'Any 2xx response acknowledges the delivery.'
-  account.deletion_scheduled:
+  user.deletion_scheduled:
     post:
-      operationId: onAccountDeletionScheduled
+      operationId: onUserDeletionScheduled
       tags:
         - Webhooks
-      summary: account.deletion_scheduled
-      description: 'The account is `pending_deletion`; `data.account.purge_at` is when it is purged.'
+      summary: user.deletion_scheduled
+      description: 'The user is `pending_deletion`; `data.user.purge_at` is when it is purged.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WebhookAccountDeletionScheduled'
+              $ref: '#/components/schemas/WebhookUserDeletionScheduled'
             examples:
               sample:
                 summary: 'Sample payload'
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                  type: account.deletion_scheduled
+                  type: user.deletion_scheduled
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                     type: example
                   data:
-                    account:
+                    user:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       name: Example
                       status: active
@@ -26118,7 +26118,7 @@ webhooks:
                   type: message.queued
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26126,7 +26126,7 @@ webhooks:
                   data:
                     message:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                      user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                       channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                       channel_type: android_sim
                       line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -26215,7 +26215,7 @@ webhooks:
                   type: message.sent
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26223,7 +26223,7 @@ webhooks:
                   data:
                     message:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                      user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                       channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                       channel_type: android_sim
                       line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -26312,7 +26312,7 @@ webhooks:
                   type: message.delivered
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26320,7 +26320,7 @@ webhooks:
                   data:
                     message:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                      user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                       channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                       channel_type: android_sim
                       line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -26409,7 +26409,7 @@ webhooks:
                   type: message.read
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26417,7 +26417,7 @@ webhooks:
                   data:
                     message:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                      user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                       channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                       channel_type: android_sim
                       line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -26506,7 +26506,7 @@ webhooks:
                   type: message.failed
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26514,7 +26514,7 @@ webhooks:
                   data:
                     message:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                      user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                       channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                       channel_type: android_sim
                       line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -26603,7 +26603,7 @@ webhooks:
                   type: message.expired
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26611,7 +26611,7 @@ webhooks:
                   data:
                     message:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                      user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                       channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                       channel_type: android_sim
                       line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -26700,7 +26700,7 @@ webhooks:
                   type: message.cancelled
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26708,7 +26708,7 @@ webhooks:
                   data:
                     message:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                      user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                       channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                       channel_type: android_sim
                       line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -26798,7 +26798,7 @@ webhooks:
                   type: message.received
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26806,7 +26806,7 @@ webhooks:
                   data:
                     message:
                       id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      account_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
+                      user_id: 0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01
                       channel_id: 0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02
                       channel_type: android_sim
                       line_id: 0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03
@@ -26897,7 +26897,7 @@ webhooks:
                   type: conversation.read
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26951,7 +26951,7 @@ webhooks:
                   type: conversation.unread
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27005,7 +27005,7 @@ webhooks:
                   type: conversation.archived
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27059,7 +27059,7 @@ webhooks:
                   type: conversation.unarchived
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27113,7 +27113,7 @@ webhooks:
                   type: conversation.deleted
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27149,7 +27149,7 @@ webhooks:
                   type: contact.opted_out
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27190,7 +27190,7 @@ webhooks:
                   type: contact.opted_in
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27231,7 +27231,7 @@ webhooks:
                   type: ping
                   api_version: 2.0.0
                   created_at: '2026-10-01T09:15:02Z'
-                  account_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                  user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   channel:
                     id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10

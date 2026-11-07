@@ -23,8 +23,8 @@ export class TemplatesResource {
   /**
    * List templates.
    *
-   * Requires `templates:read`. Templates of the account sorted by `name` (default) with cursor pagination.
-   * Archived templates are hidden unless `archived=true`, which lists only them.
+   * Requires `templates:read`. Templates of the user sorted by `name` (default) with cursor pagination. Archived
+   * templates are hidden unless `archived=true`, which lists only them.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listTemplates`
    */
@@ -123,7 +123,7 @@ export class TemplatesResource {
    *
    * Requires `templates:read`, and `contacts:read` when `contact_id` is given (`403 ABILITY_MISSING` otherwise).
    * Renders the saved body exactly as a send renders it for one recipient: `variables` first, then the fields of
-   * `contact_id` (a contact of the account), then account fields, then each variable's fallback.
+   * `contact_id` (a contact of the user), then user fields, then each variable's fallback.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `renderTemplate`
    */

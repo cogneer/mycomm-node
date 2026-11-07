@@ -20,6 +20,18 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
 - Partner keys act on a line, not an account: `client.forLine(lineId)` replaces `forAccount()` and every `/v1` call of
   that client carries `MyComm-Line` (was `MyComm-Account`); the option `lineId` replaces `accountId`, in `MyCommFake`
   too.
+- The API speaks of the user, not an account: `mycomm.me.get()` and `me.update()` (`GET`/`PATCH /v1/me`, ability
+  `me:write`) replace `account.get()` and `account.update()`. The `Account`, `AccountSettings`, `AccountStatus`,
+  `WebhookAccount`, `WebhookAccountData` and `WebhookAccountCounts` types are now `User`, `UserSettings`, `UserStatus`,
+  `WebhookUser`, `WebhookUserData` and `WebhookUserCounts`; `AccountUpdateParams` is `MeUpdateParams`.
+- `account_id` is now `user_id` in results and webhook events, and the `account.*` events are `user.*`
+  (`user.suspended`, `user.reactivated`, `user.deletion_scheduled`).
+- Error codes `ACCOUNT_SUSPENDED`, `ACCOUNT_PENDING_DELETION`, `ACCOUNT_THROTTLED` and `NEW_ACCOUNT_LIMIT` are now
+  `USER_SUSPENDED`, `USER_PENDING_DELETION`, `USER_THROTTLED` and `NEW_USER_LIMIT`; the values `account_suspended`
+  (device pause reason), `account_deleted` (device revoked reason), `account_zip` (export type),
+  `number_has_account` (channel verification failure reason) and `account_limit` (hold reason) are now `user_suspended`,
+  `user_deleted`, `user_zip`, `number_has_user` and `user_limit`.
+- `client.verify()` returns the key's `user` (was `account`).
 
 ### Removed (breaking)
 
@@ -36,7 +48,7 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
 - Partner lines: `partner.lines.list()`, `all()`, `create()`, `get()`, `update()` and `detach()`, and
   `partner.lines.status(id)` (`PartnerLineStatus`: `state`, `needs_attention_reasons`, channels and sponsorship).
 - Hosted links: `partner.lines.links.create(lineId, { purpose })` and `partner.links.get()` / `revoke()` for partner
-  keys, `lines.links.create()` and `links.get()` / `revoke()` for account keys (`CreatedHostedLink`, with the one-time
+  keys, `lines.links.create()` and `links.get()` / `revoke()` for user keys (`CreatedHostedLink`, with the one-time
   `url`, and `HostedLink`; purposes `connect`, `add_channel`, `replace_device`, `manage`, `claim`).
 - `partner.sponsorshipDefaults.get()` and `put()`, and `sponsorship` on partner lines (`SponsorshipTerms`).
 - `partner.usage.get()` reports one row per partner line (`line_id`, `external_ref`); its filter is `line_id`.

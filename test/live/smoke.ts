@@ -1,7 +1,7 @@
 /*
  * Runs the SDK against a real MyComm API: the key, contacts, groups, paging, idempotent replays, dry-run sends, uploads,
  * webhook endpoints, stats and the mapping of the API's errors. Not part of the test suite: run it before a release,
- * against a test account. It creates contacts, a group, a webhook endpoint and a media file, and deletes what the API lets
+ * against a test user. It creates contacts, a group, a webhook endpoint and a media file, and deletes what the API lets
  * it delete. It sends no message: every send is a dry run.
  *
  *   MYCOMM_API_KEY=mc_live_... MYCOMM_BASE_URL=https://staging.mycomm.cogneer.tech npx tsx test/live/smoke.ts
@@ -63,15 +63,15 @@ const phone = (n: number) => `+92300${String(1_000_000 + ((Date.now() + n) % 8_9
 
 console.log(`MyComm Node SDK live check against ${baseUrl}`);
 
-const account = await step('account.get and verify()', async () => {
+const me = await step('me.get and verify()', async () => {
   const verified = await mycomm.verify();
   check(verified.ok, verified.problems.join('; '));
-  const found = await mycomm.account.get();
-  check(found.id === verified.account?.id, 'verify() and account.get() disagree');
+  const found = await mycomm.me.get();
+  check(found.id === verified.user?.id, 'verify() and me.get() disagree');
   check(typeof found._meta.requestId === 'string', 'no request id');
   return found;
 });
-void account;
+void me;
 
 const lines = await step('lines.list and channels.list', async () => {
   const page = await mycomm.lines.list({ limit: 10 });
@@ -197,7 +197,7 @@ await step('stats.summary and stats.daily', async () => {
 await step('errors: 404, 401 and the server-side 422', async () => {
   await expectError(NotFoundError, () => mycomm.messages.show('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'));
   await expectError(AuthenticationError, () =>
-    new MyComm({ apiKey: 'mc_live_not_a_real_key_0000000000', baseUrl, maxRetries: 0 }).account.get(),
+    new MyComm({ apiKey: 'mc_live_not_a_real_key_0000000000', baseUrl, maxRetries: 0 }).me.get(),
   );
   const unchecked = new MyComm({ apiKey, baseUrl, maxRetries: 0, validate: false });
   const invalid = (await expectError(ValidationError, () =>

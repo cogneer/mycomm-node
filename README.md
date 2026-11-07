@@ -240,7 +240,7 @@ try {
 | `InvalidHeaderError`        | 400 `INVALID_HEADER` (extends `BadRequestError`): `details.header` says which |
 | `UnsupportedMediaTypeError` | 415: the body is not in the format the endpoint takes                         |
 | `AuthenticationError`       | 401: key missing, unknown, revoked or expired                                 |
-| `PermissionDeniedError`     | 403: ability, scope, IP allow-list, suspended account                         |
+| `PermissionDeniedError`     | 403: ability, scope, IP allow-list, suspended user                            |
 | `NotFoundError`             | 404                                                                           |
 | `ConflictError`             | 409, for example `REFERENCE_ID_EXISTS`                                        |
 | `PayloadTooLargeError`      | 413                                                                           |
@@ -391,7 +391,7 @@ through the line (`partner.forLine(lineId).verify({ to })`).
 | `partner.sponsorshipDefaults.get()`, `put({...})`                            | The sponsorship terms new lines get                                            |
 | `partner.usage.get({ from, to })`                                            | Usage per line                                                                 |
 
-An account key mints the same links for its own lines with `mycomm.lines.links.create(lineId, { purpose })` and follows
+A user key mints the same links for its own lines with `mycomm.lines.links.create(lineId, { purpose })` and follows
 them with `mycomm.links.get(id)` and `revoke(id)`.
 
 ## Uploading files

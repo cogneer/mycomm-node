@@ -10,7 +10,7 @@ describe('verify()', () => {
 
     expect(result.ok).toBe(true);
     expect(result.checks.map((check) => check.name)).toEqual(['key', 'send']);
-    expect(result.account?.id).toBeDefined();
+    expect(result.user?.id).toBeDefined();
     fake.assertCalled('messages.send', (request) => request.json?.dry_run === true && request.json?.to === '+923001234567');
   });
 
@@ -25,7 +25,7 @@ describe('verify()', () => {
 
   it('reports a refused key as a failed check instead of throwing', async () => {
     const fake = new MyCommFake();
-    fake.respond('account.get', FakeResponse.error(401, 'UNAUTHENTICATED', 'The API key is not valid.'));
+    fake.respond('me.get', FakeResponse.error(401, 'UNAUTHENTICATED', 'The API key is not valid.'));
 
     const result = await fake.client.verify({ to: '+923001234567' });
 
@@ -63,16 +63,16 @@ describe('verify()', () => {
   it('verifies_a_partner_key_on_a_partner_route_and_dry_runs_through_its_line', async () => {
     const fake = new MyCommFake({ apiKey: 'mc_partner_fake' });
     fake.respond('messages.send', FakeResponse.json({ id: null, status: null, hold_reason: null }, 200));
-    fake.respond('account.get', FakeResponse.error(403, 'PARTNER_ROUTE_NOT_ALLOWED', 'A partner key cannot use this route.'));
+    fake.respond('me.get', FakeResponse.error(403, 'PARTNER_ROUTE_NOT_ALLOWED', 'A partner key cannot use this route.'));
 
     const viaOption = await fake.client.verify({ to: '+923001234567', lineId: 'line-1' });
     const viaForLine = await fake.client.forLine('line-2').verify({ to: '+923001234567' });
 
     expect(viaOption.ok).toBe(true);
     expect(viaOption.checks.map((check) => check.name)).toEqual(['key', 'send']);
-    expect(viaOption.account).toBeNull();
+    expect(viaOption.user).toBeNull();
     expect(viaForLine.ok).toBe(true);
-    fake.assertNotCalled('account.get').assertCalledTimes('partner.lines.list', 2);
+    fake.assertNotCalled('me.get').assertCalledTimes('partner.lines.list', 2);
     const sends = fake.calls('messages.send');
     expect(sends[0]!.header('MyComm-Line')).toBe('line-1');
     expect(sends[0]!.json?.line_id).toBeUndefined();

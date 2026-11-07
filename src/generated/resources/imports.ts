@@ -69,7 +69,7 @@ export class ImportsResource {
    * Get an import.
    *
    * Requires `contacts:read`. Carries the totals and, once an error report exists, `error_report_url` signed for
-   * 15 minutes and refreshed on every call (the URL is a secret). An import of another account answers `404
+   * 15 minutes and refreshed on every call (the URL is a secret). An import of another user answers `404
    * NOT_FOUND`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getImport`

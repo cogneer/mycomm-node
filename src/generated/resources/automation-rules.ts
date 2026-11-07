@@ -24,8 +24,8 @@ export class AutomationRulesResource {
    *
    * Requires `automation:read`. All rules of the line ordered by `position`, not paginated: the away message first
    * (position 0), then the keyword rules from 1; rules are evaluated by ascending position and the first matching
-   * keyword rule wins. A key restricted to lines reads only its own lines; another line, or one of another
-   * account, is `404`.
+   * keyword rule wins. A key restricted to lines reads only its own lines; another line, or one of another user,
+   * is `404`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listAutomationRules`
    */
@@ -62,8 +62,7 @@ export class AutomationRulesResource {
   /**
    * Get an automation rule.
    *
-   * Requires `automation:read`. `404` for a rule of another line or account and for a line outside the key's
-   * scope.
+   * Requires `automation:read`. `404` for a rule of another line or user and for a line outside the key's scope.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getAutomationRule`
    */

@@ -1,7 +1,6 @@
 // Generated from the MyComm OpenAPI documents by generator/. Do not edit: run `npm run generate`.
 
 import type { Connection } from '../../core/connection.js';
-import { AccountResource } from './account.js';
 import { ApiKeysResource } from './api-keys.js';
 import { AutomationRulesResource } from './automation-rules.js';
 import { AutomationRunsResource } from './automation-runs.js';
@@ -16,6 +15,7 @@ import { GroupsResource } from './groups.js';
 import { ImportsResource } from './imports.js';
 import { LinesResource } from './lines.js';
 import { LinksResource } from './links.js';
+import { MeResource } from './me.js';
 import { MediaResource } from './media.js';
 import { MessagesResource } from './messages.js';
 import { PairingCodesResource } from './pairing-codes.js';
@@ -27,7 +27,6 @@ import { TemplatesResource } from './templates.js';
 import { WebhookDeliveriesResource } from './webhook-deliveries.js';
 import { WebhookEndpointsResource } from './webhook-endpoints.js';
 import { PartnerResource } from './partner.js';
-export * from './account.js';
 export * from './api-keys.js';
 export * from './automation-rules.js';
 export * from './automation-runs.js';
@@ -42,6 +41,7 @@ export * from './groups.js';
 export * from './imports.js';
 export * from './lines.js';
 export * from './links.js';
+export * from './me.js';
 export * from './media.js';
 export * from './messages.js';
 export * from './pairing-codes.js';
@@ -56,7 +56,6 @@ export * from './partner.js';
 
 /** The top-level resources of the API. */
 export class Resources {
-  readonly account: AccountResource;
   readonly apiKeys: ApiKeysResource;
   readonly automationRules: AutomationRulesResource;
   readonly automationRuns: AutomationRunsResource;
@@ -71,6 +70,7 @@ export class Resources {
   readonly imports: ImportsResource;
   readonly lines: LinesResource;
   readonly links: LinksResource;
+  readonly me: MeResource;
   readonly media: MediaResource;
   readonly messages: MessagesResource;
   readonly pairingCodes: PairingCodesResource;
@@ -85,7 +85,6 @@ export class Resources {
 
   /** @internal */
   constructor(connection: Connection) {
-    this.account = new AccountResource(connection);
     this.apiKeys = new ApiKeysResource(connection);
     this.automationRules = new AutomationRulesResource(connection);
     this.automationRuns = new AutomationRunsResource(connection);
@@ -100,6 +99,7 @@ export class Resources {
     this.imports = new ImportsResource(connection);
     this.lines = new LinesResource(connection);
     this.links = new LinksResource(connection);
+    this.me = new MeResource(connection);
     this.media = new MediaResource(connection);
     this.messages = new MessagesResource(connection);
     this.pairingCodes = new PairingCodesResource(connection);

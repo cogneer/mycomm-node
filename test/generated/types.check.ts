@@ -2,7 +2,6 @@
 
 import type { MyComm } from '../../src/index.js';
 import type {
-  Account,
   ApiKey,
   ApiKeysRotateResponse,
   AutomationDryRun,
@@ -60,15 +59,13 @@ import type {
   TemplateRender,
   TemplateSaved,
   UsageResponse,
+  User,
   WebhookDeliveriesBulkReplayResponse,
   WebhookDelivery,
   WebhookEndpoint,
   WebhookTestResult,
 } from '../../src/generated/types.js';
 import type {
-  AccountDeletionScheduledEvent,
-  AccountReactivatedEvent,
-  AccountSuspendedEvent,
   CampaignCancelledEvent,
   CampaignCompletedEvent,
   CampaignPausedEvent,
@@ -124,88 +121,17 @@ import type {
   MessageReceivedEvent,
   MessageSentEvent,
   PingEvent,
+  UserDeletionScheduledEvent,
+  UserReactivatedEvent,
+  UserSuspendedEvent,
 } from '../../src/generated/events.js';
 
-// account.get 200 (full)
-export const answer0 = {
-  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  name: 'Example name',
-  status: 'Example status',
-  country_iso: 'PK',
-  timezone: 'Asia/Karachi',
-  default_locale: 'en',
-  settings: {
-    opt_out: {},
-    compliance: {},
-    quiet_hours: {},
-    frequency_cap: {},
-    links: {},
-    default_expiry_minutes: {},
-    sms: {},
-    channels: {},
-    whatsapp: {},
-    retention: {},
-    automation: {},
-    alerts: {},
-    limits: {},
-    support: {},
-  },
-  created_at: '2026-10-01T09:15:02Z',
-} satisfies Account;
-// account.get 200 (minimal)
-export const answer1 = {
-  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  name: 'Example name',
-  status: 'Example status',
-  country_iso: 'PK',
-  timezone: 'Asia/Karachi',
-  default_locale: 'en',
-  settings: {},
-  created_at: '2026-10-01T09:15:02Z',
-} satisfies Account;
-// account.update 200 (full)
-export const answer2 = {
-  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  name: 'Example name',
-  status: 'Example status',
-  country_iso: 'PK',
-  timezone: 'Asia/Karachi',
-  default_locale: 'en',
-  settings: {
-    opt_out: {},
-    compliance: {},
-    quiet_hours: {},
-    frequency_cap: {},
-    links: {},
-    default_expiry_minutes: {},
-    sms: {},
-    channels: {},
-    whatsapp: {},
-    retention: {},
-    automation: {},
-    alerts: {},
-    limits: {},
-    support: {},
-  },
-  created_at: '2026-10-01T09:15:02Z',
-} satisfies Account;
-// account.update 200 (minimal)
-export const answer3 = {
-  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  name: 'Example name',
-  status: 'Example status',
-  country_iso: 'PK',
-  timezone: 'Asia/Karachi',
-  default_locale: 'en',
-  settings: {},
-  created_at: '2026-10-01T09:15:02Z',
-} satisfies Account;
 // apiKeys.list 200 (full)
-export const answer4 = {
+export const answer0 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      kind: 'account',
+      kind: 'user',
       name: 'Example name',
       prefix: 'Example prefix',
       scope: { line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'], channel_types: ['Example channel type'] },
@@ -222,11 +148,11 @@ export const answer4 = {
   next_cursor: null,
 } satisfies { data: ApiKey[]; next_cursor?: string | null };
 // apiKeys.list 200 (minimal)
-export const answer5 = { data: [], next_cursor: null } satisfies { data: ApiKey[]; next_cursor?: string | null };
+export const answer1 = { data: [], next_cursor: null } satisfies { data: ApiKey[]; next_cursor?: string | null };
 // apiKeys.create 201 (full)
-export const answer6 = {
+export const answer2 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  kind: 'account',
+  kind: 'user',
   name: 'Example name',
   prefix: 'Example prefix',
   scope: { line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'], channel_types: ['Example channel type'] },
@@ -241,9 +167,9 @@ export const answer6 = {
   token: 'mc_test_example',
 } satisfies CreatedApiKey;
 // apiKeys.create 201 (minimal)
-export const answer7 = {
+export const answer3 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  kind: 'account',
+  kind: 'user',
   name: 'Example name',
   prefix: 'Example prefix',
   scope: { line_ids: null, channel_types: null },
@@ -258,9 +184,9 @@ export const answer7 = {
   token: 'mc_test_example',
 } satisfies CreatedApiKey;
 // apiKeys.rotate 201 (full)
-export const answer8 = {
+export const answer4 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  kind: 'account',
+  kind: 'user',
   name: 'Example name',
   prefix: 'Example prefix',
   scope: { line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'], channel_types: ['Example channel type'] },
@@ -280,9 +206,9 @@ export const answer8 = {
   },
 } satisfies ApiKeysRotateResponse;
 // apiKeys.rotate 201 (minimal)
-export const answer9 = {
+export const answer5 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  kind: 'account',
+  kind: 'user',
   name: 'Example name',
   prefix: 'Example prefix',
   scope: { line_ids: null, channel_types: null },
@@ -298,7 +224,7 @@ export const answer9 = {
   replaces: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', expires_at: null, revoked_at: null },
 } satisfies ApiKeysRotateResponse;
 // automationRules.list 200 (full)
-export const answer10 = {
+export const answer6 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -318,9 +244,9 @@ export const answer10 = {
   ],
 } satisfies AutomationRuleList;
 // automationRules.list 200 (minimal)
-export const answer11 = { data: [] } satisfies AutomationRuleList;
+export const answer7 = { data: [] } satisfies AutomationRuleList;
 // automationRules.create 201 (full)
-export const answer12 = {
+export const answer8 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'keyword',
@@ -336,7 +262,7 @@ export const answer12 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies AutomationRule;
 // automationRules.create 201 (minimal)
-export const answer13 = {
+export const answer9 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'keyword',
@@ -352,7 +278,7 @@ export const answer13 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies AutomationRule;
 // automationRules.reorder 200 (full)
-export const answer14 = {
+export const answer10 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -372,9 +298,9 @@ export const answer14 = {
   ],
 } satisfies AutomationRuleList;
 // automationRules.reorder 200 (minimal)
-export const answer15 = { data: [] } satisfies AutomationRuleList;
+export const answer11 = { data: [] } satisfies AutomationRuleList;
 // automationRules.get 200 (full)
-export const answer16 = {
+export const answer12 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'keyword',
@@ -390,7 +316,7 @@ export const answer16 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies AutomationRule;
 // automationRules.get 200 (minimal)
-export const answer17 = {
+export const answer13 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'keyword',
@@ -406,7 +332,7 @@ export const answer17 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies AutomationRule;
 // automationRules.update 200 (full)
-export const answer18 = {
+export const answer14 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'keyword',
@@ -422,7 +348,7 @@ export const answer18 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies AutomationRule;
 // automationRules.update 200 (minimal)
-export const answer19 = {
+export const answer15 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'keyword',
@@ -438,7 +364,7 @@ export const answer19 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies AutomationRule;
 // automationRules.test 200 (full)
-export const answer20 = {
+export const answer16 = {
   matched_rule_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   rule_type: 'keyword',
   actions: [{ type: 'reply', body: 'Example body', template_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c' }],
@@ -446,7 +372,7 @@ export const answer20 = {
   outcome: 'applied',
 } satisfies AutomationDryRun;
 // automationRules.test 200 (minimal)
-export const answer21 = {
+export const answer17 = {
   matched_rule_id: null,
   rule_type: null,
   actions: [],
@@ -454,7 +380,7 @@ export const answer21 = {
   outcome: 'applied',
 } satisfies AutomationDryRun;
 // automationRuns.list 200 (full)
-export const answer22 = {
+export const answer18 = {
   data: [
     {
       id: 1,
@@ -480,9 +406,9 @@ export const answer22 = {
   next_cursor: null,
 } satisfies { data: AutomationRun[]; next_cursor?: string | null };
 // automationRuns.list 200 (minimal)
-export const answer23 = { data: [], next_cursor: null } satisfies { data: AutomationRun[]; next_cursor?: string | null };
+export const answer19 = { data: [], next_cursor: null } satisfies { data: AutomationRun[]; next_cursor?: string | null };
 // campaigns.recipients.list 200 (full)
-export const answer24 = {
+export const answer20 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -500,9 +426,9 @@ export const answer24 = {
   next_cursor: null,
 } satisfies { data: CampaignRecipient[]; next_cursor?: string | null };
 // campaigns.recipients.list 200 (minimal)
-export const answer25 = { data: [], next_cursor: null } satisfies { data: CampaignRecipient[]; next_cursor?: string | null };
+export const answer21 = { data: [], next_cursor: null } satisfies { data: CampaignRecipient[]; next_cursor?: string | null };
 // campaigns.report 200 (full)
-export const answer26 = {
+export const answer22 = {
   campaign_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   status: 'draft',
   stats: {
@@ -524,7 +450,7 @@ export const answer26 = {
   completed_at: '2026-10-01T09:15:02Z',
 } satisfies CampaignReport;
 // campaigns.report 200 (minimal)
-export const answer27 = {
+export const answer23 = {
   campaign_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   status: 'draft',
   stats: { total: 1, sent: 1, delivered: 1, failed: 1 },
@@ -536,7 +462,7 @@ export const answer27 = {
   completed_at: null,
 } satisfies CampaignReport;
 // campaigns.list 200 (full)
-export const answer28 = {
+export const answer24 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -579,9 +505,9 @@ export const answer28 = {
   next_cursor: null,
 } satisfies { data: Campaign[]; next_cursor?: string | null };
 // campaigns.list 200 (minimal)
-export const answer29 = { data: [], next_cursor: null } satisfies { data: Campaign[]; next_cursor?: string | null };
+export const answer25 = { data: [], next_cursor: null } satisfies { data: Campaign[]; next_cursor?: string | null };
 // campaigns.create 201 (full)
-export const answer30 = {
+export const answer26 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -619,7 +545,7 @@ export const answer30 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.create 201 (minimal)
-export const answer31 = {
+export const answer27 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -648,7 +574,7 @@ export const answer31 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.show 200 (full)
-export const answer32 = {
+export const answer28 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -686,7 +612,7 @@ export const answer32 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.show 200 (minimal)
-export const answer33 = {
+export const answer29 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -715,7 +641,7 @@ export const answer33 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.update 200 (full)
-export const answer34 = {
+export const answer30 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -753,7 +679,7 @@ export const answer34 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.update 200 (minimal)
-export const answer35 = {
+export const answer31 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -782,7 +708,7 @@ export const answer35 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.estimate 200 (full)
-export const answer36 = {
+export const answer32 = {
   recipients: 1,
   skipped: { example: 1 },
   segments_per_message: { min: 1, max: 1 },
@@ -797,7 +723,7 @@ export const answer36 = {
   landlines: 1,
 } satisfies CampaignEstimate;
 // campaigns.estimate 200 (minimal)
-export const answer37 = {
+export const answer33 = {
   recipients: 1,
   skipped: {},
   segments_per_message: { min: 1, max: 1 },
@@ -807,7 +733,7 @@ export const answer37 = {
   warnings: [],
 } satisfies CampaignEstimate;
 // campaigns.start 200 (full)
-export const answer38 = {
+export const answer34 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -845,7 +771,7 @@ export const answer38 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.start 200 (minimal)
-export const answer39 = {
+export const answer35 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -874,7 +800,7 @@ export const answer39 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.unschedule 200 (full)
-export const answer40 = {
+export const answer36 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -912,7 +838,7 @@ export const answer40 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.unschedule 200 (minimal)
-export const answer41 = {
+export const answer37 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -941,7 +867,7 @@ export const answer41 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.pause 200 (full)
-export const answer42 = {
+export const answer38 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -979,7 +905,7 @@ export const answer42 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.pause 200 (minimal)
-export const answer43 = {
+export const answer39 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -1008,7 +934,7 @@ export const answer43 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.resume 200 (full)
-export const answer44 = {
+export const answer40 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -1046,7 +972,7 @@ export const answer44 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.resume 200 (minimal)
-export const answer45 = {
+export const answer41 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -1075,7 +1001,7 @@ export const answer45 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.cancel 200 (full)
-export const answer46 = {
+export const answer42 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -1113,7 +1039,7 @@ export const answer46 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // campaigns.cancel 200 (minimal)
-export const answer47 = {
+export const answer43 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -1142,7 +1068,7 @@ export const answer47 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Campaign;
 // channels.get 200 (full)
-export const answer48 = {
+export const answer44 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1228,7 +1154,7 @@ export const answer48 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.get 200 (minimal)
-export const answer49 = {
+export const answer45 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1293,7 +1219,7 @@ export const answer49 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.update 200 (full)
-export const answer50 = {
+export const answer46 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1379,7 +1305,7 @@ export const answer50 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.update 200 (minimal)
-export const answer51 = {
+export const answer47 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1444,7 +1370,7 @@ export const answer51 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.pause 200 (full)
-export const answer52 = {
+export const answer48 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1530,7 +1456,7 @@ export const answer52 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.pause 200 (minimal)
-export const answer53 = {
+export const answer49 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1595,7 +1521,7 @@ export const answer53 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.resume 200 (full)
-export const answer54 = {
+export const answer50 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1681,7 +1607,7 @@ export const answer54 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.resume 200 (minimal)
-export const answer55 = {
+export const answer51 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1746,7 +1672,7 @@ export const answer55 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.disconnect 200 (full)
-export const answer56 = {
+export const answer52 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1832,7 +1758,7 @@ export const answer56 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.disconnect 200 (minimal)
-export const answer57 = {
+export const answer53 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1897,7 +1823,7 @@ export const answer57 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.connectSim 202 (full)
-export const answer58 = {
+export const answer54 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -1983,7 +1909,7 @@ export const answer58 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.connectSim 202 (minimal)
-export const answer59 = {
+export const answer55 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -2048,7 +1974,7 @@ export const answer59 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.verify 202 (full)
-export const answer60 = {
+export const answer56 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -2134,7 +2060,7 @@ export const answer60 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.verify 202 (minimal)
-export const answer61 = {
+export const answer57 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -2199,7 +2125,7 @@ export const answer61 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.list 200 (full)
-export const answer62 = {
+export const answer58 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -2290,9 +2216,9 @@ export const answer62 = {
   next_cursor: null,
 } satisfies { data: Channel[]; next_cursor?: string | null };
 // channels.list 200 (minimal)
-export const answer63 = { data: [], next_cursor: null } satisfies { data: Channel[]; next_cursor?: string | null };
+export const answer59 = { data: [], next_cursor: null } satisfies { data: Channel[]; next_cursor?: string | null };
 // channels.updateRatePolicy 200 (full)
-export const answer64 = {
+export const answer60 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -2378,7 +2304,7 @@ export const answer64 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.updateRatePolicy 200 (minimal)
-export const answer65 = {
+export const answer61 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'android_sim',
   name: 'Example name',
@@ -2443,7 +2369,7 @@ export const answer65 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Channel;
 // channels.types 200 (full)
-export const answer66 = {
+export const answer62 = {
   data: [
     {
       type: 'android_sim',
@@ -2476,9 +2402,9 @@ export const answer66 = {
   ],
 } satisfies { data: ChannelTypeInfo[]; next_cursor?: string | null };
 // channels.types 200 (minimal)
-export const answer67 = { data: [] } satisfies { data: ChannelTypeInfo[]; next_cursor?: string | null };
+export const answer63 = { data: [] } satisfies { data: ChannelTypeInfo[]; next_cursor?: string | null };
 // contactFields.list 200 (full)
-export const answer68 = {
+export const answer64 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -2492,9 +2418,9 @@ export const answer68 = {
   ],
 } satisfies { data: ContactField[]; next_cursor?: string | null };
 // contactFields.list 200 (minimal)
-export const answer69 = { data: [] } satisfies { data: ContactField[]; next_cursor?: string | null };
+export const answer65 = { data: [] } satisfies { data: ContactField[]; next_cursor?: string | null };
 // contactFields.create 201 (full)
-export const answer70 = {
+export const answer66 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   key: 'Example key',
   label: 'Example label',
@@ -2504,7 +2430,7 @@ export const answer70 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactField;
 // contactFields.create 201 (minimal)
-export const answer71 = {
+export const answer67 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   key: 'Example key',
   label: 'Example label',
@@ -2514,7 +2440,7 @@ export const answer71 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactField;
 // contactFields.update 200 (full)
-export const answer72 = {
+export const answer68 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   key: 'Example key',
   label: 'Example label',
@@ -2524,7 +2450,7 @@ export const answer72 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactField;
 // contactFields.update 200 (minimal)
-export const answer73 = {
+export const answer69 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   key: 'Example key',
   label: 'Example label',
@@ -2534,7 +2460,7 @@ export const answer73 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactField;
 // contacts.identities.create 200 (full)
-export const answer74 = {
+export const answer70 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2547,7 +2473,7 @@ export const answer74 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.create 200 (minimal)
-export const answer75 = {
+export const answer71 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2560,7 +2486,7 @@ export const answer75 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.create 201 (full)
-export const answer76 = {
+export const answer72 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2573,7 +2499,7 @@ export const answer76 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.create 201 (minimal)
-export const answer77 = {
+export const answer73 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2586,7 +2512,7 @@ export const answer77 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.update 200 (full)
-export const answer78 = {
+export const answer74 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2599,7 +2525,7 @@ export const answer78 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.update 200 (minimal)
-export const answer79 = {
+export const answer75 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2612,7 +2538,7 @@ export const answer79 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.block 200 (full)
-export const answer80 = {
+export const answer76 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2625,7 +2551,7 @@ export const answer80 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.block 200 (minimal)
-export const answer81 = {
+export const answer77 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2638,7 +2564,7 @@ export const answer81 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.unblock 200 (full)
-export const answer82 = {
+export const answer78 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2651,7 +2577,7 @@ export const answer82 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.identities.unblock 200 (minimal)
-export const answer83 = {
+export const answer79 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone',
   address: '+923001234567',
@@ -2664,11 +2590,11 @@ export const answer83 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies ContactIdentity;
 // contacts.optOut 200 (full)
-export const answer84 = { suppressed: 1, already_suppressed: 1 } satisfies ContactOptOutResult;
+export const answer80 = { suppressed: 1, already_suppressed: 1 } satisfies ContactOptOutResult;
 // contacts.optOut 200 (minimal)
-export const answer85 = { suppressed: 1, already_suppressed: 1 } satisfies ContactOptOutResult;
+export const answer81 = { suppressed: 1, already_suppressed: 1 } satisfies ContactOptOutResult;
 // contacts.upsertByIdentity 200 (full)
-export const answer86 = {
+export const answer82 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2698,7 +2624,7 @@ export const answer86 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.upsertByIdentity 200 (minimal)
-export const answer87 = {
+export const answer83 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2728,7 +2654,7 @@ export const answer87 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.upsertByIdentity 201 (full)
-export const answer88 = {
+export const answer84 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2758,7 +2684,7 @@ export const answer88 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.upsertByIdentity 201 (minimal)
-export const answer89 = {
+export const answer85 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2788,7 +2714,7 @@ export const answer89 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.bulkUpsert 200 (full)
-export const answer90 = {
+export const answer86 = {
   summary: { created: 1, updated: 1, rejected: 1 },
   results: [
     {
@@ -2800,9 +2726,9 @@ export const answer90 = {
   ],
 } satisfies ContactBulkResponse;
 // contacts.bulkUpsert 200 (minimal)
-export const answer91 = { summary: { created: 1, updated: 1, rejected: 1 }, results: [] } satisfies ContactBulkResponse;
+export const answer87 = { summary: { created: 1, updated: 1, rejected: 1 }, results: [] } satisfies ContactBulkResponse;
 // contacts.list 200 (full)
-export const answer92 = {
+export const answer88 = {
   data: [
     {
       id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
@@ -2837,9 +2763,9 @@ export const answer92 = {
   next_cursor: null,
 } satisfies { data: Contact[]; next_cursor?: string | null };
 // contacts.list 200 (minimal)
-export const answer93 = { data: [], next_cursor: null } satisfies { data: Contact[]; next_cursor?: string | null };
+export const answer89 = { data: [], next_cursor: null } satisfies { data: Contact[]; next_cursor?: string | null };
 // contacts.create 201 (full)
-export const answer94 = {
+export const answer90 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2869,7 +2795,7 @@ export const answer94 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.create 201 (minimal)
-export const answer95 = {
+export const answer91 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2899,7 +2825,7 @@ export const answer95 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.show 200 (full)
-export const answer96 = {
+export const answer92 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2929,7 +2855,7 @@ export const answer96 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.show 200 (minimal)
-export const answer97 = {
+export const answer93 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2959,7 +2885,7 @@ export const answer97 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.update 200 (full)
-export const answer98 = {
+export const answer94 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -2989,7 +2915,7 @@ export const answer98 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.update 200 (minimal)
-export const answer99 = {
+export const answer95 = {
   id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
   first_name: 'Amina',
   last_name: 'Khan',
@@ -3019,11 +2945,11 @@ export const answer99 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Contact;
 // contacts.delete 202 (full)
-export const answer100 = { status: 'erasing' } satisfies ContactsDeleteResponse;
+export const answer96 = { status: 'erasing' } satisfies ContactsDeleteResponse;
 // contacts.delete 202 (minimal)
-export const answer101 = { status: 'erasing' } satisfies ContactsDeleteResponse;
+export const answer97 = { status: 'erasing' } satisfies ContactsDeleteResponse;
 // contacts.conversations 200 (full)
-export const answer102 = {
+export const answer98 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3051,9 +2977,9 @@ export const answer102 = {
   next_cursor: null,
 } satisfies { data: Conversation[]; next_cursor?: string | null };
 // contacts.conversations 200 (minimal)
-export const answer103 = { data: [], next_cursor: null } satisfies { data: Conversation[]; next_cursor?: string | null };
+export const answer99 = { data: [], next_cursor: null } satisfies { data: Conversation[]; next_cursor?: string | null };
 // conversations.read 200 (full)
-export const answer104 = {
+export const answer100 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3076,7 +3002,7 @@ export const answer104 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.read 200 (minimal)
-export const answer105 = {
+export const answer101 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3099,7 +3025,7 @@ export const answer105 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.unread 200 (full)
-export const answer106 = {
+export const answer102 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3122,7 +3048,7 @@ export const answer106 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.unread 200 (minimal)
-export const answer107 = {
+export const answer103 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3145,7 +3071,7 @@ export const answer107 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.archive 200 (full)
-export const answer108 = {
+export const answer104 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3168,7 +3094,7 @@ export const answer108 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.archive 200 (minimal)
-export const answer109 = {
+export const answer105 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3191,7 +3117,7 @@ export const answer109 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.unarchive 200 (full)
-export const answer110 = {
+export const answer106 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3214,7 +3140,7 @@ export const answer110 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.unarchive 200 (minimal)
-export const answer111 = {
+export const answer107 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3237,7 +3163,7 @@ export const answer111 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.block 200 (full)
-export const answer112 = {
+export const answer108 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3260,7 +3186,7 @@ export const answer112 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.block 200 (minimal)
-export const answer113 = {
+export const answer109 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3283,7 +3209,7 @@ export const answer113 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.unblock 200 (full)
-export const answer114 = {
+export const answer110 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3306,7 +3232,7 @@ export const answer114 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.unblock 200 (minimal)
-export const answer115 = {
+export const answer111 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3329,7 +3255,7 @@ export const answer115 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.handover 200 (full)
-export const answer116 = {
+export const answer112 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3352,7 +3278,7 @@ export const answer116 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.handover 200 (minimal)
-export const answer117 = {
+export const answer113 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3375,7 +3301,7 @@ export const answer117 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.show 200 (full)
-export const answer118 = {
+export const answer114 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3398,7 +3324,7 @@ export const answer118 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.show 200 (minimal)
-export const answer119 = {
+export const answer115 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3421,11 +3347,11 @@ export const answer119 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Conversation;
 // conversations.delete 202 (full)
-export const answer120 = { status: 'deleting' } satisfies ConversationsDeleteResponse;
+export const answer116 = { status: 'deleting' } satisfies ConversationsDeleteResponse;
 // conversations.delete 202 (minimal)
-export const answer121 = { status: 'deleting' } satisfies ConversationsDeleteResponse;
+export const answer117 = { status: 'deleting' } satisfies ConversationsDeleteResponse;
 // conversations.list 200 (full)
-export const answer122 = {
+export const answer118 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3453,13 +3379,13 @@ export const answer122 = {
   next_cursor: null,
 } satisfies { data: Conversation[]; next_cursor?: string | null };
 // conversations.list 200 (minimal)
-export const answer123 = { data: [], next_cursor: null } satisfies { data: Conversation[]; next_cursor?: string | null };
+export const answer119 = { data: [], next_cursor: null } satisfies { data: Conversation[]; next_cursor?: string | null };
 // conversations.messages 200 (full)
-export const answer124 = {
+export const answer120 = {
   data: [
     {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -3523,9 +3449,9 @@ export const answer124 = {
   next_cursor: null,
 } satisfies { data: Message[]; next_cursor?: string | null };
 // conversations.messages 200 (minimal)
-export const answer125 = { data: [], next_cursor: null } satisfies { data: Message[]; next_cursor?: string | null };
+export const answer121 = { data: [], next_cursor: null } satisfies { data: Message[]; next_cursor?: string | null };
 // conversations.reply 200 (full)
-export const answer126 = {
+export const answer122 = {
   dry_run: true,
   id: null,
   status: null,
@@ -3539,11 +3465,11 @@ export const answer126 = {
   warnings: [{ code: 'Example code', path: 'Example path', message: 'Example message' }],
 } satisfies SendMessageDryRunResponse;
 // conversations.reply 200 (minimal)
-export const answer127 = { dry_run: true, id: null, status: null, warnings: [] } satisfies SendMessageDryRunResponse;
+export const answer123 = { dry_run: true, id: null, status: null, warnings: [] } satisfies SendMessageDryRunResponse;
 // conversations.reply 202 (full)
-export const answer128 = {
+export const answer124 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_type: 'Example channel type',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3614,9 +3540,9 @@ export const answer128 = {
   warnings: [{ code: 'Example code', path: 'Example path', message: 'Example message' }],
 } satisfies SendMessageResponse;
 // conversations.reply 202 (minimal)
-export const answer129 = {
+export const answer125 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_type: null,
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3665,7 +3591,7 @@ export const answer129 = {
   warnings: [],
 } satisfies SendMessageResponse;
 // devices.list 200 (full)
-export const answer130 = {
+export const answer126 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -3721,9 +3647,9 @@ export const answer130 = {
   next_cursor: null,
 } satisfies { data: Device[]; next_cursor?: string | null };
 // devices.list 200 (minimal)
-export const answer131 = { data: [], next_cursor: null } satisfies { data: Device[]; next_cursor?: string | null };
+export const answer127 = { data: [], next_cursor: null } satisfies { data: Device[]; next_cursor?: string | null };
 // devices.get 200 (full)
-export const answer132 = {
+export const answer128 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   status: 'active',
@@ -3774,7 +3700,7 @@ export const answer132 = {
   drain_until: '2026-10-01T09:15:02Z',
 } satisfies Device;
 // devices.get 200 (minimal)
-export const answer133 = {
+export const answer129 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: null,
   status: 'active',
@@ -3809,7 +3735,7 @@ export const answer133 = {
   drain_until: null,
 } satisfies Device;
 // devices.update 200 (full)
-export const answer134 = {
+export const answer130 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   status: 'active',
@@ -3860,7 +3786,7 @@ export const answer134 = {
   drain_until: '2026-10-01T09:15:02Z',
 } satisfies Device;
 // devices.update 200 (minimal)
-export const answer135 = {
+export const answer131 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: null,
   status: 'active',
@@ -3895,7 +3821,7 @@ export const answer135 = {
   drain_until: null,
 } satisfies Device;
 // devices.pause 200 (full)
-export const answer136 = {
+export const answer132 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   status: 'active',
@@ -3946,7 +3872,7 @@ export const answer136 = {
   drain_until: '2026-10-01T09:15:02Z',
 } satisfies Device;
 // devices.pause 200 (minimal)
-export const answer137 = {
+export const answer133 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: null,
   status: 'active',
@@ -3981,7 +3907,7 @@ export const answer137 = {
   drain_until: null,
 } satisfies Device;
 // devices.resume 200 (full)
-export const answer138 = {
+export const answer134 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   status: 'active',
@@ -4032,7 +3958,7 @@ export const answer138 = {
   drain_until: '2026-10-01T09:15:02Z',
 } satisfies Device;
 // devices.resume 200 (minimal)
-export const answer139 = {
+export const answer135 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: null,
   status: 'active',
@@ -4067,7 +3993,7 @@ export const answer139 = {
   drain_until: null,
 } satisfies Device;
 // devices.revoke 200 (full)
-export const answer140 = {
+export const answer136 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   status: 'active',
@@ -4118,7 +4044,7 @@ export const answer140 = {
   drain_until: '2026-10-01T09:15:02Z',
 } satisfies Device;
 // devices.revoke 200 (minimal)
-export const answer141 = {
+export const answer137 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: null,
   status: 'active',
@@ -4153,7 +4079,7 @@ export const answer141 = {
   drain_until: null,
 } satisfies Device;
 // devices.sims.list 200 (full)
-export const answer142 = {
+export const answer138 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4173,9 +4099,9 @@ export const answer142 = {
   ],
 } satisfies { data: DeviceSim[]; next_cursor?: string | null };
 // devices.sims.list 200 (minimal)
-export const answer143 = { data: [] } satisfies { data: DeviceSim[]; next_cursor?: string | null };
+export const answer139 = { data: [] } satisfies { data: DeviceSim[]; next_cursor?: string | null };
 // exports.list 200 (full)
-export const answer144 = {
+export const answer140 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4192,9 +4118,9 @@ export const answer144 = {
   next_cursor: null,
 } satisfies { data: Export[]; next_cursor?: string | null };
 // exports.list 200 (minimal)
-export const answer145 = { data: [], next_cursor: null } satisfies { data: Export[]; next_cursor?: string | null };
+export const answer141 = { data: [], next_cursor: null } satisfies { data: Export[]; next_cursor?: string | null };
 // exports.create 202 (full)
-export const answer146 = {
+export const answer142 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'messages_csv',
   status: 'queued',
@@ -4206,7 +4132,7 @@ export const answer146 = {
   completed_at: '2026-10-01T09:15:02Z',
 } satisfies Export;
 // exports.create 202 (minimal)
-export const answer147 = {
+export const answer143 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'messages_csv',
   status: 'queued',
@@ -4218,7 +4144,7 @@ export const answer147 = {
   completed_at: null,
 } satisfies Export;
 // exports.get 200 (full)
-export const answer148 = {
+export const answer144 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'messages_csv',
   status: 'queued',
@@ -4230,7 +4156,7 @@ export const answer148 = {
   completed_at: '2026-10-01T09:15:02Z',
 } satisfies Export;
 // exports.get 200 (minimal)
-export const answer149 = {
+export const answer145 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'messages_csv',
   status: 'queued',
@@ -4242,7 +4168,7 @@ export const answer149 = {
   completed_at: null,
 } satisfies Export;
 // groups.list 200 (full)
-export const answer150 = {
+export const answer146 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4256,9 +4182,9 @@ export const answer150 = {
   next_cursor: null,
 } satisfies { data: Group[]; next_cursor?: string | null };
 // groups.list 200 (minimal)
-export const answer151 = { data: [], next_cursor: null } satisfies { data: Group[]; next_cursor?: string | null };
+export const answer147 = { data: [], next_cursor: null } satisfies { data: Group[]; next_cursor?: string | null };
 // groups.create 201 (full)
-export const answer152 = {
+export const answer148 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   description: 'Example description',
@@ -4267,7 +4193,7 @@ export const answer152 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Group;
 // groups.create 201 (minimal)
-export const answer153 = {
+export const answer149 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   description: null,
@@ -4276,7 +4202,7 @@ export const answer153 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Group;
 // groups.show 200 (full)
-export const answer154 = {
+export const answer150 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   description: 'Example description',
@@ -4285,7 +4211,7 @@ export const answer154 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Group;
 // groups.show 200 (minimal)
-export const answer155 = {
+export const answer151 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   description: null,
@@ -4294,7 +4220,7 @@ export const answer155 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Group;
 // groups.update 200 (full)
-export const answer156 = {
+export const answer152 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   description: 'Example description',
@@ -4303,7 +4229,7 @@ export const answer156 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Group;
 // groups.update 200 (minimal)
-export const answer157 = {
+export const answer153 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   description: null,
@@ -4312,7 +4238,7 @@ export const answer157 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Group;
 // groups.members.list 200 (full)
-export const answer158 = {
+export const answer154 = {
   data: [
     {
       id: '0198ea17-5c28-7b94-8e07-3a9d1f4c6b05',
@@ -4347,21 +4273,21 @@ export const answer158 = {
   next_cursor: null,
 } satisfies { data: Contact[]; next_cursor?: string | null };
 // groups.members.list 200 (minimal)
-export const answer159 = { data: [], next_cursor: null } satisfies { data: Contact[]; next_cursor?: string | null };
+export const answer155 = { data: [], next_cursor: null } satisfies { data: Contact[]; next_cursor?: string | null };
 // groups.members.add 200 (full)
-export const answer160 = {
+export const answer156 = {
   added: 1,
   already_member: 1,
   not_found: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
 } satisfies GroupsMembersAddResponse;
 // groups.members.add 200 (minimal)
-export const answer161 = { added: 1, already_member: 1, not_found: [] } satisfies GroupsMembersAddResponse;
+export const answer157 = { added: 1, already_member: 1, not_found: [] } satisfies GroupsMembersAddResponse;
 // groups.members.remove 200 (full)
-export const answer162 = { removed: 1, not_member: 1 } satisfies GroupsMembersRemoveResponse;
+export const answer158 = { removed: 1, not_member: 1 } satisfies GroupsMembersRemoveResponse;
 // groups.members.remove 200 (minimal)
-export const answer163 = { removed: 1, not_member: 1 } satisfies GroupsMembersRemoveResponse;
+export const answer159 = { removed: 1, not_member: 1 } satisfies GroupsMembersRemoveResponse;
 // imports.list 200 (full)
-export const answer164 = {
+export const answer160 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4382,9 +4308,9 @@ export const answer164 = {
   next_cursor: null,
 } satisfies { data: Import[]; next_cursor?: string | null };
 // imports.list 200 (minimal)
-export const answer165 = { data: [], next_cursor: null } satisfies { data: Import[]; next_cursor?: string | null };
+export const answer161 = { data: [], next_cursor: null } satisfies { data: Import[]; next_cursor?: string | null };
 // imports.create 202 (full)
-export const answer166 = {
+export const answer162 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone_history',
   status: 'uploaded',
@@ -4400,7 +4326,7 @@ export const answer166 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Import;
 // imports.create 202 (minimal)
-export const answer167 = {
+export const answer163 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone_history',
   status: 'uploaded',
@@ -4416,7 +4342,7 @@ export const answer167 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Import;
 // imports.create 202 (full)
-export const answer168 = {
+export const answer164 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone_history',
   status: 'uploaded',
@@ -4432,7 +4358,7 @@ export const answer168 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Import;
 // imports.create 202 (minimal)
-export const answer169 = {
+export const answer165 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone_history',
   status: 'uploaded',
@@ -4448,7 +4374,7 @@ export const answer169 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Import;
 // imports.get 200 (full)
-export const answer170 = {
+export const answer166 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone_history',
   status: 'uploaded',
@@ -4464,7 +4390,7 @@ export const answer170 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Import;
 // imports.get 200 (minimal)
-export const answer171 = {
+export const answer167 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone_history',
   status: 'uploaded',
@@ -4480,7 +4406,7 @@ export const answer171 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Import;
 // imports.cancel 200 (full)
-export const answer172 = {
+export const answer168 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone_history',
   status: 'uploaded',
@@ -4496,7 +4422,7 @@ export const answer172 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Import;
 // imports.cancel 200 (minimal)
-export const answer173 = {
+export const answer169 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'phone_history',
   status: 'uploaded',
@@ -4512,7 +4438,7 @@ export const answer173 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies Import;
 // lines.links.create 201 (full)
-export const answer174 = {
+export const answer170 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   purpose: 'connect',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4530,7 +4456,7 @@ export const answer174 = {
   url: 'https://example.com/mycomm',
 } satisfies CreatedHostedLink;
 // lines.links.create 201 (minimal)
-export const answer175 = {
+export const answer171 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   purpose: 'connect',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4548,7 +4474,7 @@ export const answer175 = {
   url: 'https://example.com/mycomm',
 } satisfies CreatedHostedLink;
 // links.get 200 (full)
-export const answer176 = {
+export const answer172 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   purpose: 'connect',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4565,7 +4491,7 @@ export const answer176 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies HostedLink;
 // links.get 200 (minimal)
-export const answer177 = {
+export const answer173 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   purpose: 'connect',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4582,7 +4508,7 @@ export const answer177 = {
   created_at: '2026-10-01T09:15:02Z',
 } satisfies HostedLink;
 // lines.list 200 (full)
-export const answer178 = {
+export const answer174 = {
   data: [
     {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4620,9 +4546,9 @@ export const answer178 = {
   next_cursor: null,
 } satisfies { data: Line[]; next_cursor?: string | null };
 // lines.list 200 (minimal)
-export const answer179 = { data: [], next_cursor: null } satisfies { data: Line[]; next_cursor?: string | null };
+export const answer175 = { data: [], next_cursor: null } satisfies { data: Line[]; next_cursor?: string | null };
 // lines.create 201 (full)
-export const answer180 = {
+export const answer176 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4655,7 +4581,7 @@ export const answer180 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.create 201 (minimal)
-export const answer181 = {
+export const answer177 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4677,7 +4603,7 @@ export const answer181 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.get 200 (full)
-export const answer182 = {
+export const answer178 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4710,7 +4636,7 @@ export const answer182 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.get 200 (minimal)
-export const answer183 = {
+export const answer179 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4732,7 +4658,7 @@ export const answer183 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.update 200 (full)
-export const answer184 = {
+export const answer180 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4765,7 +4691,7 @@ export const answer184 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.update 200 (minimal)
-export const answer185 = {
+export const answer181 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4787,7 +4713,7 @@ export const answer185 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.archive 200 (full)
-export const answer186 = {
+export const answer182 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4820,7 +4746,7 @@ export const answer186 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.archive 200 (minimal)
-export const answer187 = {
+export const answer183 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4842,7 +4768,7 @@ export const answer187 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.unarchive 200 (full)
-export const answer188 = {
+export const answer184 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4875,7 +4801,7 @@ export const answer188 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.unarchive 200 (minimal)
-export const answer189 = {
+export const answer185 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   kind: 'direct',
   name: 'Example name',
@@ -4897,7 +4823,7 @@ export const answer189 = {
   updated_at: '2026-10-01T09:15:02Z',
 } satisfies Line;
 // lines.listSenders 200 (full)
-export const answer190 = {
+export const answer186 = {
   data: [
     {
       channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4912,9 +4838,9 @@ export const answer190 = {
   ],
 } satisfies LineSenderList;
 // lines.listSenders 200 (minimal)
-export const answer191 = { data: [] } satisfies LineSenderList;
+export const answer187 = { data: [] } satisfies LineSenderList;
 // lines.setSenders 200 (full)
-export const answer192 = {
+export const answer188 = {
   data: [
     {
       channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4929,7 +4855,81 @@ export const answer192 = {
   ],
 } satisfies LineSenderList;
 // lines.setSenders 200 (minimal)
-export const answer193 = { data: [] } satisfies LineSenderList;
+export const answer189 = { data: [] } satisfies LineSenderList;
+// me.get 200 (full)
+export const answer190 = {
+  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  name: 'Example name',
+  status: 'Example status',
+  country_iso: 'PK',
+  timezone: 'Asia/Karachi',
+  default_locale: 'en',
+  settings: {
+    opt_out: {},
+    compliance: {},
+    quiet_hours: {},
+    frequency_cap: {},
+    links: {},
+    default_expiry_minutes: {},
+    sms: {},
+    channels: {},
+    whatsapp: {},
+    retention: {},
+    automation: {},
+    alerts: {},
+    limits: {},
+    support: {},
+  },
+  created_at: '2026-10-01T09:15:02Z',
+} satisfies User;
+// me.get 200 (minimal)
+export const answer191 = {
+  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  name: 'Example name',
+  status: 'Example status',
+  country_iso: 'PK',
+  timezone: 'Asia/Karachi',
+  default_locale: 'en',
+  settings: {},
+  created_at: '2026-10-01T09:15:02Z',
+} satisfies User;
+// me.update 200 (full)
+export const answer192 = {
+  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  name: 'Example name',
+  status: 'Example status',
+  country_iso: 'PK',
+  timezone: 'Asia/Karachi',
+  default_locale: 'en',
+  settings: {
+    opt_out: {},
+    compliance: {},
+    quiet_hours: {},
+    frequency_cap: {},
+    links: {},
+    default_expiry_minutes: {},
+    sms: {},
+    channels: {},
+    whatsapp: {},
+    retention: {},
+    automation: {},
+    alerts: {},
+    limits: {},
+    support: {},
+  },
+  created_at: '2026-10-01T09:15:02Z',
+} satisfies User;
+// me.update 200 (minimal)
+export const answer193 = {
+  id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  name: 'Example name',
+  status: 'Example status',
+  country_iso: 'PK',
+  timezone: 'Asia/Karachi',
+  default_locale: 'en',
+  settings: {},
+  created_at: '2026-10-01T09:15:02Z',
+} satisfies User;
 // media.upload 201 (full)
 export const answer194 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -4997,7 +4997,7 @@ export const answer197 = {
 // messages.cancel 200 (full)
 export const answer198 = {
   id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-  account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+  user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
   channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
   channel_type: 'android_sim',
   line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5055,7 +5055,7 @@ export const answer198 = {
 // messages.cancel 200 (minimal)
 export const answer199 = {
   id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-  account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+  user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
   channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
   channel_type: 'android_sim',
   line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5113,7 +5113,7 @@ export const answer199 = {
 // messages.cancel 202 (full)
 export const answer200 = {
   id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-  account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+  user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
   channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
   channel_type: 'android_sim',
   line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5171,7 +5171,7 @@ export const answer200 = {
 // messages.cancel 202 (minimal)
 export const answer201 = {
   id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-  account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+  user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
   channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
   channel_type: 'android_sim',
   line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5229,7 +5229,7 @@ export const answer201 = {
 // messages.retry 200 (full)
 export const answer202 = {
   id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-  account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+  user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
   channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
   channel_type: 'android_sim',
   line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5287,7 +5287,7 @@ export const answer202 = {
 // messages.retry 200 (minimal)
 export const answer203 = {
   id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-  account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+  user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
   channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
   channel_type: 'android_sim',
   line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5352,7 +5352,7 @@ export const answer204 = {
       status: 'accepted',
       message: {
         id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-        account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+        user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
         channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
         channel_type: 'android_sim',
         line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5424,7 +5424,7 @@ export const answer206 = {
   data: [
     {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5508,7 +5508,7 @@ export const answer209 = { dry_run: true, id: null, status: null, warnings: [] }
 // messages.send 202 (full)
 export const answer210 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_type: 'Example channel type',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -5581,7 +5581,7 @@ export const answer210 = {
 // messages.send 202 (minimal)
 export const answer211 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel_type: null,
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
@@ -5632,7 +5632,7 @@ export const answer211 = {
 // messages.show 200 (full)
 export const answer212 = {
   id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-  account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+  user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
   channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
   channel_type: 'android_sim',
   line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -5690,7 +5690,7 @@ export const answer212 = {
 // messages.show 200 (minimal)
 export const answer213 = {
   id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-  account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+  user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
   channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
   channel_type: 'android_sim',
   line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -6672,7 +6672,7 @@ export const answer286 = {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       external_ref: 'Example external ref',
       name: 'Example name',
-      account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+      user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       allowed_channel_types: ['Example allowed channel type'],
       state: 'connected',
       created_at: '2026-10-01T09:15:02Z',
@@ -6688,7 +6688,7 @@ export const answer288 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   external_ref: 'Example external ref',
   name: 'Example name',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   allowed_channel_types: ['Example allowed channel type'],
   state: 'connected',
   created_at: '2026-10-01T09:15:02Z',
@@ -6699,7 +6699,7 @@ export const answer289 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   external_ref: 'Example external ref',
   name: 'Example name',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   allowed_channel_types: null,
   state: 'connected',
   created_at: '2026-10-01T09:15:02Z',
@@ -6710,7 +6710,7 @@ export const answer290 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   external_ref: 'Example external ref',
   name: 'Example name',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   allowed_channel_types: ['Example allowed channel type'],
   state: 'connected',
   created_at: '2026-10-01T09:15:02Z',
@@ -6721,7 +6721,7 @@ export const answer291 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   external_ref: 'Example external ref',
   name: 'Example name',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   allowed_channel_types: null,
   state: 'connected',
   created_at: '2026-10-01T09:15:02Z',
@@ -6732,7 +6732,7 @@ export const answer292 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   external_ref: 'Example external ref',
   name: 'Example name',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   allowed_channel_types: ['Example allowed channel type'],
   state: 'connected',
   created_at: '2026-10-01T09:15:02Z',
@@ -6743,7 +6743,7 @@ export const answer293 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   external_ref: 'Example external ref',
   name: 'Example name',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   allowed_channel_types: null,
   state: 'connected',
   created_at: '2026-10-01T09:15:02Z',
@@ -6888,7 +6888,7 @@ export const answer304 = {
       opt_outs: 1,
       opt_ins: 1,
       line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+      user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       external_ref: 'Example external ref',
       name: 'Example name',
       by_channel_type: { example: {} },
@@ -6927,7 +6927,7 @@ export const event306 = {
   type: 'campaign.scheduled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -6977,7 +6977,7 @@ export const event307 = {
   type: 'campaign.scheduled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7018,7 +7018,7 @@ export const event308 = {
   type: 'campaign.unscheduled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7068,7 +7068,7 @@ export const event309 = {
   type: 'campaign.unscheduled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7109,7 +7109,7 @@ export const event310 = {
   type: 'campaign.started',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7158,7 +7158,7 @@ export const event311 = {
   type: 'campaign.started',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7198,7 +7198,7 @@ export const event312 = {
   type: 'campaign.paused',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7248,7 +7248,7 @@ export const event313 = {
   type: 'campaign.paused',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7289,7 +7289,7 @@ export const event314 = {
   type: 'campaign.resumed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7339,7 +7339,7 @@ export const event315 = {
   type: 'campaign.resumed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7380,7 +7380,7 @@ export const event316 = {
   type: 'campaign.completed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7429,7 +7429,7 @@ export const event317 = {
   type: 'campaign.completed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7469,7 +7469,7 @@ export const event318 = {
   type: 'campaign.cancelled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7519,7 +7519,7 @@ export const event319 = {
   type: 'campaign.cancelled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7560,7 +7560,7 @@ export const event320 = {
   type: 'contact.created',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7601,7 +7601,7 @@ export const event321 = {
   type: 'contact.created',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7642,7 +7642,7 @@ export const event322 = {
   type: 'contact.updated',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7684,7 +7684,7 @@ export const event323 = {
   type: 'contact.updated',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7726,7 +7726,7 @@ export const event324 = {
   type: 'contact.deleted',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { contact_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', erased: true, merged_into: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c' },
@@ -7737,7 +7737,7 @@ export const event325 = {
   type: 'contact.deleted',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: { contact_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', erased: true, merged_into: null },
@@ -7748,7 +7748,7 @@ export const event326 = {
   type: 'import.completed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7775,7 +7775,7 @@ export const event327 = {
   type: 'import.completed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7802,7 +7802,7 @@ export const event328 = {
   type: 'import.failed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7829,7 +7829,7 @@ export const event329 = {
   type: 'import.failed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7856,7 +7856,7 @@ export const event330 = {
   type: 'export.completed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7879,7 +7879,7 @@ export const event331 = {
   type: 'export.completed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7902,7 +7902,7 @@ export const event332 = {
   type: 'line.sender_changed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7917,7 +7917,7 @@ export const event333 = {
   type: 'line.sender_changed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', senders: [], sticky_cleared_count: 1 },
@@ -7928,7 +7928,7 @@ export const event334 = {
   type: 'line.failover',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -7946,7 +7946,7 @@ export const event335 = {
   type: 'line.failover',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -7964,7 +7964,7 @@ export const event336 = {
   type: 'line.no_sender',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', held_count: 1 },
@@ -7975,7 +7975,7 @@ export const event337 = {
   type: 'line.no_sender',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', held_count: 1 },
@@ -7986,7 +7986,7 @@ export const event338 = {
   type: 'line.connected',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8003,7 +8003,7 @@ export const event339 = {
   type: 'line.connected',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8020,7 +8020,7 @@ export const event340 = {
   type: 'line.needs_attention',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8037,7 +8037,7 @@ export const event341 = {
   type: 'line.needs_attention',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8054,7 +8054,7 @@ export const event342 = {
   type: 'line.recovered',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8071,7 +8071,7 @@ export const event343 = {
   type: 'line.recovered',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8088,7 +8088,7 @@ export const event344 = {
   type: 'line.detached',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', external_ref: 'Example external ref', by: 'partner' },
@@ -8099,7 +8099,7 @@ export const event345 = {
   type: 'line.detached',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: { line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', external_ref: null, by: 'partner' },
@@ -8110,7 +8110,7 @@ export const event346 = {
   type: 'line.quota_low',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8128,7 +8128,7 @@ export const event347 = {
   type: 'line.quota_low',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8146,7 +8146,7 @@ export const event348 = {
   type: 'line.quota_exhausted',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8164,7 +8164,7 @@ export const event349 = {
   type: 'line.quota_exhausted',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8182,7 +8182,7 @@ export const event350 = {
   type: 'line.alarm',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8201,7 +8201,7 @@ export const event351 = {
   type: 'line.alarm',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8220,7 +8220,7 @@ export const event352 = {
   type: 'line.recovery_requested',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8238,7 +8238,7 @@ export const event353 = {
   type: 'line.recovery_requested',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8256,7 +8256,7 @@ export const event354 = {
   type: 'conversation.handed_over',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8271,7 +8271,7 @@ export const event355 = {
   type: 'conversation.handed_over',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8286,7 +8286,7 @@ export const event356 = {
   type: 'link.clicked',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8307,7 +8307,7 @@ export const event357 = {
   type: 'link.clicked',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8328,7 +8328,7 @@ export const event358 = {
   type: 'channel.connected',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8425,7 +8425,7 @@ export const event359 = {
   type: 'channel.connected',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8501,7 +8501,7 @@ export const event360 = {
   type: 'channel.verification_failed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8599,7 +8599,7 @@ export const event361 = {
   type: 'channel.verification_failed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8676,7 +8676,7 @@ export const event362 = {
   type: 'channel.disconnected',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8774,7 +8774,7 @@ export const event363 = {
   type: 'channel.disconnected',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -8851,7 +8851,7 @@ export const event364 = {
   type: 'channel.paused',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -8951,7 +8951,7 @@ export const event365 = {
   type: 'channel.paused',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -9030,7 +9030,7 @@ export const event366 = {
   type: 'channel.resumed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9127,7 +9127,7 @@ export const event367 = {
   type: 'channel.resumed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -9203,7 +9203,7 @@ export const event368 = {
   type: 'channel.health_changed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9224,7 +9224,7 @@ export const event369 = {
   type: 'channel.health_changed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -9239,7 +9239,7 @@ export const event370 = {
   type: 'channel.volume_warning',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', window: '24h', used_segments: 1, cap: 1, date: 'Example date' },
@@ -9250,7 +9250,7 @@ export const event371 = {
   type: 'channel.volume_warning',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', window: '24h', used_segments: 1, cap: 1, date: 'Example date' },
@@ -9261,7 +9261,7 @@ export const event372 = {
   type: 'channel.qr_updated',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9276,7 +9276,7 @@ export const event373 = {
   type: 'channel.qr_updated',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: { channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', qr_png_base64: null, expires_at: null },
@@ -9287,7 +9287,7 @@ export const event374 = {
   type: 'device.paired',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9350,7 +9350,7 @@ export const event375 = {
   type: 'device.paired',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -9397,7 +9397,7 @@ export const event376 = {
   type: 'device.online',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9460,7 +9460,7 @@ export const event377 = {
   type: 'device.online',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -9507,7 +9507,7 @@ export const event378 = {
   type: 'device.degraded',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9570,7 +9570,7 @@ export const event379 = {
   type: 'device.degraded',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -9617,7 +9617,7 @@ export const event380 = {
   type: 'device.offline',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9680,7 +9680,7 @@ export const event381 = {
   type: 'device.offline',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -9727,7 +9727,7 @@ export const event382 = {
   type: 'device.revoked',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -9790,7 +9790,7 @@ export const event383 = {
   type: 'device.revoked',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -9831,17 +9831,17 @@ export const event383 = {
     reason: 'owner',
   },
 } satisfies DeviceRevokedEvent;
-// account.suspended (full)
+// user.suspended (full)
 export const event384 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'account.suspended',
+  type: 'user.suspended',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
-    account: {
+    user: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       name: 'Example name',
       status: 'active',
@@ -9880,18 +9880,18 @@ export const event384 = {
     actor: { type: 'Example type', id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c' },
     reason: 'Example reason',
   },
-} satisfies AccountSuspendedEvent;
-// account.suspended (minimal)
+} satisfies UserSuspendedEvent;
+// user.suspended (minimal)
 export const event385 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'account.suspended',
+  type: 'user.suspended',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
-    account: {
+    user: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       name: 'Example name',
       status: 'active',
@@ -9909,18 +9909,18 @@ export const event385 = {
     actor: { type: 'Example type', id: null },
     reason: null,
   },
-} satisfies AccountSuspendedEvent;
-// account.reactivated (full)
+} satisfies UserSuspendedEvent;
+// user.reactivated (full)
 export const event386 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'account.reactivated',
+  type: 'user.reactivated',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
-    account: {
+    user: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       name: 'Example name',
       status: 'active',
@@ -9959,18 +9959,18 @@ export const event386 = {
     actor: { type: 'Example type', id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c' },
     reason: 'Example reason',
   },
-} satisfies AccountReactivatedEvent;
-// account.reactivated (minimal)
+} satisfies UserReactivatedEvent;
+// user.reactivated (minimal)
 export const event387 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'account.reactivated',
+  type: 'user.reactivated',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
-    account: {
+    user: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       name: 'Example name',
       status: 'active',
@@ -9988,18 +9988,18 @@ export const event387 = {
     actor: { type: 'Example type', id: null },
     reason: null,
   },
-} satisfies AccountReactivatedEvent;
-// account.deletion_scheduled (full)
+} satisfies UserReactivatedEvent;
+// user.deletion_scheduled (full)
 export const event388 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'account.deletion_scheduled',
+  type: 'user.deletion_scheduled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
-    account: {
+    user: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       name: 'Example name',
       status: 'active',
@@ -10038,18 +10038,18 @@ export const event388 = {
     actor: { type: 'Example type', id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c' },
     reason: 'Example reason',
   },
-} satisfies AccountDeletionScheduledEvent;
-// account.deletion_scheduled (minimal)
+} satisfies UserDeletionScheduledEvent;
+// user.deletion_scheduled (minimal)
 export const event389 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  type: 'account.deletion_scheduled',
+  type: 'user.deletion_scheduled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
-    account: {
+    user: {
       id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       name: 'Example name',
       status: 'active',
@@ -10067,20 +10067,20 @@ export const event389 = {
     actor: { type: 'Example type', id: null },
     reason: null,
   },
-} satisfies AccountDeletionScheduledEvent;
+} satisfies UserDeletionScheduledEvent;
 // message.queued (full)
 export const event390 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   type: 'message.queued',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10150,13 +10150,13 @@ export const event391 = {
   type: 'message.queued',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10226,13 +10226,13 @@ export const event392 = {
   type: 'message.sent',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10302,13 +10302,13 @@ export const event393 = {
   type: 'message.sent',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10378,13 +10378,13 @@ export const event394 = {
   type: 'message.delivered',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10454,13 +10454,13 @@ export const event395 = {
   type: 'message.delivered',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10530,13 +10530,13 @@ export const event396 = {
   type: 'message.read',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10606,13 +10606,13 @@ export const event397 = {
   type: 'message.read',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10682,13 +10682,13 @@ export const event398 = {
   type: 'message.failed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10758,13 +10758,13 @@ export const event399 = {
   type: 'message.failed',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10834,13 +10834,13 @@ export const event400 = {
   type: 'message.expired',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10910,13 +10910,13 @@ export const event401 = {
   type: 'message.expired',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -10986,13 +10986,13 @@ export const event402 = {
   type: 'message.cancelled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -11063,13 +11063,13 @@ export const event403 = {
   type: 'message.cancelled',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -11140,13 +11140,13 @@ export const event404 = {
   type: 'message.received',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -11218,13 +11218,13 @@ export const event405 = {
   type: 'message.received',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
     message: {
       id: '0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10',
-      account_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
+      user_id: '0198e0aa-3b10-7c52-8a41-5d2f9e7b1c01',
       channel_id: '0198e0b4-92d3-7a18-b3c6-0e4a7d5f2c02',
       channel_type: 'android_sim',
       line_id: '0198e0b4-9411-7f60-a2d9-1c8b6e3a4d03',
@@ -11296,7 +11296,7 @@ export const event406 = {
   type: 'conversation.read',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11331,7 +11331,7 @@ export const event407 = {
   type: 'conversation.read',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -11366,7 +11366,7 @@ export const event408 = {
   type: 'conversation.unread',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11401,7 +11401,7 @@ export const event409 = {
   type: 'conversation.unread',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -11436,7 +11436,7 @@ export const event410 = {
   type: 'conversation.archived',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11471,7 +11471,7 @@ export const event411 = {
   type: 'conversation.archived',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -11506,7 +11506,7 @@ export const event412 = {
   type: 'conversation.unarchived',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11541,7 +11541,7 @@ export const event413 = {
   type: 'conversation.unarchived',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -11576,7 +11576,7 @@ export const event414 = {
   type: 'conversation.deleted',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11592,7 +11592,7 @@ export const event415 = {
   type: 'conversation.deleted',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -11608,7 +11608,7 @@ export const event416 = {
   type: 'contact.opted_out',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11629,7 +11629,7 @@ export const event417 = {
   type: 'contact.opted_out',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -11650,7 +11650,7 @@ export const event418 = {
   type: 'contact.opted_in',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: {
@@ -11671,7 +11671,7 @@ export const event419 = {
   type: 'contact.opted_in',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: {
@@ -11692,7 +11692,7 @@ export const event420 = {
   type: 'ping',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   channel: { id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', type: 'Example type' },
   data: { endpoint_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', message: 'Example message' },
@@ -11703,15 +11703,13 @@ export const event421 = {
   type: 'ping',
   api_version: '1.0.0',
   created_at: '2026-10-01T09:15:02Z',
-  account_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  user_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_id: null,
   channel: null,
   data: { endpoint_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', message: 'Example message' },
 } satisfies PingEvent;
 
 export async function calls(client: MyComm): Promise<void> {
-  await client.account.get();
-  await client.account.update({});
   await client.apiKeys.list({});
   await client.apiKeys.create({ name: 'Example name' });
   await client.apiKeys.revoke('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c');
@@ -11850,6 +11848,8 @@ export async function calls(client: MyComm): Promise<void> {
   await client.lines.setSenders('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', {
     senders: [{ channel_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c', role: 'primary', enabled: true, mirror_inbound: true }],
   });
+  await client.me.get();
+  await client.me.update({});
   await client.media.upload({ file: new Blob(['phone\n']) });
   await client.media.get('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c');
   await client.messages.cancel('01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c');

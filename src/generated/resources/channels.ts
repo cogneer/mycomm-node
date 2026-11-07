@@ -66,7 +66,7 @@ export class ChannelsResource {
    * Requires `channels:write`. `paused` → `active` for `pause_reason` `owner`, `auto:failure_streak` and
    * `auto:quota` (after the SIM was recharged); `auto:health_critical` also once the SIM safety band is back to
    * `fair` or better. `auto:sim_missing` and `device_revoked` resume through the SIM returning or re-verification,
-   * `auto:quarantine` through a successful test message or MyComm support, `admin` and `account_suspended` only
+   * `auto:quarantine` through a successful test message or MyComm support, `admin` and `user_suspended` only
    * through MyComm: these answer `409 INVALID_STATE` with the channel's `status`, as does a channel that is not
    * paused.
    *
@@ -126,9 +126,9 @@ export class ChannelsResource {
   /**
    * List channels.
    *
-   * Requires `channels:read`. Every channel of the account whatever its status, oldest first, unless a filter
-   * narrows the list. `health_band` filters on the stored SIM safety band, so a number that was never evaluated
-   * matches no band. A key restricted to lines sees only the channels of those lines.
+   * Requires `channels:read`. Every channel of the user whatever its status, oldest first, unless a filter narrows
+   * the list. `health_band` filters on the stored SIM safety band, so a number that was never evaluated matches no
+   * band. A key restricted to lines sees only the channels of those lines.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listChannels`
    */
@@ -189,9 +189,9 @@ export class ChannelsResource {
   /**
    * List channel types.
    *
-   * Requires `channels:read`. Every channel type with what this account can connect and what each type can do, so
-   * a partner UI adapts without hard-coding SMS. `available` is `true` when the type is enabled on the platform
-   * and allowed by the account's `settings.channels.allowed_types`; a type that has not shipped yet carries
+   * Requires `channels:read`. Every channel type with what this user can connect and what each type can do, so a
+   * partner UI adapts without hard-coding SMS. `available` is `true` when the type is enabled on the platform and
+   * allowed by the user's `settings.channels.allowed_types`; a type that has not shipped yet carries
    * `available_from`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listChannelTypes`

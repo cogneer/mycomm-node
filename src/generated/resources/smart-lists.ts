@@ -28,7 +28,7 @@ export class SmartListsResource {
   /**
    * List smart lists.
    *
-   * Requires `contacts:read`. Smart lists of the account sorted by `name` (default) with cursor pagination. `q`
+   * Requires `contacts:read`. Smart lists of the user sorted by `name` (default) with cursor pagination. `q`
    * matches the name, case-insensitively.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listSmartLists`
@@ -52,8 +52,8 @@ export class SmartListsResource {
    * Create a smart list.
    *
    * Requires `groups:write`. `filter` is the smart list filter language; a filter that breaks it answers `422
-   * FILTER_INVALID` with `details.pointer`, a JSON pointer to the bad node. The name is unique per account,
-   * ignoring case (`409 NAME_TAKEN`).
+   * FILTER_INVALID` with `details.pointer`, a JSON pointer to the bad node. The name is unique per user, ignoring
+   * case (`409 NAME_TAKEN`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createSmartList`
    */

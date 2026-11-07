@@ -72,7 +72,7 @@ name drift apart, or when two operations of a resource would share a method name
    project with `typescript` and `@types/node`, and compile an `.mts` file that imports `@mycomm/node` and
    `@mycomm/node/testing` and a `.cts` file that does the same, with `"module": "NodeNext"`; run both, and a plain `.cjs`
    file that calls `require('@mycomm/node')`.
-3. Run the SDK against a test account: send a dry run, list messages, create and delete a webhook endpoint, and verify a
+3. Run the SDK against a test user: send a dry run, list messages, create and delete a webhook endpoint, and verify a
    delivery signed by the backend's test action (`webhookEndpoints.test`).
 4. Bump `version` in `package.json` and `VERSION` in `src/core/version.ts` in the same commit, tag `vX.Y.Z`, and publish
    with `npm publish --access public`.

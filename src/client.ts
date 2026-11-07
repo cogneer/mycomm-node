@@ -2,11 +2,11 @@ import { Connection } from './core/connection.js';
 import { MyCommError } from './core/errors.js';
 import { FetchTransport, type Fetch, type Transport } from './core/http.js';
 import type { RequestOptions } from './core/request-options.js';
-import type { Account } from './generated/types.js';
+import type { User } from './generated/types.js';
 import { Resources } from './generated/resources/index.js';
 
 export interface ClientOptions {
-  /** An account key (`mc_live_...`) or a partner key (`mc_partner_...`). Defaults to the `MYCOMM_API_KEY` environment variable. */
+  /** A user key (`mc_live_...`) or a partner key (`mc_partner_...`). Defaults to the `MYCOMM_API_KEY` environment variable. */
   apiKey?: string;
   /** Origin of the API, without `/v1`. Defaults to `MYCOMM_BASE_URL`, else `https://mycomm.cogneer.tech`. */
   baseUrl?: string;
@@ -54,8 +54,8 @@ export interface VerifyResult {
   checks: VerifyCheck[];
   /** The messages of the checks that failed, for a settings screen or a log. */
   problems: string[];
-  /** The account the key acts on, when the key works. */
-  account: Account | null;
+  /** The user the key acts on, when the key works. */
+  user: User | null;
   /** What would hold a message to the number you tested, when the dry run predicts a hold. */
   holdReason: string | null;
 }
@@ -130,13 +130,13 @@ export class MyComm extends Resources {
    * own message. It does not retry, so a failure is reported at once. `lineId` names the line to send from; leave it out
    * when the key has only one.
    *
-   * A partner key is checked on the partner API (it reaches no account of its own on `/v1`, so `account` stays null) and
+   * A partner key is checked on the partner API (it reaches no user of its own on `/v1`, so `user` stays null) and
    * its send is dry-run through a line: the one of `forLine()`, else `lineId`.
    */
   async verify(options: { to?: string; lineId?: string } = {}): Promise<VerifyResult> {
     const once: RequestOptions = { maxRetries: 0 };
     const checks: VerifyCheck[] = [];
-    let account: Account | null = null;
+    let user: User | null = null;
     let holdReason: string | null = null;
     const partner = this.isPartnerKey();
 
@@ -145,8 +145,8 @@ export class MyComm extends Resources {
         await this.partner.lines.list({ limit: 1 }, once);
         checks.push({ name: 'key', ok: true, message: 'The partner key works.' });
       } else {
-        account = await this.account.get(once);
-        checks.push({ name: 'key', ok: true, message: `The key works for account ${account.id}.` });
+        user = await this.me.get(once);
+        checks.push({ name: 'key', ok: true, message: `The key works for user ${user.id}.` });
       }
     } catch (error) {
       if (!(error instanceof MyCommError)) throw error;
@@ -189,13 +189,13 @@ export class MyComm extends Resources {
       }
     }
 
-    return result(checks, account, holdReason);
+    return result(checks, user, holdReason);
   }
 }
 
-function result(checks: VerifyCheck[], account: Account | null, holdReason: string | null): VerifyResult {
+function result(checks: VerifyCheck[], user: User | null, holdReason: string | null): VerifyResult {
   const problems = checks.filter((check) => !check.ok).map((check) => check.message);
-  return { ok: problems.length === 0, checks, problems, account, holdReason };
+  return { ok: problems.length === 0, checks, problems, user, holdReason };
 }
 
 function env(name: string): string | undefined {

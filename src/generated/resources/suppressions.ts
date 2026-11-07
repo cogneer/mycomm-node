@@ -21,9 +21,9 @@ export class SuppressionsResource {
   /**
    * List suppressions.
    *
-   * Requires `suppressions:read`. The account's suppressed identities, newest first, with cursor pagination.
-   * Suppressions belong to the account, not to a line: a restricted key sees the whole list. Comma lists match any
-   * of the values. A phone number in `address` written without country code is read in the account country.
+   * Requires `suppressions:read`. The user's suppressed identities, newest first, with cursor pagination.
+   * Suppressions belong to the user, not to a line: a restricted key sees the whole list. Comma lists match any of
+   * the values. A phone number in `address` written without country code is read in the user's country.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listSuppressions`
    */
@@ -47,7 +47,7 @@ export class SuppressionsResource {
    *
    * Requires `suppressions:write` (never held by a restricted key). `identity_type` defaults to `phone` (the only
    * type in v1) and `reason` to `api`; the API may write `api`, `complaint` or `dnc`. The address is stored in
-   * E.164 (a number without country code is read in the account country; one that is not a valid number is `422
+   * E.164 (a number without country code is read in the user's country; one that is not a valid number is `422
    * VALIDATION_FAILED` with `INVALID_NUMBER` on `address`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createSuppression`
@@ -74,8 +74,8 @@ export class SuppressionsResource {
    * Check whether an address is suppressed.
    *
    * Requires `suppressions:read`. `address` is the E.164 number (a number without country code is read in the
-   * account country; one that is not a valid number is `422 VALIDATION_FAILED` with `INVALID_NUMBER` on
-   * `address`). `identity_type` defaults to `phone`. The answer echoes the normalised address.
+   * user's country; one that is not a valid number is `422 VALIDATION_FAILED` with `INVALID_NUMBER` on `address`).
+   * `identity_type` defaults to `phone`. The answer echoes the normalised address.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `checkSuppression`
    */

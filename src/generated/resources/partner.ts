@@ -88,10 +88,10 @@ export class PartnerLinesResource {
   /**
    * Create a line.
    *
-   * Requires `lines:write`. Makes a line for one of your users in a new, empty MyComm account that becomes the
-   * user's account when they connect a phone through a hosted link. `user_number` is only a hint for that page: it
-   * never joins the line to an account that already has the number (that needs a code sent to the number), and the
-   * answer is the same whether or not the number has an account.
+   * Requires `lines:write`. Makes a line for one of your users for a new MyComm user that becomes your user when
+   * they connect a phone through a hosted link. `user_number` is only a hint for that page: it never joins the
+   * line to a user that already has the number (that needs a code sent to the number), and the answer is the same
+   * whether or not the number has a user.
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `createPartnerLine`
    */
@@ -114,7 +114,7 @@ export class PartnerLinesResource {
    * Change a line.
    *
    * Requires `lines:write`. Changes `name` and `allowed_channel_types`; a field left out or `null` stays as it is.
-   * `external_ref` never changes (`422`). A name another line of the account has answers `409 NAME_TAKEN`.
+   * `external_ref` never changes (`422`). A name another line of the user has answers `409 NAME_TAKEN`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `updatePartnerLine`
    */
@@ -125,9 +125,9 @@ export class PartnerLinesResource {
   /**
    * Detach a line.
    *
-   * Requires `lines:write`. Archives the line: its open conversations move to the account's Direct line, and the
-   * user keeps the account, its channels, phones and history. `line.detached` is emitted once; detaching an
-   * archived line again changes nothing. The line header stops working for it (`403 LINE_CONTEXT_INVALID`).
+   * Requires `lines:write`. Archives the line: its open conversations move to the user's Direct line, and the user
+   * keeps the user, its channels, phones and history. `line.detached` is emitted once; detaching an archived line
+   * again changes nothing. The line header stops working for it (`403 LINE_CONTEXT_INVALID`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `detachPartnerLine`
    */
@@ -138,7 +138,7 @@ export class PartnerLinesResource {
   /**
    * Vouch for a recovery request.
    *
-   * Requires `lines:write`. Someone asked to recover the account of your line (`line.recovery_requested`), and you
+   * Requires `lines:write`. Someone asked to recover the user of your line (`line.recovery_requested`), and you
    * know this person. MyComm staff see your answer when they decide. It is never required and never enough alone:
    * nothing changes before the 7-day wait is over and staff approve.
    *
@@ -159,9 +159,9 @@ export class PartnerLinesLinksResource {
    *
    * Requires `links:write`. A short-lived link to MyComm's hosted page for this line: send your user's browser to
    * `url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and
-   * joins an account that already has it, after a code sent to that number), `add_channel` (one more SIM, added to
-   * the line as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's
-   * account), `manage` and `claim`.
+   * joins a user that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the
+   * line as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's user),
+   * `manage` and `claim`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `createPartnerLineLink`
    */
@@ -243,8 +243,8 @@ export class PartnerUsageResource {
    * Usage per line.
    *
    * One row per line of yours, detached lines included (their history stays), sorted by `sent_segments`
-   * descending. Counters come from the line's own traffic only, never from the rest of the user's account. Dates
-   * are interpreted in each line's account time zone. Counters match the usage reports in the portal; rows and
+   * descending. Counters come from the line's own traffic only, never from the rest of the user's traffic. Dates
+   * are interpreted in the time zone of each line's user. Counters match the usage reports in the portal; rows and
    * totals add `by_channel_type`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `getPartnerUsage`

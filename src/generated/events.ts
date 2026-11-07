@@ -1,7 +1,6 @@
 // Generated from the MyComm OpenAPI documents by generator/. Do not edit: run `npm run generate`.
 
 import type {
-  WebhookAccountData,
   WebhookCampaignActorData,
   WebhookCampaignData,
   WebhookChannelData,
@@ -37,6 +36,7 @@ import type {
   WebhookMessageData,
   WebhookMessageReceivedData,
   WebhookPingData,
+  WebhookUserData,
 } from './types.js';
 
 /**
@@ -54,7 +54,7 @@ export interface WebhookEventBase {
    */
   api_version: string;
   created_at: string;
-  account_id: string;
+  user_id: string;
   line_id: string | null;
   channel: WebhookChannelRef | null;
 }
@@ -211,7 +211,7 @@ export interface LineNoSenderEvent extends WebhookEventBase {
  * `line.connected`: A partner line left `not_connected`: the user connected a phone and its first number was
  * verified. Sent once per line, whatever the line's state then is: `state` says it, and when it is
  * `needs_attention` a `line.needs_attention` follows. Later recoveries send `line.recovered`. Partner lines only
- * (`partner_lines` endpoints and the account's own endpoints).
+ * (`partner_lines` endpoints and the user's own endpoints).
  */
 export interface LineConnectedEvent extends WebhookEventBase {
   type: 'line.connected';
@@ -236,8 +236,7 @@ export interface LineRecoveredEvent extends WebhookEventBase {
 
 /**
  * `line.detached`: A partner line was detached and archived, by the partner (`DELETE /partner/v1/lines/{id}`),
- * by the account's owner, or by MyComm. The account keeps its numbers and history; the line sends no more. Sent
- * once.
+ * by the user's owner, or by MyComm. The user keeps its numbers and history; the line sends no more. Sent once.
  */
 export interface LineDetachedEvent extends WebhookEventBase {
   type: 'line.detached';
@@ -273,7 +272,7 @@ export interface LineQuotaExhaustedEvent extends WebhookEventBase {
  * member was paused or disconnected; ends when it is resumed), `budget_80` (a sender used
  * `alarm_thresholds.budget_percent` of its hourly limit; ends below 60 % of that limit, or 20 points under
  * `alarm_thresholds.budget_percent` when that is lower), `self_loop` (a sender sent
- * `alarm_thresholds.self_loop_per_hour` messages to the account's own numbers within an hour; ends after an hour
+ * `alarm_thresholds.self_loop_per_hour` messages to the user's own numbers within an hour; ends after an hour
  * without one), `sponsor_quota_low` (80 % of the sponsored allowance is used; ends with the next cycle or when
  * the line has no active sponsorship) or `unconfirmed` (messages an unpaired phone never confirmed were failed
  * or sent again, per `on_unconfirmed`; ends after 24 hours without one). Archiving or detaching a line ends its
@@ -287,10 +286,10 @@ export interface LineAlarmEvent extends WebhookEventBase {
 }
 
 /**
- * `line.recovery_requested`: Someone who says they lost their number asked to recover the account of this line;
- * sent once per partner, on its oldest live line of the account. Nothing has changed on the account. If you know
- * this person, answer with `POST /partner/v1/lines/{id}/vouch`. It is never required and never enough alone:
- * MyComm staff decide, no earlier than `waiting_until`.
+ * `line.recovery_requested`: Someone who says they lost their number asked to recover the user of this line;
+ * sent once per partner, on its oldest live line of the user. Nothing has changed on the user. If you know this
+ * person, answer with `POST /partner/v1/lines/{id}/vouch`. It is never required and never enough alone: MyComm
+ * staff decide, no earlier than `waiting_until`.
  */
 export interface LineRecoveryRequestedEvent extends WebhookEventBase {
   type: 'line.recovery_requested';
@@ -335,8 +334,8 @@ export interface ChannelVerificationFailedEvent extends WebhookEventBase {
 }
 
 /**
- * `channel.disconnected`: The number was disconnected (owner disconnect, SIM retirement, ops force-release,
- * account deletion or a stale release). `data.reason` is the `disconnect_reason`.
+ * `channel.disconnected`: The number was disconnected (owner disconnect, SIM retirement, ops force-release, user
+ * deletion or a stale release). `data.reason` is the `disconnect_reason`.
  */
 export interface ChannelDisconnectedEvent extends WebhookEventBase {
   type: 'channel.disconnected';
@@ -407,8 +406,8 @@ export interface DeviceDegradedEvent extends WebhookEventBase {
 }
 
 /**
- * `device.offline`: The device has been offline longer than the account's offline threshold;
- * `data.previous_state` is the state it was in before it went offline.
+ * `device.offline`: The device has been offline longer than the user's offline threshold; `data.previous_state`
+ * is the state it was in before it went offline.
  */
 export interface DeviceOfflineEvent extends WebhookEventBase {
   type: 'device.offline';
@@ -422,24 +421,24 @@ export interface DeviceRevokedEvent extends WebhookEventBase {
 }
 
 /**
- * `account.suspended`: The account was suspended by the partner, the owner or ops. An ops-initiated suspension
- * carries the actor `admin` with a `null` id.
+ * `user.suspended`: The user was suspended by the partner, the owner or ops. An ops-initiated suspension carries
+ * the actor `admin` with a `null` id.
  */
-export interface AccountSuspendedEvent extends WebhookEventBase {
-  type: 'account.suspended';
-  data: WebhookAccountData;
+export interface UserSuspendedEvent extends WebhookEventBase {
+  type: 'user.suspended';
+  data: WebhookUserData;
 }
 
-/** `account.reactivated`: A suspended account is `active` again. */
-export interface AccountReactivatedEvent extends WebhookEventBase {
-  type: 'account.reactivated';
-  data: WebhookAccountData;
+/** `user.reactivated`: A suspended user is `active` again. */
+export interface UserReactivatedEvent extends WebhookEventBase {
+  type: 'user.reactivated';
+  data: WebhookUserData;
 }
 
-/** `account.deletion_scheduled`: The account is `pending_deletion`; `data.account.purge_at` is when it is purged. */
-export interface AccountDeletionScheduledEvent extends WebhookEventBase {
-  type: 'account.deletion_scheduled';
-  data: WebhookAccountData;
+/** `user.deletion_scheduled`: The user is `pending_deletion`; `data.user.purge_at` is when it is purged. */
+export interface UserDeletionScheduledEvent extends WebhookEventBase {
+  type: 'user.deletion_scheduled';
+  data: WebhookUserData;
 }
 
 /**
@@ -592,9 +591,9 @@ export type WebhookEvent =
   | DeviceDegradedEvent
   | DeviceOfflineEvent
   | DeviceRevokedEvent
-  | AccountSuspendedEvent
-  | AccountReactivatedEvent
-  | AccountDeletionScheduledEvent
+  | UserSuspendedEvent
+  | UserReactivatedEvent
+  | UserDeletionScheduledEvent
   | MessageQueuedEvent
   | MessageSentEvent
   | MessageDeliveredEvent
@@ -655,9 +654,9 @@ export const EVENT_TYPES: readonly WebhookEventType[] = [
   'device.degraded',
   'device.offline',
   'device.revoked',
-  'account.suspended',
-  'account.reactivated',
-  'account.deletion_scheduled',
+  'user.suspended',
+  'user.reactivated',
+  'user.deletion_scheduled',
   'message.queued',
   'message.sent',
   'message.delivered',

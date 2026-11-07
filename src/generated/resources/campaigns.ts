@@ -41,7 +41,7 @@ export class CampaignsResource {
   /**
    * List campaigns.
    *
-   * Requires `campaigns:read`. Campaigns of the account, newest first (`sort=-created_at`, the only sort), with
+   * Requires `campaigns:read`. Campaigns of the user, newest first (`sort=-created_at`, the only sort), with
    * cursor pagination. An item carries no `audience.addresses`; read the campaign for them. A key limited to some
    * lines never holds `campaigns:read` and answers `403 ABILITY_MISSING`.
    *
@@ -168,8 +168,8 @@ export class CampaignsResource {
    * Resume a campaign.
    *
    * Requires `campaigns:write`. `paused` to `running`; held messages are released. `409 INVALID_STATE` from any
-   * other status. While the account is frozen the campaign stays paused and the call answers `422
-   * ACCOUNT_THROTTLED` with `details.risk_state: frozen`.
+   * other status. While the user is frozen the campaign stays paused and the call answers `422 USER_THROTTLED`
+   * with `details.risk_state: frozen`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `resumeCampaign`
    */
@@ -200,7 +200,7 @@ export class CampaignsRecipientsResource {
    * List the recipients of a campaign.
    *
    * Requires `campaigns:read`. The per-recipient results of a campaign, oldest first (`sort=created_at`), with
-   * cursor pagination. Each filter takes one value. A campaign of another account answers `404`. A key limited to
+   * cursor pagination. Each filter takes one value. A campaign of another user answers `404`. A key limited to
    * some lines never holds `campaigns:read` and answers `403 ABILITY_MISSING`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listCampaignRecipients`

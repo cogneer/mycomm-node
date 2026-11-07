@@ -40,7 +40,7 @@ export class MessagesResource {
    *
    * Re-queues the same message (same id, `reference_id` and conversation position) from `failed` or `expired`.
    * Requires `messages:send`. `attempts` is reset, the failure fields are cleared and `expires_at` is set to now
-   * plus the lane default. Compliance and channel and account state are checked again.
+   * plus the lane default. Compliance and channel and user state are checked again.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `retryMessage`
    */
@@ -64,9 +64,9 @@ export class MessagesResource {
   /**
    * List and search messages.
    *
-   * Messages of the account, newest first, with cursor pagination. Requires `messages:read`. A restricted key
-   * lists only the messages of its lines. Comma lists match any of the values. `q` is a full-text search on `body`
-   * (at least 2 characters, Postgres `simple` configuration, so Urdu and Roman Urdu match word by word) and always
+   * Messages of the user, newest first, with cursor pagination. Requires `messages:read`. A restricted key lists
+   * only the messages of its lines. Comma lists match any of the values. `q` is a full-text search on `body` (at
+   * least 2 characters, Postgres `simple` configuration, so Urdu and Roman Urdu match word by word) and always
    * sorts newest first.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `listMessages`

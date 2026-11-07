@@ -76,8 +76,8 @@ export class LinesResource {
    *
    * Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a
    * channel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a
-   * key set to `null` is removed). `409 NAME_TAKEN` `{field: "name"}` when another line of the account has the
-   * name (case-insensitive).
+   * key set to `null` is removed). `409 NAME_TAKEN` `{field: "name"}` when another line of the user has the name
+   * (case-insensitive).
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `updateLine`
    */
@@ -145,9 +145,9 @@ export class LinesLinksResource {
    *
    * Requires `links:write`. A short-lived link to MyComm's hosted page for one of your lines: send your user's
    * browser to `url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's
-   * number and joins an account that already has it, after a code sent to that number), `add_channel` (one more
-   * SIM, added to the line as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of
-   * the line's account), `manage` and `claim`.
+   * number and joins a user that already has it, after a code sent to that number), `add_channel` (one more SIM,
+   * added to the line as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the
+   * line's user), `manage` and `claim`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createLineLink`
    */

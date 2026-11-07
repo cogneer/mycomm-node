@@ -1,27 +1,5 @@
 [
   {
-    "operation": "account.get",
-    "key": "account.get",
-    "resource": ["account"],
-    "method": "get",
-    "args": [],
-    "http": "GET",
-    "path": "/v1/account",
-    "format": "none",
-    "returns": "model"
-  },
-  {
-    "operation": "account.update",
-    "key": "account.update",
-    "resource": ["account"],
-    "method": "update",
-    "args": [{}],
-    "http": "PATCH",
-    "path": "/v1/account",
-    "format": "json",
-    "returns": "model"
-  },
-  {
     "operation": "apiKeys.list",
     "key": "apiKeys.list",
     "resource": ["apiKeys"],
@@ -1282,6 +1260,28 @@
     ],
     "http": "PUT",
     "path": "/v1/lines/01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c/senders",
+    "format": "json",
+    "returns": "model"
+  },
+  {
+    "operation": "me.get",
+    "key": "me.get",
+    "resource": ["me"],
+    "method": "get",
+    "args": [],
+    "http": "GET",
+    "path": "/v1/me",
+    "format": "none",
+    "returns": "model"
+  },
+  {
+    "operation": "me.update",
+    "key": "me.update",
+    "resource": ["me"],
+    "method": "update",
+    "args": [{}],
+    "http": "PATCH",
+    "path": "/v1/me",
     "format": "json",
     "returns": "model"
   },

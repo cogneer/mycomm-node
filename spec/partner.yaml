@@ -3,7 +3,7 @@ openapi: 3.1.0
 info:
   title: 'MyComm Partner API'
   version: 2.0.0
-  description: "For platforms that give their own users messaging through MyComm. Authenticate with a partner key (`mc_partner_...`)\nsent as `Authorization: Bearer <key>`.\n\nA partner owns **lines**, not accounts. `POST /lines` makes a line for one of your users, known to you by your\n`external_ref`; it lives in the user's MyComm account (an empty one until the user connects a phone), and the user\nowns that account. Send and read through a line on `/v1` with the partner key plus the `MyComm-Line: <line id>`\nheader; a partner key reaches only the message and conversation endpoints of that line and `GET /v1/lines/{id}`.\n`DELETE /lines/{id}` detaches the line: it is archived, the user keeps the account, its channels and its history.\n`/usage` reports usage. `POST /lines/{id}/vouch` answers a `line.recovery_requested` webhook.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
+  description: "For platforms that give their own users messaging through MyComm. Authenticate with a partner key (`mc_partner_...`)\nsent as `Authorization: Bearer <key>`.\n\nA partner owns **lines**, not users. `POST /lines` makes a line for one of your users, known to you by your\n`external_ref`; it belongs to your user in MyComm (a new, empty user until they connect a phone), and the user\nowns it. Send and read through a line on `/v1` with the partner key plus the `MyComm-Line: <line id>`\nheader; a partner key reaches only the message and conversation endpoints of that line and `GET /v1/lines/{id}`.\n`DELETE /lines/{id}` detaches the line: it is archived, the user keeps the user, its channels and its history.\n`/usage` reports usage. `POST /lines/{id}/vouch` answers a `line.recovery_requested` webhook.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
 servers:
   -
     url: 'https://mycomm.cogneer.tech/partner/v1'
@@ -21,7 +21,7 @@ components:
     partnerKey:
       type: http
       scheme: bearer
-      description: '`Authorization: Bearer mc_partner_…`. Account keys get `403 WRONG_KEY_KIND`.'
+      description: '`Authorization: Bearer mc_partner_…`. User keys get `403 WRONG_KEY_KIND`.'
   headers:
     MyComm-Request-Id:
       description: 'Id of this request; also `error.request_id` on errors. Quote it to support.'
@@ -88,7 +88,7 @@ components:
       name: Idempotency-Key
       in: header
       required: false
-      description: "Makes a POST safe to retry: 1 to 255 printable ASCII characters, a UUID is recommended. The first response (any 2xx\nor 4xx; a 5xx is not kept) is stored for 24 hours per account and returned again, with `Idempotent-Replayed: true`,\nfor the same method, path and body. The same key with a different request answers `409 IDEMPOTENCY_KEY_REUSED`;\nwhile the first request still runs, `409 IDEMPOTENCY_IN_PROGRESS`. A key that is empty, longer than 255 characters or\nnot printable ASCII answers `400 INVALID_HEADER`, also on a dry run.\n"
+      description: "Makes a POST safe to retry: 1 to 255 printable ASCII characters, a UUID is recommended. The first response (any 2xx\nor 4xx; a 5xx is not kept) is stored for 24 hours per user and returned again, with `Idempotent-Replayed: true`,\nfor the same method, path and body. The same key with a different request answers `409 IDEMPOTENCY_KEY_REUSED`;\nwhile the first request still runs, `409 IDEMPOTENCY_IN_PROGRESS`. A key that is empty, longer than 255 characters or\nnot printable ASCII answers `400 INVALID_HEADER`, also on a dry run.\n"
       schema:
         type: string
         minLength: 1
@@ -119,8 +119,8 @@ components:
         - IP_NOT_ALLOWED
         - LINE_CONTEXT_INVALID
         - PARTNER_ROUTE_NOT_ALLOWED
-        - ACCOUNT_SUSPENDED
-        - ACCOUNT_PENDING_DELETION
+        - USER_SUSPENDED
+        - USER_PENDING_DELETION
         - PARTNER_ACCESS_REVOKED
         - NOT_FOUND
         - METHOD_NOT_ALLOWED
@@ -185,8 +185,8 @@ components:
         - CONSENT_ASSERTION_REQUIRED
         - RISK_ACKNOWLEDGEMENT_REQUIRED
         - ABOVE_PLATFORM_CEILING
-        - NEW_ACCOUNT_LIMIT
-        - ACCOUNT_THROTTLED
+        - NEW_USER_LIMIT
+        - USER_THROTTLED
         - ADDRESS_REQUIRED
         - COUNTRY_NOT_ENABLED
         - DEVICE_SIM_LIMIT
@@ -266,7 +266,7 @@ components:
         OUT_OF_RANGE: 'The number is outside the allowed range.'
         TOO_LONG: 'The text or list is longer than allowed.'
         TOO_SHORT: 'The text or list is shorter than allowed.'
-        NOT_FOUND: 'The id refers to something that does not exist in this account.'
+        NOT_FOUND: 'The id refers to something that does not exist in this user.'
         NOT_UNIQUE: 'The value is already used where it must be unique.'
         INVALID: 'Any other rule; see the message.'
     ValidationError:
@@ -473,13 +473,13 @@ components:
           $ref: '#/components/schemas/Timestamp'
     PartnerLine:
       type: object
-      description: "A line you made, in your user's account."
+      description: 'A line you made, owned by your user.'
       additionalProperties: false
       required:
         - id
         - external_ref
         - name
-        - account_id
+        - user_id
         - allowed_channel_types
         - state
         - created_at
@@ -492,7 +492,7 @@ components:
           description: 'Your own reference for the line, unique among your live lines; a detached line frees it.'
         name:
           type: string
-        account_id:
+        user_id:
           $ref: '#/components/schemas/Uuid'
         allowed_channel_types:
           type:
@@ -616,13 +616,13 @@ components:
             - string
             - 'null'
           maxLength: 35
-          description: "BCP 47 tag of the page's language; defaults to the account's default locale."
+          description: "BCP 47 tag of the page's language; defaults to the user's default locale."
         replaces_device_id:
           type:
             - string
             - 'null'
           format: uuid
-          description: "Required for `replace_device`, refused for any other purpose. An active phone of the line's account."
+          description: "Required for `replace_device`, refused for any other purpose. An active phone of the line's user."
     HostedLink:
       type: object
       required:
@@ -820,7 +820,7 @@ components:
           type: object
           required:
             - line_id
-            - account_id
+            - user_id
             - external_ref
             - name
             - by_channel_type
@@ -828,7 +828,7 @@ components:
           properties:
             line_id:
               $ref: '#/components/schemas/Uuid'
-            account_id:
+            user_id:
               $ref: '#/components/schemas/Uuid'
             external_ref:
               type: string
@@ -1288,20 +1288,20 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountSuspended:
+    ErrUserSuspended:
       type: object
-      description: 'This account is suspended and cannot use the API. Contact support to have it restored.'
+      description: 'This user is suspended and cannot use the API. Contact support to have it restored.'
       x-http-status: 403
       examples:
         -
           error:
-            code: ACCOUNT_SUSPENDED
-            message: 'This account is suspended and cannot use the API. Contact support to have it restored.'
+            code: USER_SUSPENDED
+            message: 'This user is suspended and cannot use the API. Contact support to have it restored.'
             details:
               reason: 'Example text.'
               status: queued
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-suspended'
+            doc_url: 'https://api.mycomm.example/docs/errors#user-suspended'
       required:
         - error
       properties:
@@ -1316,7 +1316,7 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_SUSPENDED
+              const: USER_SUSPENDED
             message:
               type: string
             details:
@@ -1335,19 +1335,19 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountPendingDeletion:
+    ErrUserPendingDeletion:
       type: object
-      description: 'This account is scheduled for deletion and cannot use the API.'
+      description: 'This user is scheduled for deletion and cannot use the API.'
       x-http-status: 403
       examples:
         -
           error:
-            code: ACCOUNT_PENDING_DELETION
-            message: 'This account is scheduled for deletion and cannot use the API.'
+            code: USER_PENDING_DELETION
+            message: 'This user is scheduled for deletion and cannot use the API.'
             details:
               purge_at: '2026-10-01T09:15:02Z'
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-pending-deletion'
+            doc_url: 'https://api.mycomm.example/docs/errors#user-pending-deletion'
       required:
         - error
       properties:
@@ -1362,7 +1362,7 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_PENDING_DELETION
+              const: USER_PENDING_DELETION
             message:
               type: string
             details:
@@ -1421,13 +1421,13 @@ components:
               format: uri
     ErrNotFound:
       type: object
-      description: "The resource does not exist, belongs to another account or is outside this key's scope. Check the id."
+      description: "The resource does not exist, belongs to another user or is outside this key's scope. Check the id."
       x-http-status: 404
       examples:
         -
           error:
             code: NOT_FOUND
-            message: "The resource does not exist, belongs to another account or is outside this key's scope. Check the id."
+            message: "The resource does not exist, belongs to another user or is outside this key's scope. Check the id."
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
             doc_url: 'https://api.mycomm.example/docs/errors#not-found'
@@ -1808,13 +1808,13 @@ components:
               format: uri
     ErrNameTaken:
       type: object
-      description: 'That name is already used in this account. Choose another one.'
+      description: 'You already use that name. Choose another one.'
       x-http-status: 409
       examples:
         -
           error:
             code: NAME_TAKEN
-            message: 'That name is already used in this account. Choose another one.'
+            message: 'You already use that name. Choose another one.'
             details:
               field: category
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -1850,13 +1850,13 @@ components:
               format: uri
     ErrIdentityTaken:
       type: object
-      description: 'That address already belongs to another contact in this account. Update that contact instead.'
+      description: 'That address already belongs to another of your contacts. Update that contact instead.'
       x-http-status: 409
       examples:
         -
           error:
             code: IDENTITY_TAKEN
-            message: 'That address already belongs to another contact in this account. Update that contact instead.'
+            message: 'That address already belongs to another of your contacts. Update that contact instead.'
             details:
               contact_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -1936,13 +1936,13 @@ components:
               format: uri
     ErrSuspendedBySupport:
       type: object
-      description: 'MyComm support suspended this account, so a partner cannot reactivate it. Contact support.'
+      description: 'MyComm support suspended this user, so a partner cannot reactivate them. Contact support.'
       x-http-status: 409
       examples:
         -
           error:
             code: SUSPENDED_BY_SUPPORT
-            message: 'MyComm support suspended this account, so a partner cannot reactivate it. Contact support.'
+            message: 'MyComm support suspended this user, so a partner cannot reactivate them. Contact support.'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
             doc_url: 'https://api.mycomm.example/docs/errors#suspended-by-support'
@@ -1974,13 +1974,13 @@ components:
               format: uri
     ErrChannelAddressInUse:
       type: object
-      description: 'This number is already connected to another MyComm account. Disconnect it there first.'
+      description: 'This number is already connected to another MyComm user. Disconnect it there first.'
       x-http-status: 409
       examples:
         -
           error:
             code: CHANNEL_ADDRESS_IN_USE
-            message: 'This number is already connected to another MyComm account. Disconnect it there first.'
+            message: 'This number is already connected to another MyComm user. Disconnect it there first.'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
             doc_url: 'https://api.mycomm.example/docs/errors#channel-address-in-use'
@@ -2012,13 +2012,13 @@ components:
               format: uri
     ErrDeviceInUse:
       type: object
-      description: 'This phone is connected to another MyComm account or platform. Disconnect it there first, or contact support.'
+      description: 'This phone is connected to another MyComm user or platform. Disconnect it there first, or contact support.'
       x-http-status: 409
       examples:
         -
           error:
             code: DEVICE_IN_USE
-            message: 'This phone is connected to another MyComm account or platform. Disconnect it there first, or contact support.'
+            message: 'This phone is connected to another MyComm user or platform. Disconnect it there first, or contact support.'
             details: {}
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
             doc_url: 'https://api.mycomm.example/docs/errors#device-in-use'
@@ -2088,13 +2088,13 @@ components:
               format: uri
     ErrSimAlreadyConnected:
       type: object
-      description: 'This SIM is already connected to a channel in this account.'
+      description: 'This SIM is already connected to one of your channels.'
       x-http-status: 409
       examples:
         -
           error:
             code: SIM_ALREADY_CONNECTED
-            message: 'This SIM is already connected to a channel in this account.'
+            message: 'This SIM is already connected to one of your channels.'
             details:
               channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -2950,13 +2950,13 @@ components:
               format: uri
     ErrContactBlocked:
       type: object
-      description: "This contact's address is blocked in your account, so nothing can be sent to it. Unblock it first."
+      description: "This contact's address is blocked, so nothing can be sent to it. Unblock it first."
       x-http-status: 422
       examples:
         -
           error:
             code: CONTACT_BLOCKED
-            message: "This contact's address is blocked in your account, so nothing can be sent to it. Unblock it first."
+            message: "This contact's address is blocked, so nothing can be sent to it. Unblock it first."
             details:
               contact_identity_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -3168,13 +3168,13 @@ components:
               format: uri
     ErrLineIsDirect:
       type: object
-      description: 'Line :line_id is the Direct line of the account. It holds every conversation no other line claims, so it cannot be archived.'
+      description: 'Line :line_id is your Direct line. It holds every conversation no other line claims, so it cannot be archived.'
       x-http-status: 422
       examples:
         -
           error:
             code: LINE_IS_DIRECT
-            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is the Direct line of the account. It holds every conversation no other line claims, so it cannot be archived.'
+            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is your Direct line. It holds every conversation no other line claims, so it cannot be archived.'
             details:
               line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -3583,13 +3583,13 @@ components:
               format: uri
     ErrChannelTypeNotAllowed:
       type: object
-      description: 'That channel type is not enabled for this account.'
+      description: 'That channel type is not enabled for you.'
       x-http-status: 422
       examples:
         -
           error:
             code: CHANNEL_TYPE_NOT_ALLOWED
-            message: 'That channel type is not enabled for this account.'
+            message: 'That channel type is not enabled for you.'
             details:
               type: example
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -4154,21 +4154,21 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrNewAccountLimit:
+    ErrNewUserLimit:
       type: object
-      description: 'New accounts are limited during their first 14 days (limit :limit). Stay under the limit or wait.'
+      description: 'New users are limited during their first 14 days (limit :limit). Stay under the limit or wait.'
       x-http-status: 422
       examples:
         -
           error:
-            code: NEW_ACCOUNT_LIMIT
-            message: 'New accounts are limited during their first 14 days (limit 1). Stay under the limit or wait.'
+            code: NEW_USER_LIMIT
+            message: 'New users are limited during their first 14 days (limit 1). Stay under the limit or wait.'
             details:
               limit: 1
               recipients: 1
               devices: 1
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#new-account-limit'
+            doc_url: 'https://api.mycomm.example/docs/errors#new-user-limit'
       required:
         - error
       properties:
@@ -4183,7 +4183,7 @@ components:
           properties:
             code:
               type: string
-              const: NEW_ACCOUNT_LIMIT
+              const: NEW_USER_LIMIT
             message:
               type: string
             details:
@@ -4204,19 +4204,19 @@ components:
             doc_url:
               type: string
               format: uri
-    ErrAccountThrottled:
+    ErrUserThrottled:
       type: object
-      description: 'This account is throttled while MyComm reviews its sending. Marketing and new numbers are paused; contact support.'
+      description: 'This user is throttled while MyComm reviews their sending. Marketing and new numbers are paused; contact support.'
       x-http-status: 422
       examples:
         -
           error:
-            code: ACCOUNT_THROTTLED
-            message: 'This account is throttled while MyComm reviews its sending. Marketing and new numbers are paused; contact support.'
+            code: USER_THROTTLED
+            message: 'This user is throttled while MyComm reviews their sending. Marketing and new numbers are paused; contact support.'
             details:
               risk_state: example
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
-            doc_url: 'https://api.mycomm.example/docs/errors#account-throttled'
+            doc_url: 'https://api.mycomm.example/docs/errors#user-throttled'
       required:
         - error
       properties:
@@ -4231,7 +4231,7 @@ components:
           properties:
             code:
               type: string
-              const: ACCOUNT_THROTTLED
+              const: USER_THROTTLED
             message:
               type: string
             details:
@@ -4606,13 +4606,13 @@ components:
               format: uri
     ErrConnectSessionLimitReached:
       type: object
-      description: 'Too many open connect sessions for this account. Finish or let some expire, then try again.'
+      description: 'Too many open connect sessions for this user. Finish or let some expire, then try again.'
       x-http-status: 422
       examples:
         -
           error:
             code: CONNECT_SESSION_LIMIT_REACHED
-            message: 'Too many open connect sessions for this account. Finish or let some expire, then try again.'
+            message: 'Too many open connect sessions for this user. Finish or let some expire, then try again.'
             details:
               max: 1
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -4686,13 +4686,13 @@ components:
               format: uri
     ErrSecondFactorRequired:
       type: object
-      description: 'This action needs the account owner to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
+      description: 'This action needs you to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
       x-http-status: 403
       examples:
         -
           error:
             code: SECOND_FACTOR_REQUIRED
-            message: 'This action needs the account owner to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
+            message: 'This action needs you to confirm a second factor (PIN, password, Google or an authenticator app) in the portal. API keys cannot do it.'
             details:
               reason: 'Example text.'
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -5077,7 +5077,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
     NotFound:
-      description: '404 NOT_FOUND: the line or account is absent, or belongs to another partner.'
+      description: '404 NOT_FOUND: the line or user is absent, or belongs to another partner.'
       headers:
         MyComm-Request-Id:
           $ref: '#/components/headers/MyComm-Request-Id'
@@ -5275,7 +5275,7 @@ paths:
       tags:
         - Lines
       summary: 'Create a line'
-      description: "Requires `lines:write`. Makes a line for one of your users in a new, empty MyComm account that becomes the\nuser's account when they connect a phone through a hosted link. `user_number` is only a hint for that page: it\nnever joins the line to an account that already has the number (that needs a code sent to the number), and the\nanswer is the same whether or not the number has an account. `external_ref` is unique among your live lines: a\ntaken one answers `409 EXTERNAL_REF_TAKEN` with the line in `details.line_id`. Detaching a line frees its\n`external_ref`. A `name` the account's Direct line has (\"Direct\") answers `409 NAME_TAKEN`.\n"
+      description: "Requires `lines:write`. Makes a line for one of your users for a new MyComm user that becomes your\nuser when they connect a phone through a hosted link. `user_number` is only a hint for that page: it\nnever joins the line to a user that already has the number (that needs a code sent to the number), and the\nanswer is the same whether or not the number has a user. `external_ref` is unique among your live lines: a\ntaken one answers `409 EXTERNAL_REF_TAKEN` with the line in `details.line_id`. Detaching a line frees its\n`external_ref`. A `name` the user's Direct line has (\"Direct\") answers `409 NAME_TAKEN`.\n"
       requestBody:
         required: true
         content:
@@ -5458,7 +5458,7 @@ paths:
       tags:
         - Lines
       summary: 'Change a line'
-      description: "Requires `lines:write`. Changes `name` and `allowed_channel_types`; a field left out or `null` stays as it is.\n`external_ref` never changes (`422`). A name another line of the account has answers `409 NAME_TAKEN`.\n"
+      description: "Requires `lines:write`. Changes `name` and `allowed_channel_types`; a field left out or `null` stays as it is.\n`external_ref` never changes (`422`). A name another line of the user has answers `409 NAME_TAKEN`.\n"
       requestBody:
         required: true
         content:
@@ -5508,7 +5508,7 @@ paths:
       tags:
         - Lines
       summary: 'Detach a line'
-      description: "Requires `lines:write`. Archives the line: its open conversations move to the account's Direct line, and the\nuser keeps the account, its channels, phones and history. `line.detached` is emitted once; detaching an archived\nline again changes nothing. The line header stops working for it (`403 LINE_CONTEXT_INVALID`).\n"
+      description: "Requires `lines:write`. Archives the line: its open conversations move to the user's Direct line, and the\nuser keeps the user, its channels, phones and history. `line.detached` is emitted once; detaching an archived\nline again changes nothing. The line header stops working for it (`403 LINE_CONTEXT_INVALID`).\n"
       responses:
         204:
           description: Detached.
@@ -5553,7 +5553,7 @@ paths:
       tags:
         - Lines
       summary: 'Vouch for a recovery request'
-      description: "Requires `lines:write`. Someone asked to recover the account of your line (`line.recovery_requested`), and you know\nthis person. MyComm staff see your answer when they decide. It is never required and never enough alone: nothing\nchanges before the 7-day wait is over and staff approve. A repeat changes nothing and answers `200` with the first\n`vouched_at`. A line that is not your live line in that request's account, or no such request, is `404 NOT_FOUND`;\na request already decided is `409 INVALID_STATE`.\n"
+      description: "Requires `lines:write`. Someone asked to recover the user of your line (`line.recovery_requested`), and you know\nthis person. MyComm staff see your answer when they decide. It is never required and never enough alone: nothing\nchanges before the 7-day wait is over and staff approve. A repeat changes nothing and answers `200` with the first\n`vouched_at`. A line that is not your live line of that request's user, or no such request, is `404 NOT_FOUND`;\na request already decided is `409 INVALID_STATE`.\n"
       requestBody:
         required: true
         content:
@@ -5629,7 +5629,7 @@ paths:
       tags:
         - Lines
       summary: 'Create a hosted link for a line'
-      description: "Requires `links:write`. A short-lived link to MyComm's hosted page for this line: send your user's browser to\n`url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and joins\nan account that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the\nline as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's account),\n`manage` and `claim`. `url` is returned only here and is a bearer credential: treat it like a password. At most\n20 links of a line are open at once (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are created\nper line per hour (`429 RATE_LIMITED`). A detached line takes no new link (`422`), and detaching a line ends its\nopen links. A line of another partner is `404 NOT_FOUND`.\n"
+      description: "Requires `links:write`. A short-lived link to MyComm's hosted page for this line: send your user's browser to\n`url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and joins\na user that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the\nline as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's user),\n`manage` and `claim`. `url` is returned only here and is a bearer credential: treat it like a password. At most\n20 links of a line are open at once (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are created\nper line per hour (`429 RATE_LIMITED`). A detached line takes no new link (`422`), and detaching a line ends its\nopen links. A line of another partner is `404 NOT_FOUND`.\n"
       requestBody:
         required: true
         content:
@@ -5867,7 +5867,7 @@ paths:
       tags:
         - Usage
       summary: 'Usage per line'
-      description: "One row per line of yours, detached lines included (their history stays), sorted by `sent_segments`\ndescending. Counters come from the line's own traffic only, never from the rest of the user's account. Dates\nare interpreted in each line's account time zone. Counters match the usage reports in the portal; rows and\ntotals add `by_channel_type`. `line_id` narrows the report to one of your lines (`404 NOT_FOUND` for any other\nid).\n"
+      description: "One row per line of yours, detached lines included (their history stays), sorted by `sent_segments`\ndescending. Counters come from the line's own traffic only, never from the rest of the user's traffic. Dates\nare interpreted in the time zone of each line's user. Counters match the usage reports in the portal; rows and\ntotals add `by_channel_type`. `line_id` narrows the report to one of your lines (`404 NOT_FOUND` for any other\nid).\n"
       parameters:
         -
           name: from

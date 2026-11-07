@@ -37,7 +37,7 @@ describe('requests', () => {
   it.each(['POST', 'PATCH'])('sends an empty JSON object on a %s without fields', async (method) => {
     const { client, transport } = scripted([json(200, MESSAGE)]);
 
-    await (method === 'POST' ? client.conversations.read('c-1') : client.account.update({}));
+    await (method === 'POST' ? client.conversations.read('c-1') : client.me.update({}));
 
     expect(transport.requests[0]!.body).toBe('{}');
     expect(transport.requests[0]!.header('Content-Type')).toBe('application/json');
@@ -148,9 +148,9 @@ describe('requests', () => {
     async (baseUrl) => {
       const { client, transport } = scripted([json(200, { id: 'acc' })], { baseUrl });
 
-      await client.account.get();
+      await client.me.get();
 
-      expect(transport.requests[0]!.url).toBe('https://api.test/v1/account');
+      expect(transport.requests[0]!.url).toBe('https://api.test/v1/me');
     },
   );
 

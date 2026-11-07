@@ -48,8 +48,8 @@ export class WebhookEndpointsResource {
    *
    * Requires `webhooks:write`. The `url` must be `https`, carry no credentials and resolve only to public
    * addresses. `events` empty or omitted means every event except the opt-in ones. `line_ids` and `channel_types`
-   * `null` mean all. At most 20 endpoints per account. A restricted key's endpoint defaults to (and must stay
-   * inside) its lines, takes the key's channel types and cannot set `partner_lines`.
+   * `null` mean all. At most 20 endpoints per user. A restricted key's endpoint defaults to (and must stay inside)
+   * its lines, takes the key's channel types and cannot set `partner_lines`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createWebhookEndpoint`
    */

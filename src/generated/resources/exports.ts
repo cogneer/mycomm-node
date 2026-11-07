@@ -40,9 +40,9 @@ export class ExportsResource {
    * Request an export.
    *
    * The required ability depends on `type`: `messages_csv` needs `reports:read`, `contacts_csv` and `contact_json`
-   * need `contacts:read`, `campaign_report` needs `campaigns:read`, `account_zip` needs `account:write`.
-   * `messages_csv` takes the `GET /v1/messages` filters as `params`; `created_after` and `created_before` are
-   * required and at most 366 days apart.
+   * need `contacts:read`, `campaign_report` needs `campaigns:read`, `user_zip` needs `me:write`. `messages_csv`
+   * takes the `GET /v1/messages` filters as `params`; `created_after` and `created_before` are required and at
+   * most 366 days apart.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createExport`
    */
@@ -54,7 +54,7 @@ export class ExportsResource {
    * Get an export with a fresh signed URL.
    *
    * Requires the ability of the export's type. A `completed` export carries a `url` signed for 15 minutes,
-   * refreshed on every call; the URL is a secret. An export of another account answers `404 NOT_FOUND`.
+   * refreshed on every call; the URL is a secret. An export of another user answers `404 NOT_FOUND`.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getExport`
    */

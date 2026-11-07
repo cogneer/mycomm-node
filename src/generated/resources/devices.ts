@@ -79,8 +79,8 @@ export class DevicesResource {
    * Resume a paused device.
    *
    * Requires `channels:write`. Ends a pause with `pause_reason: owner`; an `admin` pause ends only through MyComm
-   * and an `account_suspended` pause only when the account is reactivated (`409 INVALID_STATE`). A device that is
-   * not paused is returned unchanged.
+   * and an `user_suspended` pause only when the user is reactivated (`409 INVALID_STATE`). A device that is not
+   * paused is returned unchanged.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `resumeDevice`
    */

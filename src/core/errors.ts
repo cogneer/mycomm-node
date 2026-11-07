@@ -132,7 +132,7 @@ export class APIError extends MyCommError {
   }
 }
 
-/** 400: the request is malformed, the cursor is invalid or the account context is missing. */
+/** 400: the request is malformed, the cursor is invalid or a required header is wrong. */
 export class BadRequestError extends APIError {}
 
 /**
@@ -144,10 +144,10 @@ export class InvalidHeaderError extends BadRequestError {}
 /** 401: the API key is missing, malformed, revoked or expired. */
 export class AuthenticationError extends APIError {}
 
-/** 403: the key may not do this (its scope, the account's state, or a partner key on a route or line it may not reach). */
+/** 403: the key may not do this (its scope, the user's state, or a partner key on a route or line it may not reach). */
 export class PermissionDeniedError extends APIError {}
 
-/** 404: nothing with that id in this account. */
+/** 404: nothing with that id for this user. */
 export class NotFoundError extends APIError {}
 
 /** 409: the request conflicts with the current state, or an `Idempotency-Key` was reused with another body. */

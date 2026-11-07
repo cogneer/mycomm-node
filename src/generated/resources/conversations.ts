@@ -72,10 +72,10 @@ export class ConversationsResource {
   /**
    * Block the conversation's contact identity.
    *
-   * Convenience route: blocks the conversation's contact identity account-wide (every line and channel), exactly
-   * like `POST /v1/contacts/{id}/identities/{identity_id}/block`. Idempotent. Every conversation of that identity
-   * shows the same `blocked_at`. Requires `conversations:write`. A conversation outside the key's line scope
-   * answers 404.
+   * Convenience route: blocks the conversation's contact identity user-wide (every line and channel), exactly like
+   * `POST /v1/contacts/{id}/identities/{identity_id}/block`. Idempotent. Every conversation of that identity shows
+   * the same `blocked_at`. Requires `conversations:write`. A conversation outside the key's line scope answers
+   * 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `blockConversation`
    */
@@ -86,7 +86,7 @@ export class ConversationsResource {
   /**
    * Unblock the conversation's contact identity.
    *
-   * Clears `blocked_at` of the conversation's contact identity, account-wide. Nothing is replayed. Requires
+   * Clears `blocked_at` of the conversation's contact identity, user-wide. Nothing is replayed. Requires
    * `conversations:write`. A conversation outside the key's line scope answers 404.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unblockConversation`
@@ -98,8 +98,8 @@ export class ConversationsResource {
   /**
    * Hand a conversation over to another line.
    *
-   * Moves the conversation and its messages to another line of the account; the contact's next replies land on
-   * that line, also when it does not send through the conversation's channel. When the target line already has a
+   * Moves the conversation and its messages to another line of the user; the contact's next replies land on that
+   * line, also when it does not send through the conversation's channel. When the target line already has a
    * conversation with the same contact, the two merge into it and the answer is that conversation.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `handOverConversation`
@@ -139,7 +139,7 @@ export class ConversationsResource {
   /**
    * List conversations.
    *
-   * Conversations of the account, newest `last_message_at` first, with cursor pagination. Requires
+   * Conversations of the user, newest `last_message_at` first, with cursor pagination. Requires
    * `conversations:read`. A restricted key lists only the conversations of its lines. A conversation without
    * messages is not listed. Comma lists match any of the values. `q` matches the contact name, address and last
    * message preview (case-insensitive, at least 2 characters).

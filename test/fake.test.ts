@@ -106,9 +106,9 @@ describe('the fake', () => {
   it('fails assertNothingCalled naming the calls', async () => {
     const fake = new MyCommFake();
     fake.assertNothingCalled();
-    await fake.client.account.get();
+    await fake.client.me.get();
 
-    expect(() => fake.assertNothingCalled()).toThrow('Expected no API call, but these were made: account.get.');
+    expect(() => fake.assertNothingCalled()).toThrow('Expected no API call, but these were made: me.get.');
   });
 
   it('builds a signed webhook delivery for a receiver test', async () => {
