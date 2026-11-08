@@ -667,8 +667,9 @@ export const HostedLinkStatus = {
 } as const;
 
 /**
- * `direct`: the user's own line, where unclaimed replies land (one per user). `app`: a line an app or
- * integration sends through. `partner`: a line a partner created for a client.
+ * `direct`: a number's own line (one per number, made when it verifies), where replies no other line claims
+ * land; it sends only through that number. `app`: an integration line an app or the portal sends through, over
+ * one or more numbers. `partner`: an integration line a partner created for a client.
  */
 export type LineKind = 'direct' | 'app' | 'partner';
 export const LineKind = {
@@ -1086,7 +1087,7 @@ export const ErrorCode = {
   ServiceUnavailable: 'SERVICE_UNAVAILABLE',
 } as const;
 
-/** `partner` with the partner key, `owner` by a person of the user, `system` by MyComm. */
+/** `partner` with the partner key, `owner` by the user, `system` by MyComm. */
 export type LineDetachedBy = 'partner' | 'owner' | 'system';
 export const LineDetachedBy = {
   Partner: 'partner',
@@ -1516,10 +1517,10 @@ export interface Channel {
   device_id: string | null;
   device_sim_id: string | null;
   /**
-   * The line unknown replies to this number land on (the user's Direct line unless the owner chose another);
-   * `null` until the number is connected.
+   * This number's direct line, where replies no other line claims land; `null` until the number is verified. A
+   * disconnected number keeps it, archived.
    */
-  default_line_id: string | null;
+  direct_line_id: string | null;
   /**
    * The lines that have this channel in their sender list (any role, archived lines left out), oldest first. A key
    * restricted to lines sees only its own.
@@ -2350,8 +2351,10 @@ export interface User {
   name: string;
   /** `active`, `suspended` or `pending_deletion`. */
   status: string;
-  country_iso: string;
-  timezone: string;
+  /** ISO 3166-1 alpha-2, or `null` while the user has not set a country. */
+  country_iso: string | null;
+  /** IANA time zone, or `null` while the user has not set one (MyComm then uses UTC). */
+  timezone: string | null;
   /** BCP 47, default `en-GB`. */
   default_locale: string;
   settings: UserSettings;
@@ -3056,7 +3059,7 @@ export interface WebhookLineDetachedData {
   line_id: string;
   /** The partner's own reference for the line; free again for a new line. */
   external_ref: string | null;
-  /** `partner` with the partner key, `owner` by a person of the user, `system` by MyComm. */
+  /** `partner` with the partner key, `owner` by the user, `system` by MyComm. */
   by: Open<LineDetachedBy>;
 }
 

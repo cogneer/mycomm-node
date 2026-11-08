@@ -1080,7 +1080,7 @@ export const answer44 = {
   disconnect_reason: 'owner',
   device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
   capabilities: {
     text_max_chars: 1,
@@ -1166,7 +1166,7 @@ export const answer45 = {
   disconnect_reason: null,
   device_id: null,
   device_sim_id: null,
-  default_line_id: null,
+  direct_line_id: null,
   line_ids: [],
   capabilities: {
     text_max_chars: null,
@@ -1231,7 +1231,7 @@ export const answer46 = {
   disconnect_reason: 'owner',
   device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
   capabilities: {
     text_max_chars: 1,
@@ -1317,7 +1317,7 @@ export const answer47 = {
   disconnect_reason: null,
   device_id: null,
   device_sim_id: null,
-  default_line_id: null,
+  direct_line_id: null,
   line_ids: [],
   capabilities: {
     text_max_chars: null,
@@ -1382,7 +1382,7 @@ export const answer48 = {
   disconnect_reason: 'owner',
   device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
   capabilities: {
     text_max_chars: 1,
@@ -1468,7 +1468,7 @@ export const answer49 = {
   disconnect_reason: null,
   device_id: null,
   device_sim_id: null,
-  default_line_id: null,
+  direct_line_id: null,
   line_ids: [],
   capabilities: {
     text_max_chars: null,
@@ -1533,7 +1533,7 @@ export const answer50 = {
   disconnect_reason: 'owner',
   device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
   capabilities: {
     text_max_chars: 1,
@@ -1619,7 +1619,7 @@ export const answer51 = {
   disconnect_reason: null,
   device_id: null,
   device_sim_id: null,
-  default_line_id: null,
+  direct_line_id: null,
   line_ids: [],
   capabilities: {
     text_max_chars: null,
@@ -1684,7 +1684,7 @@ export const answer52 = {
   disconnect_reason: 'owner',
   device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
   capabilities: {
     text_max_chars: 1,
@@ -1770,7 +1770,7 @@ export const answer53 = {
   disconnect_reason: null,
   device_id: null,
   device_sim_id: null,
-  default_line_id: null,
+  direct_line_id: null,
   line_ids: [],
   capabilities: {
     text_max_chars: null,
@@ -1835,7 +1835,7 @@ export const answer54 = {
   disconnect_reason: 'owner',
   device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
   capabilities: {
     text_max_chars: 1,
@@ -1921,7 +1921,7 @@ export const answer55 = {
   disconnect_reason: null,
   device_id: null,
   device_sim_id: null,
-  default_line_id: null,
+  direct_line_id: null,
   line_ids: [],
   capabilities: {
     text_max_chars: null,
@@ -1986,7 +1986,7 @@ export const answer56 = {
   disconnect_reason: 'owner',
   device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
   capabilities: {
     text_max_chars: 1,
@@ -2072,7 +2072,7 @@ export const answer57 = {
   disconnect_reason: null,
   device_id: null,
   device_sim_id: null,
-  default_line_id: null,
+  direct_line_id: null,
   line_ids: [],
   capabilities: {
     text_max_chars: null,
@@ -2139,7 +2139,7 @@ export const answer58 = {
       disconnect_reason: 'owner',
       device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+      direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
       capabilities: {
         text_max_chars: 1,
@@ -2230,7 +2230,7 @@ export const answer60 = {
   disconnect_reason: 'owner',
   device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-  default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+  direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
   capabilities: {
     text_max_chars: 1,
@@ -2316,7 +2316,7 @@ export const answer61 = {
   disconnect_reason: null,
   device_id: null,
   device_sim_id: null,
-  default_line_id: null,
+  direct_line_id: null,
   line_ids: [],
   capabilities: {
     text_max_chars: null,
@@ -4887,8 +4887,8 @@ export const answer191 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   status: 'Example status',
-  country_iso: 'PK',
-  timezone: 'Asia/Karachi',
+  country_iso: null,
+  timezone: null,
   default_locale: 'en',
   settings: {},
   created_at: '2026-10-01T09:15:02Z',
@@ -4924,8 +4924,8 @@ export const answer193 = {
   id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
   name: 'Example name',
   status: 'Example status',
-  country_iso: 'PK',
-  timezone: 'Asia/Karachi',
+  country_iso: null,
+  timezone: null,
   default_locale: 'en',
   settings: {},
   created_at: '2026-10-01T09:15:02Z',
@@ -8344,7 +8344,7 @@ export const event358 = {
       disconnect_reason: 'owner',
       device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+      direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
       capabilities: {
         text_max_chars: 1,
@@ -8441,7 +8441,7 @@ export const event359 = {
       disconnect_reason: null,
       device_id: null,
       device_sim_id: null,
-      default_line_id: null,
+      direct_line_id: null,
       line_ids: [],
       capabilities: {
         text_max_chars: null,
@@ -8517,7 +8517,7 @@ export const event360 = {
       disconnect_reason: 'owner',
       device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+      direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
       capabilities: {
         text_max_chars: 1,
@@ -8615,7 +8615,7 @@ export const event361 = {
       disconnect_reason: null,
       device_id: null,
       device_sim_id: null,
-      default_line_id: null,
+      direct_line_id: null,
       line_ids: [],
       capabilities: {
         text_max_chars: null,
@@ -8692,7 +8692,7 @@ export const event362 = {
       disconnect_reason: 'owner',
       device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+      direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
       capabilities: {
         text_max_chars: 1,
@@ -8790,7 +8790,7 @@ export const event363 = {
       disconnect_reason: null,
       device_id: null,
       device_sim_id: null,
-      default_line_id: null,
+      direct_line_id: null,
       line_ids: [],
       capabilities: {
         text_max_chars: null,
@@ -8867,7 +8867,7 @@ export const event364 = {
       disconnect_reason: 'owner',
       device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+      direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
       capabilities: {
         text_max_chars: 1,
@@ -8967,7 +8967,7 @@ export const event365 = {
       disconnect_reason: null,
       device_id: null,
       device_sim_id: null,
-      default_line_id: null,
+      direct_line_id: null,
       line_ids: [],
       capabilities: {
         text_max_chars: null,
@@ -9046,7 +9046,7 @@ export const event366 = {
       disconnect_reason: 'owner',
       device_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       device_sim_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
-      default_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
+      direct_line_id: '01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c',
       line_ids: ['01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c'],
       capabilities: {
         text_max_chars: 1,
@@ -9143,7 +9143,7 @@ export const event367 = {
       disconnect_reason: null,
       device_id: null,
       device_sim_id: null,
-      default_line_id: null,
+      direct_line_id: null,
       line_ids: [],
       capabilities: {
         text_max_chars: null,

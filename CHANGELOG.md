@@ -32,6 +32,8 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
   `number_has_account` (channel verification failure reason) and `account_limit` (hold reason) are now `user_suspended`,
   `user_deleted`, `user_zip`, `number_has_user` and `user_limit`.
 - `client.verify()` returns the key's `user` (was `account`).
+- Every number has its own direct line: a channel's `default_line_id` is `direct_line_id`. A user's `country_iso` and
+  `timezone` may be `null` until the user sets them.
 
 ### Removed (breaking)
 

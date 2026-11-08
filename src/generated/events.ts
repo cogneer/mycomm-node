@@ -177,7 +177,7 @@ export interface ExportCompletedEvent extends WebhookEventBase {
 
 /**
  * `line.sender_changed`: The sender list of a line changed: senders were set or reordered, a newly verified
- * number joined the Direct line, or a disconnected number left every line. `data.senders` is the whole list
+ * number joined its direct line, or a disconnected number left every line. `data.senders` is the whole list
  * after the change, in position order (0 first).
  */
 export interface LineSenderChangedEvent extends WebhookEventBase {
@@ -236,7 +236,7 @@ export interface LineRecoveredEvent extends WebhookEventBase {
 
 /**
  * `line.detached`: A partner line was detached and archived, by the partner (`DELETE /partner/v1/lines/{id}`),
- * by the user's owner, or by MyComm. The user keeps its numbers and history; the line sends no more. Sent once.
+ * by the user, or by MyComm. The user keeps its numbers and history; the line sends no more. Sent once.
  */
 export interface LineDetachedEvent extends WebhookEventBase {
   type: 'line.detached';

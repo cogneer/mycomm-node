@@ -88,9 +88,9 @@ export class LinesResource {
   /**
    * Archive a line.
    *
-   * Requires `channels:write`. Archives the line; nothing is deleted. The Direct line cannot be archived (`422
-   * LINE_IS_DIRECT`). Sends from an archived line are refused (`LINE_ARCHIVED`), reply routing skips it and its
-   * open conversations move to the Direct line. Keys restricted to it keep read access.
+   * Requires `channels:write`. Archives the line; nothing is deleted. A direct line cannot be archived (`422
+   * LINE_IS_DIRECT`): it is archived when its number disconnects. Sends from an archived line are refused
+   * (`LINE_ARCHIVED`), reply routing skips it and each open conversation moves to the direct line of its number.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `archiveLine`
    */
@@ -102,7 +102,8 @@ export class LinesResource {
    * Unarchive a line.
    *
    * Requires `channels:write`. Does nothing when the line is not archived. Takes no body. A partner line that was
-   * detached stays archived: `409 INVALID_STATE` `{line_id}`.
+   * detached stays archived: `409 INVALID_STATE` `{line_id}`. So does the direct line of a disconnected number
+   * (`409 INVALID_STATE`): it comes back by itself when the number is connected again.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `unarchiveLine`
    */

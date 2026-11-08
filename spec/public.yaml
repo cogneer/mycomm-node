@@ -2238,7 +2238,7 @@ components:
         - disconnect_reason
         - device_id
         - device_sim_id
-        - default_line_id
+        - direct_line_id
         - line_ids
         - capabilities
         - allowed_destination_countries
@@ -2340,8 +2340,8 @@ components:
               $ref: '#/components/schemas/Uuid'
             -
               type: 'null'
-        default_line_id:
-          description: "The line unknown replies to this number land on (the user's Direct line unless the owner chose another); `null` until the number is connected."
+        direct_line_id:
+          description: "This number's direct line, where replies no other line claims land; `null` until the number is verified. A disconnected number keeps it, archived."
           oneOf:
             -
               $ref: '#/components/schemas/Uuid'
@@ -4206,7 +4206,7 @@ components:
           description: 'How long the first type has to deliver (default 120).'
     LineKind:
       type: string
-      description: "`direct`: the user's own line, where unclaimed replies land (one per user). `app`: a line an app or integration sends through. `partner`: a line a partner created for a client."
+      description: "`direct`: a number's own line (one per number, made when it verifies), where replies no other line claims land; it sends only through that number. `app`: an integration line an app or the portal sends through, over one or more numbers. `partner`: an integration line a partner created for a client."
       enum:
         - direct
         - app
@@ -4508,9 +4508,15 @@ components:
           type: string
           description: '`active`, `suspended` or `pending_deletion`.'
         country_iso:
-          type: string
+          type:
+            - string
+            - 'null'
+          description: 'ISO 3166-1 alpha-2, or `null` while the user has not set a country.'
         timezone:
-          type: string
+          type:
+            - string
+            - 'null'
+          description: 'IANA time zone, or `null` while the user has not set one (MyComm then uses UTC).'
         default_locale:
           type: string
           description: 'BCP 47, default `en-GB`.'
@@ -6837,7 +6843,7 @@ components:
             - partner
             - owner
             - system
-          description: '`partner` with the partner key, `owner` by a person of the user, `system` by MyComm.'
+          description: '`partner` with the partner key, `owner` by the user, `system` by MyComm.'
     WebhookLineQuota:
       allOf:
         -
@@ -8404,13 +8410,13 @@ components:
               format: uri
     ErrUserSuspended:
       type: object
-      description: 'This user is suspended and cannot use the API. Contact support to have it restored.'
+      description: 'This user is suspended and cannot use the API. Contact support to have the suspension lifted.'
       x-http-status: 403
       examples:
         -
           error:
             code: USER_SUSPENDED
-            message: 'This user is suspended and cannot use the API. Contact support to have it restored.'
+            message: 'This user is suspended and cannot use the API. Contact support to have the suspension lifted.'
             details:
               reason: 'Example text.'
               status: queued
@@ -10200,13 +10206,13 @@ components:
               format: uri
     ErrLineIsDirect:
       type: object
-      description: 'Line :line_id is your Direct line. It holds every conversation no other line claims, so it cannot be archived.'
+      description: 'Line :line_id is a direct line. It closes only when its number disconnects, so it cannot be archived.'
       x-http-status: 422
       examples:
         -
           error:
             code: LINE_IS_DIRECT
-            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is your Direct line. It holds every conversation no other line claims, so it cannot be archived.'
+            message: 'Line 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10 is a direct line. It closes only when its number disconnects, so it cannot be archived.'
             details:
               line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
             request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
@@ -18540,7 +18546,7 @@ paths:
       tags:
         - Lines
       summary: 'Create a hosted link for a line'
-      description: "Requires `links:write`. A short-lived link to MyComm's hosted page for one of your lines: send your user's browser to\n`url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and joins\na user that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the\nline as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's user),\n`manage` and `claim`. `url` is returned only here and is a bearer credential: treat it like a password. At most\n20 links of a line are open at once (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are created\nper line per hour (`429 RATE_LIMITED`). A detached line takes no new link (`422`), and detaching a line ends its\nopen links. A line this key does not see is `404 NOT_FOUND`. Partner keys use `POST /partner/v1/lines/{id}/links`.\n"
+      description: "Requires `links:write`. A short-lived link to MyComm's hosted page for one of your lines: send your user's browser to\n`url`. `purpose` is what the page does: `connect` (the first phone; it also asks for the user's number and joins\na user that already has it, after a code sent to that number), `add_channel` (one more SIM, added to the\nline as its last backup), `replace_device` (a new phone for `replaces_device_id`, a phone of the line's user),\n`manage` and `claim`. `url` is returned only here and is a bearer credential: treat it like a password. At most\n20 links of a line are open at once (`422 CONNECT_SESSION_LIMIT_REACHED` with `details.max`) and 60 are created\nper line per hour (`429 RATE_LIMITED`). A detached line takes no new link (`422`), and detaching a line ends its\nopen links. A direct line sends only through its own number, so it takes only `replace_device`, `manage` and\n`claim` links: `connect` and `add_channel` are `422` (a new number gets its own direct line). A line this key does not see is `404 NOT_FOUND`. Partner keys use `POST /partner/v1/lines/{id}/links`.\n"
       requestBody:
         required: true
         content:
@@ -18774,7 +18780,7 @@ paths:
       tags:
         - Lines
       summary: 'Create an app line'
-      description: "Requires `channels:write`, which a key restricted to lines never holds. Adds an `app` line that sends through\n`senders` in order: the first entry is the primary unless one is marked `primary`, which is then placed first\n(the others keep their order), so the primary always sends first; the others are backups.\nEvery channel must be one of the user's, connected and verified, and appear once (`422 VALIDATION_FAILED`\non `senders`; a channel still pending verification or disconnected answers `422 CHANNEL_INACTIVE`).\n`409 NAME_TAKEN` `{field: \"name\"}` when another line of the user has the name (case-insensitive, the Direct\nline's included). A line without senders is allowed; it can send once it has one.\n"
+      description: "Requires `channels:write`, which a key restricted to lines never holds. Adds an `app` line that sends through\n`senders` in order: the first entry is the primary unless one is marked `primary`, which is then placed first\n(the others keep their order), so the primary always sends first; the others are backups.\nEvery channel must be one of the user's, connected and verified, and appear once (`422 VALIDATION_FAILED`\non `senders`; a channel still pending verification or disconnected answers `422 CHANNEL_INACTIVE`).\n`409 NAME_TAKEN` `{field: \"name\"}` when another line of the user has the name (case-insensitive, direct\nlines included). A line without senders is allowed; it can send once it has one.\n"
       x-error-codes:
         - VALIDATION_FAILED
         - CHANNEL_INACTIVE
@@ -18931,11 +18937,10 @@ paths:
       tags:
         - Lines
       summary: 'Update a line'
-      description: "Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a\nchannel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a\nkey set to `null` is removed). `409 NAME_TAKEN` `{field: \"name\"}` when another line of the user has the\nname (case-insensitive). The Direct line keeps its name: a different `name` answers `422 LINE_IS_DIRECT`\n`{line_id}`, while its other fields change as usual. `send_mode`, `sticky_sender` and `failover_seconds` set how\nthe line picks its sender; `failover_seconds` is merged lane by lane into the stored hold times (`null` restores\nthe defaults). `prefer` sets the channel type the line sends with first and `cross_type_fallback` (merged into the\nstored value) resends an undelivered message through the next type; a fallback may double the cost of a message.\n`on_unconfirmed` decides what happens to a message an unpaired phone never confirmed, and `alarm_thresholds`\n(merged into the stored values, `null` restores the defaults) when the line's `line.alarm` fires.\nThe sender list changes with `PUT /lines/{id}/senders`.\n"
+      description: "Requires `channels:write`. Every field is optional. `reply_window_days` (1 to 365) is how long a reply on a\nchannel this line wrote from comes back to this line. `settings` keys are merged into the stored settings (a\nkey set to `null` is removed). `409 NAME_TAKEN` `{field: \"name\"}` when another line of the user has the\nname (case-insensitive). A direct line may be renamed too. `send_mode`, `sticky_sender` and `failover_seconds` set how\nthe line picks its sender; `failover_seconds` is merged lane by lane into the stored hold times (`null` restores\nthe defaults). `prefer` sets the channel type the line sends with first and `cross_type_fallback` (merged into the\nstored value) resends an undelivered message through the next type; a fallback may double the cost of a message.\n`on_unconfirmed` decides what happens to a message an unpaired phone never confirmed, and `alarm_thresholds`\n(merged into the stored values, `null` restores the defaults) when the line's `line.alarm` fires.\nThe sender list changes with `PUT /lines/{id}/senders`.\n"
       x-error-codes:
         - VALIDATION_FAILED
         - NAME_TAKEN
-        - LINE_IS_DIRECT
       requestBody:
         required: true
         content:
@@ -18990,7 +18995,7 @@ paths:
         415:
           $ref: '#/components/responses/UnsupportedMediaType'
         422:
-          description: '422: one of `VALIDATION_FAILED`, `LINE_IS_DIRECT`. More codes may be added within v1; treat an unknown one by its status.'
+          description: '422: one of `VALIDATION_FAILED`. More codes may be added within v1; treat an unknown one by its status.'
           headers:
             MyComm-Request-Id:
               $ref: '#/components/headers/MyComm-Request-Id'
@@ -19007,8 +19012,6 @@ paths:
                   -
                     $ref: '#/components/schemas/ValidationError'
                   -
-                    $ref: '#/components/schemas/ErrLineIsDirect'
-                  -
                     $ref: '#/components/schemas/Error'
         429:
           $ref: '#/components/responses/RateLimited'
@@ -19021,7 +19024,7 @@ paths:
       tags:
         - Lines
       summary: 'Archive a line'
-      description: "Requires `channels:write`. Archives the line; nothing is deleted. The Direct line cannot be archived\n(`422 LINE_IS_DIRECT`). Sends from an archived line are refused (`LINE_ARCHIVED`), reply routing skips it and\nits open conversations move to the Direct line. Keys restricted to it keep read access. Archiving an archived\nline changes nothing. `POST /lines/{id}/unarchive` brings it back.\n"
+      description: "Requires `channels:write`. Archives the line; nothing is deleted. A direct line cannot be archived\n(`422 LINE_IS_DIRECT`): it is archived when its number disconnects. Sends from an archived line are refused\n(`LINE_ARCHIVED`), reply routing skips it and each open conversation moves to the direct line of its number. Keys restricted to it keep read access. Archiving an archived\nline changes nothing. `POST /lines/{id}/unarchive` brings it back.\n"
       x-error-codes:
         - LINE_IS_DIRECT
       responses:
@@ -19091,7 +19094,7 @@ paths:
       tags:
         - Lines
       summary: 'Unarchive a line'
-      description: "Requires `channels:write`. Does nothing when the line is not archived. Takes no body. A partner line that was\ndetached stays archived: `409 INVALID_STATE` `{line_id}`.\n"
+      description: "Requires `channels:write`. Does nothing when the line is not archived. Takes no body. A partner line that was\ndetached stays archived: `409 INVALID_STATE` `{line_id}`. So does the direct line of a disconnected number\n(`409 INVALID_STATE`): it comes back by itself when the number is connected again.\n"
       x-error-codes:
         - INVALID_STATE
       responses:
@@ -19207,9 +19210,10 @@ paths:
       tags:
         - Lines
       summary: "Replace a line's senders"
-      description: "Requires `channels:write`. Replaces the whole list; the order is the position (0 first). At most one entry is\n`primary`; with none marked the first entry is. A marked primary is placed first and the others keep their\norder, so role and position always agree. An entry without a role is a `backup`. Every channel must be\none of the user's, not disconnected, and appear once (`422 VALIDATION_FAILED` on `senders`). An empty list\nleaves the line without senders: sends from it are held (`no_sender_available`). Fires\n`line.sender_changed`. Queued messages on a sender that left the list move to the next healthy sender.\n"
+      description: "Requires `channels:write`. Replaces the whole list; the order is the position (0 first). At most one entry is\n`primary`; with none marked the first entry is. A marked primary is placed first and the others keep their\norder, so role and position always agree. An entry without a role is a `backup`. Every channel must be\none of the user's, not disconnected, and appear once (`422 VALIDATION_FAILED` on `senders`). An empty list\nleaves the line without senders: sends from it are held (`no_sender_available`). Fires\n`line.sender_changed`. Queued messages on a sender that left the list move to the next healthy sender.\nA direct line sends only through its own number: any other list answers `409 INVALID_STATE` (its own number,\nswitched on or off, is accepted).\n"
       x-error-codes:
         - VALIDATION_FAILED
+        - INVALID_STATE
       requestBody:
         required: true
         content:
@@ -19248,6 +19252,25 @@ paths:
           $ref: '#/components/responses/Forbidden'
         404:
           $ref: '#/components/responses/NotFound'
+        409:
+          description: '409: one of `INVALID_STATE`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ErrInvalidState'
+                  -
+                    $ref: '#/components/schemas/Error'
         413:
           $ref: '#/components/responses/PayloadTooLarge'
         415:
@@ -24136,7 +24159,7 @@ webhooks:
       tags:
         - Webhooks
       summary: line.sender_changed
-      description: 'The sender list of a line changed: senders were set or reordered, a newly verified number joined the Direct line, or a disconnected number left every line. `data.senders` is the whole list after the change, in position order (0 first).'
+      description: 'The sender list of a line changed: senders were set or reordered, a newly verified number joined its direct line, or a disconnected number left every line. `data.senders` is the whole list after the change, in position order (0 first).'
       requestBody:
         required: true
         content:
@@ -24351,7 +24374,7 @@ webhooks:
       tags:
         - Webhooks
       summary: line.detached
-      description: "A partner line was detached and archived, by the partner (`DELETE /partner/v1/lines/{id}`), by the user's owner, or by MyComm. The user keeps its numbers and history; the line sends no more. Sent once."
+      description: 'A partner line was detached and archived, by the partner (`DELETE /partner/v1/lines/{id}`), by the user, or by MyComm. The user keeps its numbers and history; the line sends no more. Sent once.'
       requestBody:
         required: true
         content:
@@ -24634,7 +24657,7 @@ webhooks:
                       disconnect_reason: owner
                       device_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       device_sim_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      default_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                      direct_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       line_ids:
                         - 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       capabilities:
@@ -24786,7 +24809,7 @@ webhooks:
                       disconnect_reason: owner
                       device_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       device_sim_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      default_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                      direct_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       line_ids:
                         - 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       capabilities:
@@ -24939,7 +24962,7 @@ webhooks:
                       disconnect_reason: owner
                       device_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       device_sim_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      default_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                      direct_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       line_ids:
                         - 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       capabilities:
@@ -25092,7 +25115,7 @@ webhooks:
                       disconnect_reason: owner
                       device_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       device_sim_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      default_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                      direct_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       line_ids:
                         - 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       capabilities:
@@ -25247,7 +25270,7 @@ webhooks:
                       disconnect_reason: owner
                       device_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       device_sim_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
-                      default_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+                      direct_line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       line_ids:
                         - 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                       capabilities:

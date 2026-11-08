@@ -125,9 +125,9 @@ export class PartnerLinesResource {
   /**
    * Detach a line.
    *
-   * Requires `lines:write`. Archives the line: its open conversations move to the user's Direct line, and the user
-   * keeps the user, its channels, phones and history. `line.detached` is emitted once; detaching an archived line
-   * again changes nothing. The line header stops working for it (`403 LINE_CONTEXT_INVALID`).
+   * Requires `lines:write`. Archives the line: each open conversation moves to the direct line of its number, and
+   * the user keeps the user, its channels, phones and history. `line.detached` is emitted once; detaching an
+   * archived line again changes nothing. The line header stops working for it (`403 LINE_CONTEXT_INVALID`).
    *
    * @see https://mycomm.cogneer.tech/docs/api/partner `detachPartnerLine`
    */
