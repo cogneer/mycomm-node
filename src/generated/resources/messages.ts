@@ -90,8 +90,9 @@ export class MessagesResource {
    * Send one message.
    *
    * Queues one message. Requires `messages:send`. The line decides the channel: give `line_id`, `channel_id` or
-   * `from` (the key's single line is used when it is restricted to exactly one). The recipient is `to` or
-   * `contact_id`. The content is the `content` union or one of the shorthand fields (`body`, `media_ids`).
+   * `from` (the key's single line is used when it is restricted to exactly one). When the number in `from` also
+   * has a disconnected copy (it was on another phone or SIM before), the live one sends; `LINE_ARCHIVED` answers
+   * only when no live copy exists.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `sendMessage`
    */
@@ -100,8 +101,9 @@ export class MessagesResource {
    * Send one message.
    *
    * Queues one message. Requires `messages:send`. The line decides the channel: give `line_id`, `channel_id` or
-   * `from` (the key's single line is used when it is restricted to exactly one). The recipient is `to` or
-   * `contact_id`. The content is the `content` union or one of the shorthand fields (`body`, `media_ids`).
+   * `from` (the key's single line is used when it is restricted to exactly one). When the number in `from` also
+   * has a disconnected copy (it was on another phone or SIM before), the live one sends; `LINE_ARCHIVED` answers
+   * only when no live copy exists.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `sendMessage`
    */
