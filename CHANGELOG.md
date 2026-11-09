@@ -4,6 +4,33 @@ All notable changes to this package are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the package follows
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-11-09
+
+Published 2.0.0 still used `account_id` and `default_line_id`; this release follows the API and renames them. Code that
+reads either field, or any other name below, has to change when it moves to 2.1.0. The same names and behaviour as
+`mycomm/mycomm-php` 2.1.0.
+
+### Changed
+
+- `account_id` is now `user_id` in results and webhook events. The API speaks of the user, not an account:
+  `mycomm.me.get()` and `me.update()` (`GET`/`PATCH /v1/me`, ability `me:write`) replace `account.get()` and
+  `account.update()`, and `client.verify()` returns the key's `user` (was `account`). The `Account`,
+  `AccountSettings`, `AccountStatus`, `WebhookAccount`, `WebhookAccountData` and `WebhookAccountCounts` types are now
+  `User`, `UserSettings`, `UserStatus`, `WebhookUser`, `WebhookUserData` and `WebhookUserCounts`;
+  `AccountUpdateParams` is `MeUpdateParams`.
+- `default_line_id` is now `direct_line_id`: every number has its own direct line (a channel's `direct_line_id`).
+- A direct line sends only through its own number. `lines.setSenders()` on a direct line answers `409 INVALID_STATE`
+  for any other list, or when its own number is switched off or has `mirror_inbound` on.
+- `from` prefers the live number. When the number in `from` also has a disconnected copy, `messages.send()` sends
+  through the live one; `LINE_ARCHIVED` answers only when no live copy exists.
+- The `account.*` webhook events are `user.*` (`user.suspended`, `user.reactivated`, `user.deletion_scheduled`).
+- Error codes `ACCOUNT_SUSPENDED`, `ACCOUNT_PENDING_DELETION`, `ACCOUNT_THROTTLED` and `NEW_ACCOUNT_LIMIT` are now
+  `USER_SUSPENDED`, `USER_PENDING_DELETION`, `USER_THROTTLED` and `NEW_USER_LIMIT`; the values `account_suspended`
+  (device pause reason), `account_deleted` (device revoked reason), `account_zip` (export type),
+  `number_has_account` (channel verification failure reason) and `account_limit` (hold reason) are now `user_suspended`,
+  `user_deleted`, `user_zip`, `number_has_user` and `user_limit`.
+- A user's `country_iso` and `timezone` may be `null` until the user sets them.
+
 ## [2.0.0] - 2026-11-02
 
 Built from the MyComm public API and partner API `2.0.0`, where lines replace inboxes and partners give each user a line.
@@ -20,20 +47,6 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
 - Partner keys act on a line, not an account: `client.forLine(lineId)` replaces `forAccount()` and every `/v1` call of
   that client carries `MyComm-Line` (was `MyComm-Account`); the option `lineId` replaces `accountId`, in `MyCommFake`
   too.
-- The API speaks of the user, not an account: `mycomm.me.get()` and `me.update()` (`GET`/`PATCH /v1/me`, ability
-  `me:write`) replace `account.get()` and `account.update()`. The `Account`, `AccountSettings`, `AccountStatus`,
-  `WebhookAccount`, `WebhookAccountData` and `WebhookAccountCounts` types are now `User`, `UserSettings`, `UserStatus`,
-  `WebhookUser`, `WebhookUserData` and `WebhookUserCounts`; `AccountUpdateParams` is `MeUpdateParams`.
-- `account_id` is now `user_id` in results and webhook events, and the `account.*` events are `user.*`
-  (`user.suspended`, `user.reactivated`, `user.deletion_scheduled`).
-- Error codes `ACCOUNT_SUSPENDED`, `ACCOUNT_PENDING_DELETION`, `ACCOUNT_THROTTLED` and `NEW_ACCOUNT_LIMIT` are now
-  `USER_SUSPENDED`, `USER_PENDING_DELETION`, `USER_THROTTLED` and `NEW_USER_LIMIT`; the values `account_suspended`
-  (device pause reason), `account_deleted` (device revoked reason), `account_zip` (export type),
-  `number_has_account` (channel verification failure reason) and `account_limit` (hold reason) are now `user_suspended`,
-  `user_deleted`, `user_zip`, `number_has_user` and `user_limit`.
-- `client.verify()` returns the key's `user` (was `account`).
-- Every number has its own direct line: a channel's `default_line_id` is `direct_line_id`. A user's `country_iso` and
-  `timezone` may be `null` until the user sets them.
 
 ### Removed (breaking)
 
@@ -50,7 +63,7 @@ The same names and behaviour as `mycomm/mycomm-php` 2.0.0. Nothing from 1.x is k
 - Partner lines: `partner.lines.list()`, `all()`, `create()`, `get()`, `update()` and `detach()`, and
   `partner.lines.status(id)` (`PartnerLineStatus`: `state`, `needs_attention_reasons`, channels and sponsorship).
 - Hosted links: `partner.lines.links.create(lineId, { purpose })` and `partner.links.get()` / `revoke()` for partner
-  keys, `lines.links.create()` and `links.get()` / `revoke()` for user keys (`CreatedHostedLink`, with the one-time
+  keys, `lines.links.create()` and `links.get()` / `revoke()` for account keys (`CreatedHostedLink`, with the one-time
   `url`, and `HostedLink`; purposes `connect`, `add_channel`, `replace_device`, `manage`, `claim`).
 - `partner.sponsorshipDefaults.get()` and `put()`, and `sponsorship` on partner lines (`SponsorshipTerms`).
 - `partner.usage.get()` reports one row per partner line (`line_id`, `external_ref`); its filter is `line_id`.
