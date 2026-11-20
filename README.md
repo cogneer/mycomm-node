@@ -257,6 +257,8 @@ version knows; a newer code arrives as it is and falls back on the error of its 
 
 The SDK retries a call twice (configurable) when the network fails or an attempt times out, when MyComm answers `429` or
 `503` (waiting as long as `Retry-After` asks, at most a minute) and on other `5xx` answers, with exponential backoff.
+`429 CHANNEL_LINK_BLOCKED` is thrown at once: linking a number stays blocked for minutes or hours, and
+`error.retryAfter()` says how long. `ServerError.retryAfter()` reads `Retry-After` of a `503` the same way.
 
 That is safe for sends because every POST carries an `Idempotency-Key`, and a retry repeats the same key: MyComm then
 replays the first answer instead of sending a second message. Pass your own key to make a whole operation of yours
@@ -393,6 +395,27 @@ through the line (`partner.forLine(lineId).verify({ to })`).
 
 A user key mints the same links for its own lines with `mycomm.lines.links.create(lineId, { purpose })` and follows
 them with `mycomm.links.get(id)` and `revoke(id)`.
+
+## Connecting a WhatsApp number
+
+A WhatsApp number is linked as a device of the phone that holds it. Create the channel, then poll its connect state until
+the phone has linked it:
+
+```ts
+const channel = await mycomm.channels.create({
+  type: 'whatsapp_web',
+  connect: { method: 'pairing_code', phone: '+923001234567' },
+});
+
+const state = await mycomm.channels.connectState(channel.id);
+state.pairing_code; // type it on the phone (WhatsApp, Linked devices); or state.qr_png_base64 for qr_scan
+state.state; // 'awaiting_link', then 'connected', or 'failed' / 'expired'
+
+// After a failed or expired attempt, or for a number whose session was logged out ('needs_relink'):
+await mycomm.channels.continueConnect(channel.id, { action: 'retry' });
+await mycomm.channels.continueConnect(channel.id, { action: 'switch_method', method: 'qr_scan' });
+await mycomm.channels.continueConnect(channel.id, { action: 'relink' });
+```
 
 ## Uploading files
 

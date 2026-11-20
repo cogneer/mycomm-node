@@ -201,6 +201,53 @@ describe('retries', () => {
     expect(waits).toEqual([60]);
   });
 
+  it('throws a blocked link at once instead of waiting', async () => {
+    const { client, transport, waits } = scripted([
+      error(429, 'CHANNEL_LINK_BLOCKED', { 'Retry-After': '3600' }, { kind: 'attempts', retry_after_seconds: 3600 }),
+    ]);
+
+    const thrown = await client.channels
+      .create({ type: 'whatsapp_web', connect: { method: 'pairing_code', phone: '+923001234567' } })
+      .catch((caught: unknown) => caught);
+
+    expect(thrown).toBeInstanceOf(RateLimitError);
+    expect((thrown as RateLimitError).retryAfter()).toBe(3600);
+    expect((thrown as RateLimitError).details).toEqual({ kind: 'attempts', retry_after_seconds: 3600 });
+    expect(transport.requests).toHaveLength(1);
+    expect(waits).toEqual([]);
+  });
+
+  it('waits as long as Retry-After says on a 503 of the WhatsApp server, with the same key', async () => {
+    const { client, transport, waits } = scripted([
+      error(503, 'CHANNEL_SERVER_UNAVAILABLE', { 'Retry-After': '30' }),
+      json(202, {
+        state: 'connecting',
+        method: 'pairing_code',
+        pairing_code: null,
+        qr_png_base64: null,
+        expires_at: null,
+        refusal: null,
+      }),
+    ]);
+
+    const state = await client.channels.continueConnect('ch-1', { action: 'retry' });
+
+    expect(state.state).toBe('connecting');
+    expect(waits).toEqual([30]);
+    expect(transport.requests[0]!.url).toBe('https://mycomm.cogneer.tech/v1/channels/ch-1/connect');
+    expect(transport.requests[0]!.body).toBe('{"action":"retry"}');
+    expect(transport.requests[1]!.header('Idempotency-Key')).toBe(transport.requests[0]!.header('Idempotency-Key'));
+  });
+
+  it('tells how long a failing server asks to wait', async () => {
+    const { client } = scripted([error(503, 'CHANNEL_SERVER_UNAVAILABLE', { 'Retry-After': '30' })], { maxRetries: 0 });
+
+    const thrown = await client.channels.continueConnect('ch-1', { action: 'relink' }).catch((caught: unknown) => caught);
+
+    expect(thrown).toBeInstanceOf(ServerError);
+    expect((thrown as ServerError).retryAfter()).toBe(30);
+  });
+
   it('backs off exponentially without Retry-After', async () => {
     const { client, waits } = scripted([error(500, 'INTERNAL'), error(502, 'BAD_GATEWAY'), json(200, MESSAGE)]);
 

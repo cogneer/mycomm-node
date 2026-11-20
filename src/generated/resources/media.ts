@@ -12,11 +12,13 @@ export class MediaResource {
   constructor(private readonly _connection: Connection) {}
 
   /**
-   * Upload an image.
+   * Upload a media file.
    *
-   * Requires `media:write`. `multipart/form-data` with one part `file` of at most 10 MB. The type is sniffed from
-   * the content (`image/jpeg`, `image/png`, `image/gif`, `image/webp`), never taken from the header or the file
-   * name. The upload is stored with `purpose: message`; reference its `id` from a message.
+   * Requires `media:write`. `multipart/form-data` with one part `file`. The type is sniffed from the content,
+   * never taken from the header or the file name. Every user may upload images (`image/jpeg`, `image/png`,
+   * `image/gif`, `image/webp`) of at most 10 MB; the other types and sizes are those of the channel types the user
+   * may use (`GET /v1/channels/types`, `capabilities.media` of each available type), for example WhatsApp video,
+   * audio and documents up to their caps.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `uploadMedia`
    */

@@ -1428,6 +1428,147 @@
       }
     },
     {
+      "operation": "channels.create",
+      "key": "channels.create",
+      "status": 202,
+      "body": {
+        "id": "01923f80-5c6a-7b10-9c21-0d3e4f5a6b7c",
+        "type": "android_sim",
+        "name": "Example name",
+        "address": "+923001234567",
+        "display_address": null,
+        "status": "pending_verification",
+        "pause_reason": null,
+        "paused_at": null,
+        "disconnect_reason": null,
+        "device_id": null,
+        "device_sim_id": null,
+        "direct_line_id": null,
+        "line_ids": [],
+        "capabilities": {
+          "text_max_chars": null,
+          "segmented": true,
+          "max_segments": null,
+          "media": {},
+          "max_media_items": 1,
+          "delivery_reports": true,
+          "read_receipts": true,
+          "typing": true,
+          "reactions": true,
+          "edit_delete": true,
+          "buttons": true,
+          "location": true,
+          "business_initiated": true,
+          "session_window_seconds": null,
+          "groups": true
+        },
+        "allowed_destination_countries": null,
+        "skip_business_senders": true,
+        "rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null,
+          "acknowledged_risk_at": null
+        },
+        "rate_policy_source": "suggested",
+        "rate_policy_risk": "green",
+        "suggested_rate_policy": {
+          "schema": "Example schema",
+          "interval_ms": {
+            "min": 1,
+            "max": 1
+          },
+          "caps": {
+            "per_min": 1,
+            "per_15m": 1,
+            "per_hour": 1,
+            "per_day": 1,
+            "new_recipients_per_day": null
+          },
+          "warmup": {
+            "enabled": true
+          },
+          "active_hours": null,
+          "bulk_hours": null
+        },
+        "rate_policy_ceiling": {
+          "per_min": 1,
+          "per_15m": 1,
+          "per_hour": 1,
+          "per_day": 1
+        },
+        "warmup": {
+          "active": true,
+          "day": 1,
+          "ends_at": null,
+          "today_cap": null
+        },
+        "health": {
+          "score": null,
+          "band": null,
+          "evaluated_at": null,
+          "quarantine_until": null,
+          "components": {}
+        },
+        "queue": {
+          "queued": 1,
+          "held": 1,
+          "leased": 1
+        },
+        "usage": {
+          "segments_15m": 1,
+          "segments_1h": 1,
+          "segments_24h": 1
+        },
+        "throttled_until": null,
+        "verification": null,
+        "verified_at": null,
+        "connected_at": null,
+        "disconnected_at": null,
+        "created_at": "2026-10-01T09:15:02Z"
+      }
+    },
+    {
+      "operation": "channels.connectState",
+      "key": "channels.connectState",
+      "status": 200,
+      "body": {
+        "state": "connecting",
+        "method": null,
+        "pairing_code": null,
+        "qr_png_base64": null,
+        "expires_at": null,
+        "refusal": null
+      }
+    },
+    {
+      "operation": "channels.continueConnect",
+      "key": "channels.continueConnect",
+      "status": 202,
+      "body": {
+        "state": "connecting",
+        "method": null,
+        "pairing_code": null,
+        "qr_png_base64": null,
+        "expires_at": null,
+        "refusal": null
+      }
+    },
+    {
       "operation": "channels.updateRatePolicy",
       "key": "channels.updateRatePolicy",
       "status": 200,

@@ -12,6 +12,8 @@ import { VERSION } from './version.js';
 
 /** A repeat while the first request with the same key is still running: the API asks to wait a second. */
 const IN_PROGRESS = 'IDEMPOTENCY_IN_PROGRESS';
+/** Linking a number is blocked for minutes or hours, and a repeat with the same key replays the refusal. */
+const LINK_BLOCKED = 'CHANNEL_LINK_BLOCKED';
 
 const MAX_DELAY = 60;
 
@@ -262,6 +264,7 @@ function object(response: MyCommResponse): Record<string, unknown> {
 function retryDelay(request: MyCommRequest, response: MyCommResponse, error: APIError, attempt: number): number | null {
   const retryAfter = retryAfterSeconds(response.header('Retry-After'));
   const wait = retryAfter !== undefined ? Math.min(retryAfter, MAX_DELAY) : undefined;
+  if (error.code === LINK_BLOCKED) return null;
   // Rejected before any work started, so safe for every method.
   if (response.status === 429 || response.status === 503) return wait ?? backoff(attempt);
   if (response.status === 409 && error.code === IN_PROGRESS) return wait ?? 1;

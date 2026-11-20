@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { ConnectionError, NotFoundError, RateLimitError, ValidationError, Webhook } from '../src/index.js';
+import {
+  ChannelConnectAction,
+  ChannelLinkMethod,
+  ChannelLinkState,
+  ConnectionError,
+  NotFoundError,
+  RateLimitError,
+  ValidationError,
+  Webhook,
+} from '../src/index.js';
 import { examples, FakeAssertionError, FakeResponse, FakeWebhook, MyCommFake } from '../src/testing/index.js';
 
 describe('the fake', () => {
@@ -167,5 +176,33 @@ describe('the fake', () => {
     expect(status.state).toBe((examples.responses['partner.lines.status']!.body as { state: string }).state);
     expect(fake.calls('partner.lines.status')[0]!.path).toBe(`/partner/v1/lines/${line.id}/status`);
     expect(fake.calls('messages.send')[0]!.header('MyComm-Line')).toBe(line.id);
+  });
+  it('links a WhatsApp number, polls it and links it again', async () => {
+    const fake = new MyCommFake();
+    fake
+      .respond('channels.create', { id: 'ch-1', type: 'whatsapp_web', status: 'pending_verification' })
+      .respondOnce('channels.connectState', { state: 'awaiting_link', method: 'pairing_code', pairing_code: 'ABCD-EFGH' })
+      .respond('channels.connectState', { state: 'needs_relink', method: null, pairing_code: null });
+
+    const channel = await fake.client.channels.create({
+      type: 'whatsapp_web',
+      connect: { method: ChannelLinkMethod.PairingCode, phone: '+923001234567' },
+    });
+    const first = await fake.client.channels.connectState(channel.id);
+    const later = await fake.client.channels.connectState(channel.id);
+    await fake.client.channels.continueConnect(channel.id, { action: ChannelConnectAction.Relink, method: 'qr_scan' });
+
+    expect(channel.type).toBe('whatsapp_web');
+    expect(first.state).toBe(ChannelLinkState.AwaitingLink);
+    expect(first.pairing_code).toBe('ABCD-EFGH');
+    expect(later.state).toBe('needs_relink');
+    expect(fake.calls('channels.create')[0]!.json).toEqual({
+      type: 'whatsapp_web',
+      connect: { method: 'pairing_code', phone: '+923001234567' },
+    });
+    fake.assertCalled(
+      'channels.continueConnect',
+      (call) => call.path === '/v1/channels/ch-1/connect' && call.json?.action === 'relink' && call.json?.method === 'qr_scan',
+    );
   });
 });

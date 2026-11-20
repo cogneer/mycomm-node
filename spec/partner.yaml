@@ -2,7 +2,7 @@
 openapi: 3.1.0
 info:
   title: 'MyComm Partner API'
-  version: 2.0.0
+  version: 2.1.0
   description: "For platforms that give their own users messaging through MyComm. Authenticate with a partner key (`mc_partner_...`)\nsent as `Authorization: Bearer <key>`.\n\nA partner owns **lines**, not users. `POST /lines` makes a line for one of your users, known to you by your\n`external_ref`; it belongs to your user in MyComm (a new, empty user until they connect a phone), and the user\nowns it. Send and read through a line on `/v1` with the partner key plus the `MyComm-Line: <line id>`\nheader; a partner key reaches only the message and conversation endpoints of that line and `GET /v1/lines/{id}`.\n`DELETE /lines/{id}` detaches the line: it is archived, the user keeps the user, its channels and its history.\n`/usage` reports usage. `POST /lines/{id}/vouch` answers a `line.recovery_requested` webhook.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
 servers:
   -
@@ -174,6 +174,12 @@ components:
         - IDENTITY_TYPE_UNAVAILABLE
         - CHANNEL_TYPE_NOT_ALLOWED
         - CHANNEL_TOKEN_INVALID
+        - CHANNEL_LIMIT_REACHED
+        - CHANNEL_NUMBER_IN_USE
+        - CHANNEL_LINK_BUSY
+        - CHANNEL_LINK_BLOCKED
+        - CHANNEL_NO_CAPACITY
+        - CHANNEL_SERVER_UNAVAILABLE
         - MEDIA_TYPE_UNSUPPORTED
         - MEDIA_TOO_LARGE
         - MEDIA_COUNT_EXCEEDED
@@ -367,7 +373,7 @@ components:
             - not_connected
         needs_attention_reasons:
           type: array
-          description: "Empty unless `needs_attention`. `device_offline`: every sender's phone is offline. `sim_missing`: a sender's SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `quarantined`: a sender is paused by the carrier safety hold. `session_logged_out` is reserved."
+          description: "Empty unless `needs_attention`. `device_offline`: every sender's phone is offline. `sim_missing`: a sender's SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `quarantined`: a sender is paused by the carrier safety hold. `session_logged_out`: a sender's WhatsApp session was logged out (the phone unlinked it); link that number again (`POST /v1/channels/{id}/connect` `{action: relink}`)."
           items:
             type: string
             enum:
@@ -3650,6 +3656,254 @@ components:
             code:
               type: string
               const: CHANNEL_TOKEN_INVALID
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelLimitReached:
+      type: object
+      description: 'You have connected the most numbers of this type you may (:limit). Disconnect one, or ask support to raise the limit.'
+      x-http-status: 422
+      examples:
+        -
+          error:
+            code: CHANNEL_LIMIT_REACHED
+            message: 'You have connected the most numbers of this type you may (1). Disconnect one, or ask support to raise the limit.'
+            details:
+              limit: 1
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-limit-reached'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_LIMIT_REACHED
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                limit:
+                  type: integer
+              required:
+                - limit
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelNumberInUse:
+      type: object
+      description: 'This number is already connected to one of your channels. If it was logged out, link that channel again (details.channel_id).'
+      x-http-status: 409
+      examples:
+        -
+          error:
+            code: CHANNEL_NUMBER_IN_USE
+            message: 'This number is already connected to one of your channels. If it was logged out, link that channel again (details.channel_id).'
+            details:
+              channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-number-in-use'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_NUMBER_IN_USE
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                channel_id:
+                  type: string
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelLinkBusy:
+      type: object
+      description: 'Another connect step for this number is still running. Try again in a few seconds.'
+      x-http-status: 409
+      examples:
+        -
+          error:
+            code: CHANNEL_LINK_BUSY
+            message: 'Another connect step for this number is still running. Try again in a few seconds.'
+            details: {}
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-link-busy'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_LINK_BUSY
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelLinkBlocked:
+      type: object
+      description: 'Linking is paused for now. Try again in :retry_after_seconds seconds.'
+      x-http-status: 429
+      examples:
+        -
+          error:
+            code: CHANNEL_LINK_BLOCKED
+            message: 'Linking is paused for now. Try again in 30 seconds.'
+            details:
+              kind: example
+              retry_after_seconds: 30
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-link-blocked'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_LINK_BLOCKED
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                kind:
+                  type: string
+                retry_after_seconds:
+                  type: integer
+              required:
+                - kind
+                - retry_after_seconds
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelNoCapacity:
+      type: object
+      description: 'There is no room for a new number right now. Try again later.'
+      x-http-status: 503
+      examples:
+        -
+          error:
+            code: CHANNEL_NO_CAPACITY
+            message: 'There is no room for a new number right now. Try again later.'
+            details: {}
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-no-capacity'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_NO_CAPACITY
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelServerUnavailable:
+      type: object
+      description: 'The server that links this number cannot be reached right now. Retry after the time in the Retry-After header.'
+      x-http-status: 503
+      examples:
+        -
+          error:
+            code: CHANNEL_SERVER_UNAVAILABLE
+            message: 'The server that links this number cannot be reached right now. Retry after the time in the Retry-After header.'
+            details: {}
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-server-unavailable'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_SERVER_UNAVAILABLE
             message:
               type: string
             details:

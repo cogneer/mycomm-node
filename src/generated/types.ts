@@ -156,10 +156,10 @@ export const CampaignUpdateCategory = {
   Transactional: 'transactional',
 } as const;
 
-export type ChannelType = 'android_sim' | 'whatsapp_evolution' | 'telegram_bot';
+export type ChannelType = 'android_sim' | 'whatsapp_web' | 'telegram_bot';
 export const ChannelType = {
   AndroidSim: 'android_sim',
-  WhatsappEvolution: 'whatsapp_evolution',
+  WhatsappWeb: 'whatsapp_web',
   TelegramBot: 'telegram_bot',
 } as const;
 
@@ -184,7 +184,8 @@ export type ChannelPauseReason =
   | 'auto:failure_streak'
   | 'auto:session_lost'
   | 'auto:provider_banned'
-  | 'auto:credentials_invalid';
+  | 'auto:credentials_invalid'
+  | 'auto:provider_unconfirmed';
 export const ChannelPauseReason = {
   Owner: 'owner',
   Admin: 'admin',
@@ -198,6 +199,7 @@ export const ChannelPauseReason = {
   AutoSessionLost: 'auto:session_lost',
   AutoProviderBanned: 'auto:provider_banned',
   AutoCredentialsInvalid: 'auto:credentials_invalid',
+  AutoProviderUnconfirmed: 'auto:provider_unconfirmed',
 } as const;
 
 /** Set when `disconnected`. */
@@ -315,6 +317,69 @@ export const ChannelVerificationFailureReason = {
   CountryNotEnabled: 'country_not_enabled',
   NumberDisputed: 'number_disputed',
   NumberHasUser: 'number_has_user',
+} as const;
+
+/** `pairing_code`: a code to type on the phone (needs `phone`); `qr_scan`: a QR to scan with it. */
+export type ChannelLinkMethod = 'pairing_code' | 'qr_scan';
+export const ChannelLinkMethod = {
+  PairingCode: 'pairing_code',
+  QrScan: 'qr_scan',
+} as const;
+
+export type ChannelLinkState =
+  | 'connecting'
+  | 'awaiting_link'
+  | 'passkey_required'
+  | 'failed'
+  | 'expired'
+  | 'connected'
+  | 'warming_up'
+  | 'limited'
+  | 'paused'
+  | 'server_problem'
+  | 'needs_relink'
+  | 'banned'
+  | 'disconnected';
+export const ChannelLinkState = {
+  Connecting: 'connecting',
+  AwaitingLink: 'awaiting_link',
+  PasskeyRequired: 'passkey_required',
+  Failed: 'failed',
+  Expired: 'expired',
+  Connected: 'connected',
+  WarmingUp: 'warming_up',
+  Limited: 'limited',
+  Paused: 'paused',
+  ServerProblem: 'server_problem',
+  NeedsRelink: 'needs_relink',
+  Banned: 'banned',
+  Disconnected: 'disconnected',
+} as const;
+
+/**
+ * `wrong_number`: the phone linked another number than the one entered. `number_in_use`: the linked number is
+ * already connected on MyComm. `expired`: the code or QR ran out. `passkey_required`: the number needs a
+ * passkey, which this server cannot do. `failed`: linking did not finish. `phone_changed`: replaced by an
+ * attempt for another number. `server_unavailable`: the server could not be asked; the rest is the last known
+ * state.
+ */
+export type ChannelLinkRefusalCode =
+  'wrong_number' | 'number_in_use' | 'expired' | 'passkey_required' | 'failed' | 'phone_changed' | 'server_unavailable';
+export const ChannelLinkRefusalCode = {
+  WrongNumber: 'wrong_number',
+  NumberInUse: 'number_in_use',
+  Expired: 'expired',
+  PasskeyRequired: 'passkey_required',
+  Failed: 'failed',
+  PhoneChanged: 'phone_changed',
+  ServerUnavailable: 'server_unavailable',
+} as const;
+
+export type ChannelConnectAction = 'retry' | 'switch_method' | 'relink';
+export const ChannelConnectAction = {
+  Retry: 'retry',
+  SwitchMethod: 'switch_method',
+  Relink: 'relink',
 } as const;
 
 export type ChannelConnectMethod = 'device_pairing' | 'qr_scan' | 'pairing_code' | 'bot_token';
@@ -479,9 +544,10 @@ export const MessageStatus = {
  * (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `user_limit`, `carrier_cooldown`), the
  * phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused
  * (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing
- * approval (`link_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored allowance
- * used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform hold
- * (`platform_hold`). A new value may appear.
+ * approval (`link_restricted`), a WhatsApp number linked less than 24 hours ago (`link_day`) or limited by
+ * WhatsApp (`channel_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored
+ * allowance used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform
+ * hold (`platform_hold`). A new value may appear.
  */
 export type HoldReason =
   | 'scheduled'
@@ -503,7 +569,9 @@ export type HoldReason =
   | 'device_hot'
   | 'no_sender_available'
   | 'sponsor_quota_exhausted'
-  | 'unpaid';
+  | 'unpaid'
+  | 'link_day'
+  | 'channel_restricted';
 export const HoldReason = {
   Scheduled: 'scheduled',
   QuietHours: 'quiet_hours',
@@ -525,6 +593,8 @@ export const HoldReason = {
   NoSenderAvailable: 'no_sender_available',
   SponsorQuotaExhausted: 'sponsor_quota_exhausted',
   Unpaid: 'unpaid',
+  LinkDay: 'link_day',
+  ChannelRestricted: 'channel_restricted',
 } as const;
 
 /**
@@ -957,6 +1027,12 @@ export type ErrorCode =
   | 'IDENTITY_TYPE_UNAVAILABLE'
   | 'CHANNEL_TYPE_NOT_ALLOWED'
   | 'CHANNEL_TOKEN_INVALID'
+  | 'CHANNEL_LIMIT_REACHED'
+  | 'CHANNEL_NUMBER_IN_USE'
+  | 'CHANNEL_LINK_BUSY'
+  | 'CHANNEL_LINK_BLOCKED'
+  | 'CHANNEL_NO_CAPACITY'
+  | 'CHANNEL_SERVER_UNAVAILABLE'
   | 'MEDIA_TYPE_UNSUPPORTED'
   | 'MEDIA_TOO_LARGE'
   | 'MEDIA_COUNT_EXCEEDED'
@@ -1053,6 +1129,12 @@ export const ErrorCode = {
   IdentityTypeUnavailable: 'IDENTITY_TYPE_UNAVAILABLE',
   ChannelTypeNotAllowed: 'CHANNEL_TYPE_NOT_ALLOWED',
   ChannelTokenInvalid: 'CHANNEL_TOKEN_INVALID',
+  ChannelLimitReached: 'CHANNEL_LIMIT_REACHED',
+  ChannelNumberInUse: 'CHANNEL_NUMBER_IN_USE',
+  ChannelLinkBusy: 'CHANNEL_LINK_BUSY',
+  ChannelLinkBlocked: 'CHANNEL_LINK_BLOCKED',
+  ChannelNoCapacity: 'CHANNEL_NO_CAPACITY',
+  ChannelServerUnavailable: 'CHANNEL_SERVER_UNAVAILABLE',
   MediaTypeUnsupported: 'MEDIA_TYPE_UNSUPPORTED',
   MediaTooLarge: 'MEDIA_TOO_LARGE',
   MediaCountExceeded: 'MEDIA_COUNT_EXCEEDED',
@@ -1701,6 +1783,48 @@ export interface ChannelConfirmation {
   status: Open<ChannelConfirmationStatus>;
   expires_at: string | null;
   decided_at: string | null;
+}
+
+/**
+ * Where linking a number stands. `state` is a link state while linking runs or after it stopped: `connecting`
+ * (the server is getting ready, or could not be asked; see `refusal`), `awaiting_link` (the phone must type
+ * `pairing_code` or scan `qr_png_base64`), `passkey_required`, `failed`, `expired` (try again with `POST
+ * /v1/channels/{id}/connect`). Otherwise it is the number's own state: `warming_up`, `connected`, `limited`,
+ * `paused`, `server_problem`, `needs_relink` (link it again), `banned`, `disconnected`. Every key is always
+ * present; ignore unknown `state` and `refusal.code` values.
+ */
+export interface ChannelConnectState {
+  state: Open<ChannelLinkState>;
+  /** The method of the running or last attempt; null once the number is linked. */
+  method: Open<ChannelLinkMethod> | null;
+  /** The code to type on the phone (WhatsApp, Linked devices, Link with phone number). */
+  pairing_code: string | null;
+  /** The QR to scan, a PNG in base64. It changes every 20 seconds or so; poll for the new one. */
+  qr_png_base64: string | null;
+  /** When the QR runs out. */
+  expires_at: string | null;
+  /** Why linking does not go on, or null. */
+  refusal: ChannelConnectStateRefusal | null;
+}
+
+export interface ChannelConnectStateRefusal {
+  /**
+   * `wrong_number`: the phone linked another number than the one entered. `number_in_use`: the linked number is
+   * already connected on MyComm. `expired`: the code or QR ran out. `passkey_required`: the number needs a
+   * passkey, which this server cannot do. `failed`: linking did not finish. `phone_changed`: replaced by an
+   * attempt for another number. `server_unavailable`: the server could not be asked; the rest is the last known
+   * state.
+   */
+  code: Open<ChannelLinkRefusalCode>;
+  message: string;
+  /** When to poll again (`server_unavailable`). */
+  retry_after_seconds?: number;
+  /**
+   * `number_in_use` only: the linked number is your own number that needs to be linked again; link it again with
+   * `POST /v1/channels/{channel_id}/connect` `{action: relink}`. Absent for any other holder, and for a channel
+   * the key may not see.
+   */
+  channel_id?: string;
 }
 
 /** One channel type and its static shape. */
@@ -2374,6 +2498,11 @@ export interface UserSettings {
   links?: Record<string, unknown>;
   default_expiry_minutes?: Record<string, unknown>;
   sms?: Record<string, unknown>;
+  /**
+   * `auto_connect_sims` (boolean) and `allowed_types` (`null` or a list of channel types). Keys MyComm staff set
+   * for the user (channel access granted on request, number limits) are not shown. Sending one of them back
+   * unchanged is accepted; changing it answers `422 VALIDATION_FAILED` (`read_only`).
+   */
   channels?: Record<string, unknown>;
   whatsapp?: Record<string, unknown>;
   retention?: Record<string, unknown>;
@@ -2805,7 +2934,8 @@ export interface PartnerLineStatus {
    * Empty unless `needs_attention`. `device_offline`: every sender's phone is offline. `sim_missing`: a sender's
    * SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the
    * sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `quarantined`: a
-   * sender is paused by the carrier safety hold. `session_logged_out` is reserved.
+   * sender is paused by the carrier safety hold. `session_logged_out`: a sender's WhatsApp session was logged out
+   * (the phone unlinked it); link that number again (`POST /v1/channels/{id}/connect` `{action: relink}`).
    */
   needs_attention_reasons: Open<LineNeedsAttentionReason>[];
   /**
@@ -3361,6 +3491,17 @@ export interface CampaignAddressInput {
   variables?: Record<string, string | number | boolean>;
 }
 
+/** How the phone links the number. */
+export interface ChannelConnectInput {
+  /** `pairing_code`: a code to type on the phone (needs `phone`); `qr_scan`: a QR to scan with it. */
+  method: ChannelLinkMethod;
+  /**
+   * The WhatsApp number to link, in E.164 (`+923001234567`). Required for `pairing_code`; anything else is `422
+   * INVALID_NUMBER`.
+   */
+  phone?: string | null;
+}
+
 export interface ContactUpsert {
   identity: { type: string; address: string };
   first_name?: string | null;
@@ -3428,9 +3569,21 @@ export interface SendBatchItem {
   template_id?: string;
   /** Values for the template's variables. Needs `template_id`. */
   variables?: Record<string, unknown>;
-  /** Options only some channels understand; ignored with a warning elsewhere. */
-  channel_options?: Record<string, unknown>;
-  /** Replace characters that force UCS-2 encoding with plain look-alikes where it saves segments. */
+  /**
+   * Options per channel type, keyed by the type. The options of the type of the channel that sends apply; another
+   * type's are checked and ignored with a `CHANNEL_OPTIONS_IGNORED` warning (path `channel_options.{type}`). An
+   * unknown type, an unknown option of the sending type, or a value of the wrong type is `422 VALIDATION_FAILED`
+   * on its path (`channel_options.{type}.{option}`).
+   */
+  channel_options?: {
+    android_sim?: { smart_replace?: boolean };
+    whatsapp_web?: { link_preview?: boolean; quoted_message_id?: string | null; mentions?: string[] };
+    telegram_bot?: Record<string, unknown>;
+  };
+  /**
+   * Replace characters that force UCS-2 encoding with plain look-alikes where it saves segments. SMS only; on
+   * another channel it is ignored with a `CHANNEL_OPTIONS_IGNORED` warning.
+   */
   smart_replace?: boolean;
   /** Required when `lane` is `bulk` (`CATEGORY_REQUIRED`). */
   category?: MessageCategory;
@@ -3690,7 +3843,7 @@ export interface ChannelsVerifyParams {
 export interface ChannelsListParams {
   /** One of: `pending_verification`, `active`, `paused`, `disconnected`. */
   status?: string;
-  /** One of: `android_sim`, `whatsapp_evolution`, `telegram_bot`. */
+  /** One of: `android_sim`, `whatsapp_web`, `telegram_bot`. */
   type?: string;
   device_id?: string;
   /** One of: `good`, `fair`, `poor`, `critical`. */
@@ -3703,11 +3856,22 @@ export interface ChannelsListParams {
 
 /** The parameters of `channels.create()`. */
 export interface ChannelsCreateParams {
-  /** The channel type asked for; echoed in `details.type` of the error. */
-  type?: string;
-  name?: string;
-  /** The type's connect input (v2). */
-  connect?: Record<string, unknown>;
+  /**
+   * The channel type; `whatsapp_web`. Echoed in `details.type` of `CHANNEL_TYPE_NOT_ALLOWED`. Missing, it answers
+   * `CHANNEL_TYPE_NOT_ALLOWED` without `details.type`.
+   */
+  type: string;
+  /** Channel label; default empty (the portal shows the number). */
+  name?: string | null;
+  connect: ChannelConnectInput;
+}
+
+/** The parameters of `channels.continueConnect()`. */
+export interface ChannelsContinueConnectParams {
+  action: ChannelConnectAction;
+  method?: ChannelLinkMethod | null;
+  /** The WhatsApp number in E.164 for a pairing code; replaces the one entered before. */
+  phone?: string | null;
 }
 
 /** The parameters of `channels.updateRatePolicy()`. */
@@ -3928,9 +4092,21 @@ export interface ConversationsReplyParams {
   template_id?: string;
   /** Values for the template's variables. Needs `template_id`. */
   variables?: Record<string, unknown>;
-  /** Options only some channels understand; ignored with a warning elsewhere. */
-  channel_options?: Record<string, unknown>;
-  /** Replace characters that force UCS-2 encoding with plain look-alikes where it saves segments. */
+  /**
+   * Options per channel type, keyed by the type. The options of the type of the channel that sends apply; another
+   * type's are checked and ignored with a `CHANNEL_OPTIONS_IGNORED` warning (path `channel_options.{type}`). An
+   * unknown type, an unknown option of the sending type, or a value of the wrong type is `422 VALIDATION_FAILED`
+   * on its path (`channel_options.{type}.{option}`).
+   */
+  channel_options?: {
+    android_sim?: { smart_replace?: boolean };
+    whatsapp_web?: { link_preview?: boolean; quoted_message_id?: string | null; mentions?: string[] };
+    telegram_bot?: Record<string, unknown>;
+  };
+  /**
+   * Replace characters that force UCS-2 encoding with plain look-alikes where it saves segments. SMS only; on
+   * another channel it is ignored with a `CHANNEL_OPTIONS_IGNORED` warning.
+   */
   smart_replace?: boolean;
   /** Required when `lane` is `bulk` (`CATEGORY_REQUIRED`). */
   category?: MessageCategory;
@@ -4106,7 +4282,7 @@ export interface LinesListParams {
   archived?: boolean;
   /** Only lines that have this channel in their sender list. */
   channel_id?: string;
-  /** Only lines with a sender of this type. One of: `android_sim`, `whatsapp_evolution`, `telegram_bot`. */
+  /** Only lines with a sender of this type. One of: `android_sim`, `whatsapp_web`, `telegram_bot`. */
   channel_type?: string;
   /** Page size, 1 to 200. */
   limit?: number;
@@ -4219,7 +4395,7 @@ export interface MessagesListParams {
    * One value or a comma list. Values: `scheduled`, `quiet_hours`, `frequency_cap`, `channel_paused`,
    * `device_offline`, `device_paused`, `campaign_paused`, `media_processing`, `content_cap`, `recipient_cap`,
    * `new_recipient_cap`, `link_restricted`, `platform_hold`, `user_limit`, `bulk_hours`, `carrier_cooldown`,
-   * `device_hot`, `no_sender_available`, `sponsor_quota_exhausted`, `unpaid`.
+   * `device_hot`, `no_sender_available`, `sponsor_quota_exhausted`, `unpaid`, `link_day`, `channel_restricted`.
    */
   hold_reason?: string[] | string;
   /** Recipient address; phone numbers in any accepted format are normalised. */
@@ -4275,9 +4451,21 @@ export interface MessagesSendParams {
   template_id?: string;
   /** Values for the template's variables. Needs `template_id`. */
   variables?: Record<string, unknown>;
-  /** Options only some channels understand; ignored with a warning elsewhere. */
-  channel_options?: Record<string, unknown>;
-  /** Replace characters that force UCS-2 encoding with plain look-alikes where it saves segments. */
+  /**
+   * Options per channel type, keyed by the type. The options of the type of the channel that sends apply; another
+   * type's are checked and ignored with a `CHANNEL_OPTIONS_IGNORED` warning (path `channel_options.{type}`). An
+   * unknown type, an unknown option of the sending type, or a value of the wrong type is `422 VALIDATION_FAILED`
+   * on its path (`channel_options.{type}.{option}`).
+   */
+  channel_options?: {
+    android_sim?: { smart_replace?: boolean };
+    whatsapp_web?: { link_preview?: boolean; quoted_message_id?: string | null; mentions?: string[] };
+    telegram_bot?: Record<string, unknown>;
+  };
+  /**
+   * Replace characters that force UCS-2 encoding with plain look-alikes where it saves segments. SMS only; on
+   * another channel it is ignored with a `CHANNEL_OPTIONS_IGNORED` warning.
+   */
   smart_replace?: boolean;
   /** Required when `lane` is `bulk` (`CATEGORY_REQUIRED`). */
   category?: MessageCategory;
@@ -4371,7 +4559,7 @@ export interface StatsDailyParams {
   to: string;
   channel_id?: string;
   line_id?: string;
-  /** One of: `android_sim`, `whatsapp_evolution`, `telegram_bot`. */
+  /** One of: `android_sim`, `whatsapp_web`, `telegram_bot`. */
   channel_type?: string;
   /** Default `none`. One of: `none`, `channel`, `line`, `channel_type`. */
   group_by?: string;

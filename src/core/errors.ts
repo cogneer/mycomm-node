@@ -196,7 +196,10 @@ export class ValidationError extends UnprocessableError {
   }
 }
 
-/** 429: too many requests. The SDK has already waited and retried before throwing this. */
+/**
+ * 429: too many requests. The SDK has already waited and retried before throwing this, except for `CHANNEL_LINK_BLOCKED`,
+ * which it throws at once: linking a number stays blocked for `retryAfter()` seconds.
+ */
 export class RateLimitError extends APIError {
   /** Seconds the API asks to wait, from `Retry-After`. */
   retryAfter(): number | undefined {
@@ -205,7 +208,12 @@ export class RateLimitError extends APIError {
 }
 
 /** 5xx: the API failed. Reads and keyed writes were retried before this was thrown. */
-export class ServerError extends APIError {}
+export class ServerError extends APIError {
+  /** Seconds the API asks to wait, from `Retry-After` (a `503`, such as `CHANNEL_SERVER_UNAVAILABLE`, may carry it). */
+  retryAfter(): number | undefined {
+    return retryAfterSeconds(this.response?.header('Retry-After'));
+  }
+}
 
 /**
  * No answer arrived: DNS, TLS, timeout or a dropped connection. The request may or may not have reached the API; repeating

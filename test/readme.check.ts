@@ -126,6 +126,17 @@ export async function readme(
   await partner.partner.usage.get({ from: '2026-10-01', to: '2026-10-31' });
   await mycomm.lines.links.create(line.id, { purpose: 'add_channel' });
 
+  const channel = await mycomm.channels.create({
+    type: 'whatsapp_web',
+    connect: { method: 'pairing_code', phone: '+923001234567' },
+  });
+  const linking = await mycomm.channels.connectState(channel.id);
+  linking.pairing_code satisfies string | null;
+  linking.state satisfies string;
+  await mycomm.channels.continueConnect(channel.id, { action: 'retry' });
+  await mycomm.channels.continueConnect(channel.id, { action: 'switch_method', method: 'qr_scan' });
+  await mycomm.channels.continueConnect(channel.id, { action: 'relink' });
+
   const media = await mycomm.media.upload({ file: await fileFromPath('/path/to/photo.jpg') });
   await mycomm.media.upload({ file: toFile(bytes, 'photo.jpg', 'image/jpeg') });
   await mycomm.messages.send({ to: '+923001234567', media_ids: [media.id] });

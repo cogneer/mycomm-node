@@ -6,8 +6,10 @@ import type { Page } from '../../core/page.js';
 import type { RequestOptions } from '../../core/request-options.js';
 import type {
   Channel,
+  ChannelConnectState,
   ChannelTypeInfo,
   ChannelsConnectSimParams,
+  ChannelsContinueConnectParams,
   ChannelsCreateParams,
   ChannelsListParams,
   ChannelsUpdateParams,
@@ -148,28 +150,48 @@ export class ChannelsResource {
   }
 
   /**
-   * Connect a push channel.
+   * Connect a WhatsApp number.
    *
-   * Requires `channels:write`. Connecting a push channel (WhatsApp, Telegram) is part of v2; v1 answers `422
-   * CHANNEL_TYPE_NOT_ALLOWED` to every request, whatever its body. A SIM is connected with `POST
-   * /v1/devices/{id}/sims/{sim_id}/connect`.
+   * Requires `channels:write`. Creates a number of a type that is linked to the phone that holds it (today
+   * `whatsapp_web`, a WhatsApp linked device; a preview type that support turns on per user) and starts linking
+   * it. The answer is the channel in `pending_verification` with an empty `address`; poll `GET
+   * /v1/channels/{id}/connect` for the pairing code or QR and for the outcome.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `createChannel`
    */
-  create(params?: ChannelsCreateParams, options?: RequestOptions): Promise<Record<string, unknown>> {
-    return this._connection.call('channels.create', [], params, options) as Promise<Record<string, unknown>>;
+  create(params: ChannelsCreateParams, options?: RequestOptions): Promise<WithMeta<Channel>> {
+    return this._connection.call('channels.create', [], params, options) as Promise<WithMeta<Channel>>;
   }
 
   /**
-   * Get the connect state of a push channel.
+   * Get the connect state of a channel.
    *
-   * Requires `channels:read`. In v2 this returns the current QR code or pairing code of a connecting WhatsApp
-   * channel. A SIM channel has none, so v1 answers `404 NOT_FOUND` for every channel.
+   * Requires `channels:read`. The poll of a number being linked: the pairing code or the QR while the phone must
+   * act, why linking stopped (`refusal`), or, once linked, the number's own state. Poll every few seconds until
+   * `state` is no longer `connecting` or `awaiting_link`; the server is asked at most once every 3 seconds per
+   * channel and polls in between get the last answer.
    *
    * @see https://mycomm.cogneer.tech/docs/api/public `getChannelConnectState`
    */
-  connectState(id: string, options?: RequestOptions): Promise<Record<string, unknown>> {
-    return this._connection.call('channels.connectState', [id], undefined, options) as Promise<Record<string, unknown>>;
+  connectState(id: string, options?: RequestOptions): Promise<WithMeta<ChannelConnectState>> {
+    return this._connection.call('channels.connectState', [id], undefined, options) as Promise<WithMeta<ChannelConnectState>>;
+  }
+
+  /**
+   * Try linking a number again.
+   *
+   * Requires `channels:write`. Starts linking again, on the same channel: - `retry`: a `pending_verification`
+   * channel, after a failed or expired attempt or when the code or QR ran out; with `method` (default: the one it
+   * had) and optionally a corrected `phone` for a pairing code (default: the one entered before).
+   *
+   * @see https://mycomm.cogneer.tech/docs/api/public `continueChannelConnect`
+   */
+  continueConnect(
+    id: string,
+    params: ChannelsContinueConnectParams,
+    options?: RequestOptions,
+  ): Promise<WithMeta<ChannelConnectState>> {
+    return this._connection.call('channels.continueConnect', [id], params, options) as Promise<WithMeta<ChannelConnectState>>;
   }
 
   /**

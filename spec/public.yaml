@@ -2,7 +2,7 @@
 openapi: 3.1.0
 info:
   title: 'MyComm API'
-  version: 2.0.0
+  version: 2.1.0
   contact:
     name: 'MyComm developer support'
     url: 'https://mycomm.cogneer.tech/docs'
@@ -130,6 +130,10 @@ components:
       description: 'HTTP-date (RFC 8594) after which a deprecated endpoint stops working.'
       schema:
         type: string
+    CacheControlNoStore:
+      description: '`no-store, private`: the answer holds a pairing code or QR and must not be kept by a cache or proxy.'
+      schema:
+        type: string
   parameters:
     limit:
       name: limit
@@ -242,6 +246,12 @@ components:
         - IDENTITY_TYPE_UNAVAILABLE
         - CHANNEL_TYPE_NOT_ALLOWED
         - CHANNEL_TOKEN_INVALID
+        - CHANNEL_LIMIT_REACHED
+        - CHANNEL_NUMBER_IN_USE
+        - CHANNEL_LINK_BUSY
+        - CHANNEL_LINK_BLOCKED
+        - CHANNEL_NO_CAPACITY
+        - CHANNEL_SERVER_UNAVAILABLE
         - MEDIA_TYPE_UNSUPPORTED
         - MEDIA_TOO_LARGE
         - MEDIA_COUNT_EXCEEDED
@@ -1702,6 +1712,108 @@ components:
                   type: string
                   enum:
                     - IDEMPOTENCY_KEY_REUSED
+    ChannelConnectInput:
+      type: object
+      required:
+        - method
+      description: 'How the phone links the number.'
+      properties:
+        method:
+          type: string
+          enum:
+            - pairing_code
+            - qr_scan
+          description: '`pairing_code`: a code to type on the phone (needs `phone`); `qr_scan`: a QR to scan with it.'
+        phone:
+          type:
+            - string
+            - 'null'
+          maxLength: 20
+          description: 'The WhatsApp number to link, in E.164 (`+923001234567`). Required for `pairing_code`; anything else is `422 INVALID_NUMBER`.'
+    ChannelConnectState:
+      type: object
+      description: "Where linking a number stands. `state` is a link state while linking runs or after it stopped:\n`connecting` (the server is getting ready, or could not be asked; see `refusal`), `awaiting_link` (the phone\nmust type `pairing_code` or scan `qr_png_base64`), `passkey_required`, `failed`, `expired` (try again with\n`POST /v1/channels/{id}/connect`). Otherwise it is the number's own state: `warming_up`, `connected`,\n`limited`, `paused`, `server_problem`, `needs_relink` (link it again), `banned`, `disconnected`. Every key is\nalways present; ignore unknown `state` and `refusal.code` values.\n"
+      required:
+        - state
+        - method
+        - pairing_code
+        - qr_png_base64
+        - expires_at
+        - refusal
+      properties:
+        state:
+          type: string
+          enum:
+            - connecting
+            - awaiting_link
+            - passkey_required
+            - failed
+            - expired
+            - connected
+            - warming_up
+            - limited
+            - paused
+            - server_problem
+            - needs_relink
+            - banned
+            - disconnected
+        method:
+          type:
+            - string
+            - 'null'
+          enum:
+            - pairing_code
+            - qr_scan
+            - null
+          description: 'The method of the running or last attempt; null once the number is linked.'
+        pairing_code:
+          type:
+            - string
+            - 'null'
+          description: 'The code to type on the phone (WhatsApp, Linked devices, Link with phone number).'
+        qr_png_base64:
+          type:
+            - string
+            - 'null'
+          description: 'The QR to scan, a PNG in base64. It changes every 20 seconds or so; poll for the new one.'
+        expires_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: 'When the QR runs out.'
+        refusal:
+          description: 'Why linking does not go on, or null.'
+          oneOf:
+            -
+              type: 'null'
+            -
+              type: object
+              required:
+                - code
+                - message
+              properties:
+                code:
+                  type: string
+                  enum:
+                    - wrong_number
+                    - number_in_use
+                    - expired
+                    - passkey_required
+                    - failed
+                    - phone_changed
+                    - server_unavailable
+                  description: "`wrong_number`: the phone linked another number than the one entered. `number_in_use`: the linked\nnumber is already connected on MyComm. `expired`: the code or QR ran out. `passkey_required`: the\nnumber needs a passkey, which this server cannot do. `failed`: linking did not finish.\n`phone_changed`: replaced by an attempt for another number. `server_unavailable`: the server could\nnot be asked; the rest is the last known state.\n"
+                message:
+                  type: string
+                retry_after_seconds:
+                  type: integer
+                  minimum: 1
+                  description: 'When to poll again (`server_unavailable`).'
+                channel_id:
+                  type: string
+                  format: uuid
+                  description: "`number_in_use` only: the linked number is your own number that needs to be linked again; link it\nagain with `POST /v1/channels/{channel_id}/connect` `{action: relink}`. Absent for any other holder,\nand for a channel the key may not see.\n"
     ChannelConnectErrorGeneric:
       description: 'A connect or verify refusal that carries no details of its own.'
       allOf:
@@ -1878,7 +1990,7 @@ components:
                       type: integer
                       minimum: 1
     ChannelConnectErrorTypeNotAllowed:
-      description: "`422 CHANNEL_TYPE_NOT_ALLOWED`: the channel type is not enabled (v1: push channels), or `android_sim` is not in the user's `settings.channels.allowed_types`."
+      description: '`422 CHANNEL_TYPE_NOT_ALLOWED`: the channel type is not enabled for the user (`android_sim` not in its `settings.channels.allowed_types`), or, on `POST /v1/channels`, the type is missing, unknown or not linked this way. `details.type` echoes the type asked for; it is absent when none was given.'
       allOf:
         -
           $ref: '#/components/schemas/Error'
@@ -2106,7 +2218,7 @@ components:
           type: string
           enum:
             - android_sim
-            - whatsapp_evolution
+            - whatsapp_web
             - telegram_bot
         label:
           type: string
@@ -2265,7 +2377,7 @@ components:
           type: string
           enum:
             - android_sim
-            - whatsapp_evolution
+            - whatsapp_web
             - telegram_bot
         name:
           type: string
@@ -2302,6 +2414,7 @@ components:
             - 'auto:session_lost'
             - 'auto:provider_banned'
             - 'auto:credentials_invalid'
+            - 'auto:provider_unconfirmed'
             - null
         paused_at:
           description: 'When the current pause began.'
@@ -4351,7 +4464,7 @@ components:
           type: string
           enum:
             - android_sim
-            - whatsapp_evolution
+            - whatsapp_web
             - telegram_bot
         address:
           type: string
@@ -4544,6 +4657,7 @@ components:
           type: object
         channels:
           type: object
+          description: "`auto_connect_sims` (boolean) and `allowed_types` (`null` or a list of channel types). Keys MyComm staff\nset for the user (channel access granted on request, number limits) are not shown. Sending one of them\nback unchanged is accepted; changing it answers `422 VALIDATION_FAILED` (`read_only`).\n"
         whatsapp:
           type: object
         retention:
@@ -4848,11 +4962,38 @@ components:
           additionalProperties: true
         channel_options:
           type: object
-          description: 'Options only some channels understand; ignored with a warning elsewhere.'
+          description: "Options per channel type, keyed by the type. The options of the type of the channel that sends apply; another\ntype's are checked and ignored with a `CHANNEL_OPTIONS_IGNORED` warning (path `channel_options.{type}`). An\nunknown type, an unknown option of the sending type, or a value of the wrong type is `422 VALIDATION_FAILED`\non its path (`channel_options.{type}.{option}`).\n"
+          properties:
+            android_sim:
+              type: object
+              properties:
+                smart_replace:
+                  type: boolean
+                  description: 'As the top-level `smart_replace`, which wins when both are given. Default `false`.'
+            whatsapp_web:
+              type: object
+              properties:
+                link_preview:
+                  type: boolean
+                  description: 'Text messages only. `false` sends a link without its preview card. Left out, WhatsApp shows the preview.'
+                quoted_message_id:
+                  type:
+                    - string
+                    - 'null'
+                  format: uuid
+                  description: "Send the message as a reply quoting this message: the `id` of a message of the same conversation\nsent from this number to the recipient (once `sent`) or received by it from the recipient. Any other\nid (another conversation or number, not sent yet, unknown) is `422 VALIDATION_FAILED` on\n`channel_options.whatsapp_web.quoted_message_id`. Should the line send the message from another\nnumber later, it goes out without the quote.\n"
+                mentions:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Mentions apply in group chats only, which MyComm does not send to. Accepted and ignored with a `CHANNEL_OPTIONS_IGNORED` warning (path `channel_options.whatsapp_web.mentions`).'
+            telegram_bot:
+              type: object
+              description: 'Reserved for Telegram (not available yet); checked and ignored with a warning.'
           additionalProperties: true
         smart_replace:
           type: boolean
-          description: 'Replace characters that force UCS-2 encoding with plain look-alikes where it saves segments.'
+          description: 'Replace characters that force UCS-2 encoding with plain look-alikes where it saves segments. SMS only; on another channel it is ignored with a `CHANNEL_OPTIONS_IGNORED` warning.'
     SendMessageOptionFields:
       type: object
       description: 'Priority, timing, tracking and your own ids.'
@@ -5120,7 +5261,7 @@ components:
         - received
     HoldReason:
       type: string
-      description: "Why a queued message is waiting: the schedule (`scheduled`, `quiet_hours`, `bulk_hours`), a limit (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `user_limit`, `carrier_cooldown`), the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing approval (`link_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored allowance used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform hold (`platform_hold`). A new value may appear."
+      description: "Why a queued message is waiting: the schedule (`scheduled`, `quiet_hours`, `bulk_hours`), a limit (`frequency_cap`, `content_cap`, `recipient_cap`, `new_recipient_cap`, `user_limit`, `carrier_cooldown`), the phone (`device_offline`, `device_paused`, `device_hot`), the channel or campaign being paused (`channel_paused`, `campaign_paused`), a file still being processed (`media_processing`), a link needing approval (`link_restricted`), a WhatsApp number linked less than 24 hours ago (`link_day`) or limited by WhatsApp (`channel_restricted`), the line's sender list (`no_sender_available`), a partner's sponsored allowance used up for the cycle (`sponsor_quota_exhausted`), the number being unpaid (`unpaid`) or a platform hold (`platform_hold`). A new value may appear."
       enum:
         - scheduled
         - quiet_hours
@@ -5142,6 +5283,8 @@ components:
         - no_sender_available
         - sponsor_quota_exhausted
         - unpaid
+        - link_day
+        - channel_restricted
     MessageEventName:
       type: string
       description: 'What happened to a message, as recorded in its history. A new value may appear.'
@@ -5783,7 +5926,7 @@ components:
             - 'null'
           enum:
             - android_sim
-            - whatsapp_evolution
+            - whatsapp_web
             - telegram_bot
             - null
         sent_messages:
@@ -6809,7 +6952,7 @@ components:
         - quota_exhausted
         - number_disputed
         - quarantined
-      description: "`device_offline`: every sender's phone is offline. `sim_missing`: a sender's SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `session_logged_out` and `quarantined` are reserved."
+      description: "`device_offline`: every sender's phone is offline. `sim_missing`: a sender's SIM left its phone. `no_sender`: the line has no sender, or its messages wait for one. `quota_exhausted`: the sponsored allowance is used up. `number_disputed`: someone else verified a sender's number. `session_logged_out`: a sender's WhatsApp session was logged out (the phone unlinked it); link that number again (`POST /v1/channels/{id}/connect` `{action: relink}`). `quarantined`: a sender is paused by the carrier safety hold."
     WebhookLineDetached:
       allOf:
         -
@@ -7389,6 +7532,7 @@ components:
             - 'auto:session_lost'
             - 'auto:provider_banned'
             - 'auto:credentials_invalid'
+            - 'auto:provider_unconfirmed'
         dominant_code:
           type:
             - string
@@ -10688,6 +10832,254 @@ components:
             code:
               type: string
               const: CHANNEL_TOKEN_INVALID
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelLimitReached:
+      type: object
+      description: 'You have connected the most numbers of this type you may (:limit). Disconnect one, or ask support to raise the limit.'
+      x-http-status: 422
+      examples:
+        -
+          error:
+            code: CHANNEL_LIMIT_REACHED
+            message: 'You have connected the most numbers of this type you may (1). Disconnect one, or ask support to raise the limit.'
+            details:
+              limit: 1
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-limit-reached'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_LIMIT_REACHED
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                limit:
+                  type: integer
+              required:
+                - limit
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelNumberInUse:
+      type: object
+      description: 'This number is already connected to one of your channels. If it was logged out, link that channel again (details.channel_id).'
+      x-http-status: 409
+      examples:
+        -
+          error:
+            code: CHANNEL_NUMBER_IN_USE
+            message: 'This number is already connected to one of your channels. If it was logged out, link that channel again (details.channel_id).'
+            details:
+              channel_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-number-in-use'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_NUMBER_IN_USE
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                channel_id:
+                  type: string
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelLinkBusy:
+      type: object
+      description: 'Another connect step for this number is still running. Try again in a few seconds.'
+      x-http-status: 409
+      examples:
+        -
+          error:
+            code: CHANNEL_LINK_BUSY
+            message: 'Another connect step for this number is still running. Try again in a few seconds.'
+            details: {}
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-link-busy'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_LINK_BUSY
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelLinkBlocked:
+      type: object
+      description: 'Linking is paused for now. Try again in :retry_after_seconds seconds.'
+      x-http-status: 429
+      examples:
+        -
+          error:
+            code: CHANNEL_LINK_BLOCKED
+            message: 'Linking is paused for now. Try again in 30 seconds.'
+            details:
+              kind: example
+              retry_after_seconds: 30
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-link-blocked'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_LINK_BLOCKED
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+              properties:
+                kind:
+                  type: string
+                retry_after_seconds:
+                  type: integer
+              required:
+                - kind
+                - retry_after_seconds
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelNoCapacity:
+      type: object
+      description: 'There is no room for a new number right now. Try again later.'
+      x-http-status: 503
+      examples:
+        -
+          error:
+            code: CHANNEL_NO_CAPACITY
+            message: 'There is no room for a new number right now. Try again later.'
+            details: {}
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-no-capacity'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_NO_CAPACITY
+            message:
+              type: string
+            details:
+              type: object
+              description: 'Specific to this code.'
+            request_id:
+              type: string
+              format: uuid
+            doc_url:
+              type: string
+              format: uri
+    ErrChannelServerUnavailable:
+      type: object
+      description: 'The server that links this number cannot be reached right now. Retry after the time in the Retry-After header.'
+      x-http-status: 503
+      examples:
+        -
+          error:
+            code: CHANNEL_SERVER_UNAVAILABLE
+            message: 'The server that links this number cannot be reached right now. Retry after the time in the Retry-After header.'
+            details: {}
+            request_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e11
+            doc_url: 'https://api.mycomm.example/docs/errors#channel-server-unavailable'
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - details
+            - request_id
+            - doc_url
+          properties:
+            code:
+              type: string
+              const: CHANNEL_SERVER_UNAVAILABLE
             message:
               type: string
             details:
@@ -14547,39 +14939,76 @@ paths:
       operationId: createChannel
       tags:
         - Channels
-      summary: 'Connect a push channel'
-      description: "Requires `channels:write`. Connecting a push channel (WhatsApp, Telegram) is part of v2; v1\nanswers `422 CHANNEL_TYPE_NOT_ALLOWED` to every request, whatever its body. A SIM is connected with\n`POST /v1/devices/{id}/sims/{sim_id}/connect`.\n"
+      summary: 'Connect a WhatsApp number'
+      description: "Requires `channels:write`. Creates a number of a type that is linked to the phone that holds it\n(today `whatsapp_web`, a WhatsApp linked device; a preview type that support turns on per user) and starts\nlinking it. The answer is the channel in `pending_verification` with an empty `address`; poll\n`GET /v1/channels/{id}/connect` for the pairing code or QR and for the outcome. Once the phone links, the\nchannel becomes `active` with the linked number as its `address`, and `channel.connected` is sent.\n\n`connect.method` `pairing_code` (offered first: it works with one phone) needs `connect.phone`, the WhatsApp\nnumber in E.164 (`+923001234567`); WhatsApp shows a code to type on that phone. `qr_scan` shows a QR to scan\nwith it. A pending connect of the user for the same phone (for a QR, one with no phone) is returned instead\nof a second channel. A SIM is connected with `POST /v1/devices/{id}/sims/{sim_id}/connect`; any other\ntype, or a type not turned on for the user, is `422 CHANNEL_TYPE_NOT_ALLOWED` `{type}`. A missing `type` (or\none that is not a string) is `422 CHANNEL_TYPE_NOT_ALLOWED` too, with no `details.type`, never\n`VALIDATION_FAILED`.\n\nRefusals: `422 CHANNEL_LIMIT_REACHED` `{limit}` at the user's number limit; `409 CHANNEL_NUMBER_IN_USE`\nwhen the number is live on another of the user's channels (`details.channel_id` when that channel was logged\nout: link it again there with `POST /v1/channels/{id}/connect`); `429 CHANNEL_LINK_BLOCKED`\n`{kind, retry_after_seconds}` after three failed links in 24 hours (`attempts`) or five link starts in 15\nminutes (`rate`), with `Retry-After`; `409 CHANNEL_LINK_BUSY` while another connect step of the user is\nrunning (retry in a few seconds); `503 CHANNEL_NO_CAPACITY` when no server has room and `503\nCHANNEL_SERVER_UNAVAILABLE` (with `Retry-After`) when the server cannot be reached. A refused or failed\ncreate leaves no channel behind. A number another user holds is only refused once the phone has linked it:\nthe poll then answers `failed` with `refusal.code` `number_in_use`.\n"
+      x-error-codes:
+        - VALIDATION_FAILED
+        - CHANNEL_TYPE_NOT_ALLOWED
+        - INVALID_NUMBER
+        - CHANNEL_LIMIT_REACHED
+        - CHANNEL_NUMBER_IN_USE
+        - CHANNEL_LINK_BUSY
+        - CHANNEL_LINK_BLOCKED
+        - RATE_LIMITED
+        - CHANNEL_NO_CAPACITY
+        - CHANNEL_SERVER_UNAVAILABLE
       parameters:
         -
           $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - type
+                - connect
+              x-required-when:
+                -
+                  field: connect.phone
+                  when: 'connect.method is pairing_code'
+                  error: VALIDATION_FAILED
               properties:
                 type:
                   type: string
-                  description: 'The channel type asked for; echoed in `details.type` of the error.'
+                  description: 'The channel type; `whatsapp_web`. Echoed in `details.type` of `CHANNEL_TYPE_NOT_ALLOWED`. Missing, it answers `CHANNEL_TYPE_NOT_ALLOWED` without `details.type`.'
+                  examples:
+                    - whatsapp_web
                 name:
-                  type: string
+                  type:
+                    - string
+                    - 'null'
+                  maxLength: 100
+                  description: 'Channel label; default empty (the portal shows the number).'
                 connect:
-                  type: object
-                  description: "The type's connect input (v2)."
+                  $ref: '#/components/schemas/ChannelConnectInput'
       responses:
+        202:
+          description: 'The channel, in `pending_verification`, with linking started.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+            Idempotent-Replayed:
+              $ref: '#/components/headers/Idempotent-Replayed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
         400:
           $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/Forbidden'
-        413:
-          $ref: '#/components/responses/PayloadTooLarge'
-        415:
-          $ref: '#/components/responses/UnsupportedMediaType'
-        422:
-          description: '422 CHANNEL_TYPE_NOT_ALLOWED, with `details.type` when the request named a type.'
+        409:
+          description: '409: one of `CHANNEL_NUMBER_IN_USE`, `CHANNEL_LINK_BUSY`. More codes may be added within v1; treat an unknown one by its status.'
           headers:
             MyComm-Request-Id:
               $ref: '#/components/headers/MyComm-Request-Id'
@@ -14592,13 +15021,90 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChannelConnectErrorTypeNotAllowed'
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ErrChannelNumberInUse'
+                  -
+                    $ref: '#/components/schemas/ErrChannelLinkBusy'
+                  -
+                    $ref: '#/components/schemas/Error'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          description: '422: one of `VALIDATION_FAILED`, `CHANNEL_TYPE_NOT_ALLOWED`, `INVALID_NUMBER`, `CHANNEL_LIMIT_REACHED`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ValidationError'
+                  -
+                    $ref: '#/components/schemas/ErrChannelTypeNotAllowed'
+                  -
+                    $ref: '#/components/schemas/ErrInvalidNumber'
+                  -
+                    $ref: '#/components/schemas/ErrChannelLimitReached'
+                  -
+                    $ref: '#/components/schemas/Error'
         429:
-          $ref: '#/components/responses/RateLimited'
+          description: '429: one of `CHANNEL_LINK_BLOCKED`, `RATE_LIMITED`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ErrChannelLinkBlocked'
+                  -
+                    $ref: '#/components/schemas/ErrRateLimited'
+                  -
+                    $ref: '#/components/schemas/Error'
         500:
           $ref: '#/components/responses/InternalError'
         503:
-          $ref: '#/components/responses/ServiceUnavailable'
+          description: '503: one of `CHANNEL_NO_CAPACITY`, `CHANNEL_SERVER_UNAVAILABLE`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ErrChannelNoCapacity'
+                  -
+                    $ref: '#/components/schemas/ErrChannelServerUnavailable'
+                  -
+                    $ref: '#/components/schemas/Error'
     get:
       operationId: listChannels
       tags:
@@ -14623,7 +15129,7 @@ paths:
             type: string
             enum:
               - android_sim
-              - whatsapp_evolution
+              - whatsapp_web
               - telegram_bot
         -
           name: device_id
@@ -14689,20 +15195,37 @@ paths:
           label: curl
           source: "curl -X GET \"$MYCOMM_URL/v1/channels\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
   '/channels/{id}/connect':
+    parameters:
+      -
+        name: id
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Uuid'
     get:
       operationId: getChannelConnectState
       tags:
         - Channels
-      summary: 'Get the connect state of a push channel'
-      description: "Requires `channels:read`. In v2 this returns the current QR code or pairing code of a connecting WhatsApp channel. A SIM channel has none, so v1 answers `404 NOT_FOUND` for every channel.\n"
-      parameters:
-        -
-          name: id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/Uuid'
+      summary: 'Get the connect state of a channel'
+      description: "Requires `channels:read`. The poll of a number being linked: the pairing code or the QR while the phone\nmust act, why linking stopped (`refusal`), or, once linked, the number's own state. Poll every few seconds\nuntil `state` is no longer `connecting` or `awaiting_link`; the server is asked at most once every 3 seconds\nper channel and polls in between get the last answer. It reads no query parameters and never starts or\nchanges a link. The answer is sent with `Cache-Control: no-store`: the code and QR are for the person\nlinking only. A SIM channel has no connect state (`404 NOT_FOUND`), nor has a channel outside the key's scope.\n"
       responses:
+        200:
+          description: 'Where linking the number stands.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControlNoStore'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelConnectState'
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -14722,6 +15245,195 @@ paths:
           lang: Shell
           label: curl
           source: "curl -X GET \"$MYCOMM_URL/v1/channels/<id>/connect\" \\\n  -H \"Authorization: Bearer $MYCOMM_API_KEY\""
+    post:
+      operationId: continueChannelConnect
+      tags:
+        - Channels
+      summary: 'Try linking a number again'
+      description: "Requires `channels:write`. Starts linking again, on the same channel:\n- `retry`: a `pending_verification` channel, after a failed or expired attempt or when the code or QR ran out;\n  with `method` (default: the one it had) and optionally a corrected `phone` for a pairing code (default: the\n  one entered before).\n- `switch_method`: the same with the other `method` (`method` is required, and the one the connect already\n  uses is `422 VALIDATION_FAILED` on `method`: send `retry` for that), so a QR replaces a code or the other way\n  round without entering the phone again.\n- `relink`: a number whose session was logged out (its connect state is `needs_relink`, the channel paused\n  `auto:session_lost`), on the number it had (`phone` is refused); by `pairing_code` unless `method` says\n  `qr_scan`. History, lines and conversations stay; once the phone links the same number the channel resumes.\n\nThe answer is the new attempt's connect state; keep polling `GET /v1/channels/{id}/connect`. The pairing code\nand QR are never kept for an `Idempotency-Key` replay: a replay answers the same state with `pairing_code` and\n`qr_png_base64` `null` (and starts nothing); poll for them. Any other state\nis `409 INVALID_STATE` `{status, allowed_from}`. A pairing code with no phone ever entered is\n`422 ADDRESS_REQUIRED`. A type switched off, or no longer granted to the user, is `422 CHANNEL_TYPE_NOT_ALLOWED`\n`{type}`. A key restricted to lines cannot call it (`403 ABILITY_MISSING`). The refusals of `POST /v1/channels` apply (`CHANNEL_LINK_BLOCKED`,\n`CHANNEL_LINK_BUSY`, `CHANNEL_NUMBER_IN_USE`, `CHANNEL_NO_CAPACITY`, `CHANNEL_SERVER_UNAVAILABLE`); a refused\nstep changes nothing. A SIM channel is `404 NOT_FOUND`; retry its verification with\n`POST /v1/channels/{id}/verify`.\n"
+      x-error-codes:
+        - VALIDATION_FAILED
+        - CHANNEL_TYPE_NOT_ALLOWED
+        - INVALID_NUMBER
+        - ADDRESS_REQUIRED
+        - INVALID_STATE
+        - CHANNEL_NUMBER_IN_USE
+        - CHANNEL_LINK_BUSY
+        - CHANNEL_LINK_BLOCKED
+        - RATE_LIMITED
+        - CHANNEL_NO_CAPACITY
+        - CHANNEL_SERVER_UNAVAILABLE
+      parameters:
+        -
+          $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+              x-required-when:
+                -
+                  field: method
+                  when: 'action is switch_method'
+                  error: VALIDATION_FAILED
+                  note: 'It must differ from the method the connect already uses.'
+                -
+                  field: phone
+                  when: 'action is relink'
+                  rule: absent
+                  error: VALIDATION_FAILED
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - retry
+                    - switch_method
+                    - relink
+                method:
+                  type:
+                    - string
+                    - 'null'
+                  enum:
+                    - pairing_code
+                    - qr_scan
+                    - null
+                phone:
+                  type:
+                    - string
+                    - 'null'
+                  maxLength: 20
+                  description: 'The WhatsApp number in E.164 for a pairing code; replaces the one entered before.'
+      responses:
+        202:
+          description: 'The connect state of the new attempt.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControlNoStore'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+            Idempotent-Replayed:
+              $ref: '#/components/headers/Idempotent-Replayed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelConnectState'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: '409: one of `INVALID_STATE`, `CHANNEL_NUMBER_IN_USE`, `CHANNEL_LINK_BUSY`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ErrInvalidState'
+                  -
+                    $ref: '#/components/schemas/ErrChannelNumberInUse'
+                  -
+                    $ref: '#/components/schemas/ErrChannelLinkBusy'
+                  -
+                    $ref: '#/components/schemas/Error'
+        413:
+          $ref: '#/components/responses/PayloadTooLarge'
+        415:
+          $ref: '#/components/responses/UnsupportedMediaType'
+        422:
+          description: '422: one of `VALIDATION_FAILED`, `CHANNEL_TYPE_NOT_ALLOWED`, `INVALID_NUMBER`, `ADDRESS_REQUIRED`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ValidationError'
+                  -
+                    $ref: '#/components/schemas/ErrChannelTypeNotAllowed'
+                  -
+                    $ref: '#/components/schemas/ErrInvalidNumber'
+                  -
+                    $ref: '#/components/schemas/ErrAddressRequired'
+                  -
+                    $ref: '#/components/schemas/Error'
+        429:
+          description: '429: one of `CHANNEL_LINK_BLOCKED`, `RATE_LIMITED`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ErrChannelLinkBlocked'
+                  -
+                    $ref: '#/components/schemas/ErrRateLimited'
+                  -
+                    $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/InternalError'
+        503:
+          description: '503: one of `CHANNEL_NO_CAPACITY`, `CHANNEL_SERVER_UNAVAILABLE`. More codes may be added within v1; treat an unknown one by its status.'
+          headers:
+            MyComm-Request-Id:
+              $ref: '#/components/headers/MyComm-Request-Id'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimit-Limit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimit-Remaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  -
+                    $ref: '#/components/schemas/ErrChannelNoCapacity'
+                  -
+                    $ref: '#/components/schemas/ErrChannelServerUnavailable'
+                  -
+                    $ref: '#/components/schemas/Error'
   '/channels/{id}/rate-policy':
     patch:
       operationId: updateChannelRatePolicy
@@ -18725,7 +19437,7 @@ paths:
             type: string
             enum:
               - android_sim
-              - whatsapp_evolution
+              - whatsapp_web
               - telegram_bot
         -
           $ref: '#/components/parameters/limit'
@@ -19391,8 +20103,8 @@ paths:
       operationId: uploadMedia
       tags:
         - Media
-      summary: 'Upload an image'
-      description: "Requires `media:write`. `multipart/form-data` with one part `file` of at most 10 MB. The type is\nsniffed from the content (`image/jpeg`, `image/png`, `image/gif`, `image/webp`), never taken from the header or\nthe file name. The upload is stored with `purpose: message`; reference its `id` from a message. An upload still\nunattached after 24 hours is deleted. Rate limit: 60 requests per minute per user.\n\nErrors: `413 PAYLOAD_TOO_LARGE` (over 10 MB), `422 MEDIA_TYPE_UNSUPPORTED`, `422 VALIDATION_FAILED` (no `file` part).\n"
+      summary: 'Upload a media file'
+      description: "Requires `media:write`. `multipart/form-data` with one part `file`. The type is sniffed from the content, never\ntaken from the header or the file name. Every user may upload images (`image/jpeg`, `image/png`, `image/gif`,\n`image/webp`) of at most 10 MB; the other types and sizes are those of the channel types the user may use\n(`GET /v1/channels/types`, `capabilities.media` of each available type), for example WhatsApp video, audio\nand documents up to their caps. Whether a channel can send the file is checked when a message references it.\nImages have their metadata stripped; other files are stored as uploaded. The upload is stored with\n`purpose: message`; reference its `id` from a message. An upload still unattached after 24 hours is deleted.\nRate limit: 60 requests per minute per user.\n\nA file the sniffer names otherwise than a channel type does (for WhatsApp: an m4a sniffed as `audio/x-m4a` is\n`audio/mp4`; a real docx, xlsx or pptx without macros that sniffs as a zip is its Office type) is stored under the\nchannel type's name.\n\nErrors: `413 PAYLOAD_TOO_LARGE` (over the cap of its type, `details.max_bytes`), `422 MEDIA_TYPE_UNSUPPORTED`\n(`details.accepted` lists the types this user may upload), `422 VALIDATION_FAILED` (no `file` part),\n`503 SERVICE_UNAVAILABLE` (the file could not be stored right now; retry after `Retry-After` seconds).\n"
       requestBody:
         required: true
         content:
@@ -20106,8 +20818,8 @@ paths:
                     warnings:
                       -
                         code: CHANNEL_OPTIONS_IGNORED
-                        message: 'channel_options were ignored: the SMS channel has no options.'
-                        path: channel_options
+                        message: "channel_options.whatsapp_web does not apply to this line's channel and was ignored."
+                        path: channel_options.whatsapp_web
         400:
           $ref: '#/components/responses/BadRequest'
         401:
@@ -21446,7 +22158,7 @@ paths:
             type: string
             enum:
               - android_sim
-              - whatsapp_evolution
+              - whatsapp_web
               - telegram_bot
         -
           name: group_by
@@ -23304,7 +24016,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.scheduled
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23387,7 +24099,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.unscheduled
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23470,7 +24182,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.started
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23550,7 +24262,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.paused
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23633,7 +24345,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.resumed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23716,7 +24428,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.completed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23796,7 +24508,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.cancelled
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23879,7 +24591,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.created
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -23939,7 +24651,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.updated
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24001,7 +24713,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.deleted
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24034,7 +24746,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: import.completed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24083,7 +24795,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: import.failed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24132,7 +24844,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: export.completed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24172,7 +24884,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.sender_changed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24210,7 +24922,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.failover
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24247,7 +24959,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.no_sender
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24279,7 +24991,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.connected
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24315,7 +25027,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.needs_attention
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24351,7 +25063,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.recovered
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24387,7 +25099,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.detached
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24420,7 +25132,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.quota_low
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24456,7 +25168,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.quota_exhausted
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24492,7 +25204,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.alarm
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24529,7 +25241,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.recovery_requested
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24565,7 +25277,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.handed_over
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24598,7 +25310,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: link.clicked
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24637,7 +25349,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.connected
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24789,7 +25501,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.verification_failed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24942,7 +25654,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.disconnected
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25095,7 +25807,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.paused
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25250,7 +25962,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.resumed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25402,7 +26114,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.health_changed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25440,7 +26152,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.volume_warning
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25475,7 +26187,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.qr_updated
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25508,7 +26220,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.paired
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25594,7 +26306,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.online
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25680,7 +26392,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.degraded
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25766,7 +26478,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.offline
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25852,7 +26564,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.revoked
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25938,7 +26650,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: user.suspended
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26005,7 +26717,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: user.reactivated
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26072,7 +26784,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: user.deletion_scheduled
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26139,7 +26851,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.queued
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26236,7 +26948,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.sent
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26333,7 +27045,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.delivered
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26430,7 +27142,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.read
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26527,7 +27239,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.failed
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26624,7 +27336,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.expired
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26721,7 +27433,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.cancelled
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26819,7 +27531,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.received
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26918,7 +27630,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.read
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26972,7 +27684,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.unread
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27026,7 +27738,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.archived
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27080,7 +27792,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.unarchived
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27134,7 +27846,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.deleted
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27170,7 +27882,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.opted_out
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27211,7 +27923,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.opted_in
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27252,7 +27964,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: ping
-                  api_version: 2.0.0
+                  api_version: 2.1.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
