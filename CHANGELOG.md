@@ -4,6 +4,39 @@ All notable changes to this package are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the package follows
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-11-21
+
+Built from the MyComm public API and partner API `2.1.0`: WhatsApp numbers, linked as a device of the phone, through
+the same channel endpoints as every other type. The same names and behaviour as `mycomm/mycomm-php` 2.2.0.
+
+### Added
+
+- Connecting a WhatsApp number: `channels.create({ type: 'whatsapp_web', connect: { method, phone } })` starts linking
+  by pairing code or QR (`ChannelLinkMethod`) and returns the `Channel`; `channels.connectState(id)` is the poll and
+  returns a `ChannelConnectState` (`state` as `ChannelLinkState`, `method`, `pairing_code`, `qr_png_base64`,
+  `expires_at`, `refusal` with a `ChannelLinkRefusalCode`).
+- `channels.continueConnect(id, { action, method?, phone? })` on `POST /v1/channels/{id}/connect`, with
+  `ChannelConnectAction` `retry`, `switch_method` and `relink`; it returns the new attempt's `ChannelConnectState`.
+- Error codes `CHANNEL_LIMIT_REACHED`, `CHANNEL_LINK_BLOCKED`, `CHANNEL_LINK_BUSY`, `CHANNEL_NO_CAPACITY`,
+  `CHANNEL_SERVER_UNAVAILABLE` and `CHANNEL_NUMBER_IN_USE` in `ErrorCode`. `ServerError.retryAfter()` reads
+  `Retry-After` of a `503`, as `RateLimitError.retryAfter()` does for a `429`.
+- Pause reason `auto:provider_unconfirmed`, hold reasons `link_day` and `channel_restricted`; the line attention
+  reason `session_logged_out` is in use now (link the number again with `continueConnect(id, { action: 'relink' })`).
+- `channel_options` is keyed by channel type: `android_sim.smart_replace`; `whatsapp_web.link_preview`,
+  `whatsapp_web.quoted_message_id` and `whatsapp_web.mentions`.
+- `media.upload()` takes the video, audio and document types of the channel types the user may use, up to their caps
+  (`details.max_bytes` on `413`, `details.accepted` on `422 MEDIA_TYPE_UNSUPPORTED`), and may answer
+  `503 SERVICE_UNAVAILABLE` with `Retry-After`.
+
+### Changed
+
+- The channel type `whatsapp_evolution` is now `whatsapp_web` (`ChannelType.WhatsappWeb`). It was a reserved value
+  that the API never offered.
+- `channels.create()` takes the required `type` and `connect` and returns a `Channel`; `channels.connectState()`
+  returns a `ChannelConnectState`. Both returned a plain object before, when the API refused every call.
+- `429 CHANNEL_LINK_BLOCKED` is thrown at once instead of being retried: the block lasts minutes or hours.
+- `UserSettings.channels` shows only `auto_connect_sims` and `allowed_types`.
+
 ## [2.1.0] - 2026-11-09
 
 Published 2.0.0 still used `account_id` and `default_line_id`; this release follows the API and renames them. Code that

@@ -19,8 +19,9 @@ own phone sends from: see [Partners](#partners).
 npm install @mycomm/node
 ```
 
-Release status: `2.0.0` (lines replace inboxes) is published on npm. `2.1.0` (`account_id` is `user_id` and
-`default_line_id` is `direct_line_id`) is not published yet; until it is, `npm install @mycomm/node` installs `2.0.0`.
+Release status: `2.1.0` (`account_id` is `user_id` and `default_line_id` is `direct_line_id`) is published on npm.
+`2.2.0` (WhatsApp numbers, matching API `2.1.0`) is not published yet; until it is, `npm install @mycomm/node` installs
+`2.1.0`.
 
 ## Quick start
 
