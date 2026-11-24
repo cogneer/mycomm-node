@@ -4,6 +4,18 @@ All notable changes to this package are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the package follows
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-11-24
+
+Built from the MyComm public API and partner API `2.2.0`: a hosted link says which step the connect card is on. Only
+adds. The same names and behaviour as `mycomm/mycomm-php` 2.3.0.
+
+### Added
+
+- `step: string | null` on `HostedLink` and `CreatedHostedLink`: `completed`, `revoked` or `expired` once the link has
+  that status, `open:<step>` with the step the card last showed while it is open (for example `open:pair`), and `null`
+  while nobody has opened the link. Read it from `links.get(id)` or `partner.links.get(id)`. More step ids may be added,
+  so it is a string, not a union.
+
 ## [2.2.0] - 2026-11-21
 
 Built from the MyComm public API and partner API `2.1.0`: WhatsApp numbers, linked as a device of the phone, through

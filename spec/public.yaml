@@ -2,7 +2,7 @@
 openapi: 3.1.0
 info:
   title: 'MyComm API'
-  version: 2.1.0
+  version: 2.2.0
   contact:
     name: 'MyComm developer support'
     url: 'https://mycomm.cogneer.tech/docs'
@@ -4215,6 +4215,7 @@ components:
         - purpose
         - line_id
         - status
+        - step
         - expires_at
         - return_url
         - allowed_origins
@@ -4245,6 +4246,11 @@ components:
             - completed
             - revoked
             - expired
+        step:
+          type:
+            - string
+            - 'null'
+          description: "Which step the hosted connect card is on, from the link alone. `completed`, `revoked` or `expired` once the\nlink has that status. While it is open, `open:<step>` with the step the card last drew (the same id the page\nposts in `mycomm.connect.step`): `welcome`, `app`, `type`, `pair`, `setup`, `sims`, `connect`, `verify`,\n`done`, `test`, `continued`, `account` (the person's own MyComm: signing in, their numbers, or a phone of\ntheir account approving), `number_held`, `cancelled` or `manage`. Null while the link is open\nand no card was opened yet. More step ids may be added; treat an unknown one as \"in progress\"."
         expires_at:
           $ref: '#/components/schemas/Timestamp'
         return_url:
@@ -24016,7 +24022,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.scheduled
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24099,7 +24105,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.unscheduled
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24182,7 +24188,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.started
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24262,7 +24268,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.paused
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24345,7 +24351,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.resumed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24428,7 +24434,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.completed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24508,7 +24514,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: campaign.cancelled
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24591,7 +24597,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.created
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24651,7 +24657,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.updated
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24713,7 +24719,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.deleted
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24746,7 +24752,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: import.completed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24795,7 +24801,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: import.failed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24844,7 +24850,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: export.completed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24884,7 +24890,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.sender_changed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24922,7 +24928,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.failover
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24959,7 +24965,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.no_sender
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -24991,7 +24997,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.connected
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25027,7 +25033,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.needs_attention
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25063,7 +25069,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.recovered
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25099,7 +25105,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.detached
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25132,7 +25138,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.quota_low
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25168,7 +25174,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.quota_exhausted
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25204,7 +25210,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.alarm
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25241,7 +25247,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: line.recovery_requested
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25277,7 +25283,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.handed_over
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25310,7 +25316,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: link.clicked
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25349,7 +25355,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.connected
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25501,7 +25507,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.verification_failed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25654,7 +25660,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.disconnected
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25807,7 +25813,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.paused
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -25962,7 +25968,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.resumed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26114,7 +26120,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.health_changed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26152,7 +26158,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.volume_warning
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26187,7 +26193,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: channel.qr_updated
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26220,7 +26226,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.paired
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26306,7 +26312,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.online
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26392,7 +26398,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.degraded
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26478,7 +26484,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.offline
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26564,7 +26570,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: device.revoked
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26650,7 +26656,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: user.suspended
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26717,7 +26723,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: user.reactivated
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26784,7 +26790,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: user.deletion_scheduled
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26851,7 +26857,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.queued
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -26948,7 +26954,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.sent
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27045,7 +27051,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.delivered
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27142,7 +27148,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.read
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27239,7 +27245,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.failed
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27336,7 +27342,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.expired
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27433,7 +27439,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.cancelled
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27531,7 +27537,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: message.received
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27630,7 +27636,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.read
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27684,7 +27690,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.unread
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27738,7 +27744,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.archived
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27792,7 +27798,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.unarchived
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27846,7 +27852,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: conversation.deleted
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27882,7 +27888,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.opted_out
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27923,7 +27929,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: contact.opted_in
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
@@ -27964,7 +27970,7 @@ webhooks:
                 value:
                   id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   type: ping
-                  api_version: 2.1.0
+                  api_version: 2.2.0
                   created_at: '2026-10-01T09:15:02Z'
                   user_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10
                   line_id: 0198f3a2-7c41-7e0b-9d52-6a1f3b8c4e10

@@ -2335,6 +2335,15 @@ export interface CreatedHostedLink {
   purpose: Open<HostedLinkPurpose>;
   line_id: string;
   status: Open<HostedLinkStatus>;
+  /**
+   * Which step the hosted connect card is on, from the link alone. `completed`, `revoked` or `expired` once the
+   * link has that status. While it is open, `open:<step>` with the step the card last drew (the same id the page
+   * posts in `mycomm.connect.step`): `welcome`, `app`, `type`, `pair`, `setup`, `sims`, `connect`, `verify`,
+   * `done`, `test`, `continued`, `account` (the person's own MyComm: signing in, their numbers, or a phone of
+   * their account approving), `number_held`, `cancelled` or `manage`. Null while the link is open and no card was
+   * opened yet. More step ids may be added; treat an unknown one…
+   */
+  step: string | null;
   expires_at: string;
   return_url: string | null;
   allowed_origins: string[] | null;
@@ -2356,6 +2365,15 @@ export interface HostedLink {
   purpose: Open<HostedLinkPurpose>;
   line_id: string;
   status: Open<HostedLinkStatus>;
+  /**
+   * Which step the hosted connect card is on, from the link alone. `completed`, `revoked` or `expired` once the
+   * link has that status. While it is open, `open:<step>` with the step the card last drew (the same id the page
+   * posts in `mycomm.connect.step`): `welcome`, `app`, `type`, `pair`, `setup`, `sims`, `connect`, `verify`,
+   * `done`, `test`, `continued`, `account` (the person's own MyComm: signing in, their numbers, or a phone of
+   * their account approving), `number_held`, `cancelled` or `manage`. Null while the link is open and no card was
+   * opened yet. More step ids may be added; treat an unknown one…
+   */
+  step: string | null;
   expires_at: string;
   return_url: string | null;
   allowed_origins: string[] | null;

@@ -2,7 +2,7 @@
 openapi: 3.1.0
 info:
   title: 'MyComm Partner API'
-  version: 2.1.0
+  version: 2.2.0
   description: "For platforms that give their own users messaging through MyComm. Authenticate with a partner key (`mc_partner_...`)\nsent as `Authorization: Bearer <key>`.\n\nA partner owns **lines**, not users. `POST /lines` makes a line for one of your users, known to you by your\n`external_ref`; it belongs to your user in MyComm (a new, empty user until they connect a phone), and the user\nowns it. Send and read through a line on `/v1` with the partner key plus the `MyComm-Line: <line id>`\nheader; a partner key reaches only the message and conversation endpoints of that line and `GET /v1/lines/{id}`.\n`DELETE /lines/{id}` detaches the line: it is archived, the user keeps the user, its channels and its history.\n`/usage` reports usage. `POST /lines/{id}/vouch` answers a `line.recovery_requested` webhook.\n\nConventions are those of `/v1`: JSON UTF-8, `snake_case` fields, UUIDv7 string ids,\nRFC 3339 UTC timestamps, cursor pagination, and the `/v1` error envelope on every non-2xx\nresponse, including unknown `/partner/v1` paths (`404 NOT_FOUND`). Every write needs a key that is\nnot read-only (`403 ABILITY_MISSING`). Clients must ignore unknown fields, enum values and error codes.\n"
 servers:
   -
@@ -636,6 +636,7 @@ components:
         - purpose
         - line_id
         - status
+        - step
         - expires_at
         - return_url
         - allowed_origins
@@ -666,6 +667,11 @@ components:
             - completed
             - revoked
             - expired
+        step:
+          type:
+            - string
+            - 'null'
+          description: "Which step the hosted connect card is on, from the link alone. `completed`, `revoked` or `expired` once the\nlink has that status. While it is open, `open:<step>` with the step the card last drew (the same id the page\nposts in `mycomm.connect.step`): `welcome`, `app`, `type`, `pair`, `setup`, `sims`, `connect`, `verify`,\n`done`, `test`, `continued`, `account` (the person's own MyComm: signing in, their numbers, or a phone of\ntheir account approving), `number_held`, `cancelled` or `manage`. Null while the link is open\nand no card was opened yet. More step ids may be added; treat an unknown one as \"in progress\"."
         expires_at:
           $ref: '#/components/schemas/Timestamp'
         return_url:
